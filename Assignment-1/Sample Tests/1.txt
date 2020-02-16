@@ -1,13 +1,13 @@
 begin
 	begin
-		if a=2 then
-			while c=4 do
+		if aww=2 then
+			while cww=4 do
 				begin
-					if a=6 then
-						b:=6;
+					if aww=6 then
+						bww:=6;
 				end
 	end
 
-	if a=5 then
-	b:=6;
+	if aw=5 then
+	bww:=6;
 end
