@@ -10,16 +10,19 @@
 	int func_def=0;
     int chars = 0;
     int i=0;
+    int j=0;
 %} 
 
 TYPE auto|const|unsigned|extern|signed|register|volatile|static|void|short|long|char|int|float|double|_Bool|complex
 
 %% 
-({TYPE}[ \t]+)*{TYPE}[ \t]*"*"*[_a-zA-Z_][a-zA-Z0-9_]*[ \t]*[=\[,]?([^\(\)\n])*; {var_dec++;printf("FUCK YOU=$%s$\n",yytext);}
+({TYPE}[ \t]+)*{TYPE}[ \t]*"*"*([ \t])*[_a-zA-Z_][a-zA-Z0-9_]*\(.*\);    {chars++; func_dec++;}
+({TYPE}[ \t]+)*{TYPE}[ \t]*"*"*([ \t])*[_a-zA-Z_][a-zA-Z0-9_]*\(.*\)([ \t\n])*\{    {chars++; func_def++;printf("ALOOOOOOO=$%s$\n",yytext);printf("ahhhh=$%s$\n",yytext); for(j=0; j<yyleng; j++) {if(yytext[j]=='\n') source_code_statements++;}}
+({TYPE}[ \t]+)*{TYPE}[ \t]*"*"*([ \t])*[_a-zA-Z_][a-zA-Z0-9_]*[ \t]*[=\[,]?([^\(\)\n])*; {chars++; var_dec++;printf("FUCK YOU=$%s$\n",yytext);}
 .  {chars++;}
 ([ \t\n])*#[ \t\n]*"define"[ \t\n]   {macros++;}
 .?\n    {source_code_statements++; if(chars==0) blank_lines++; chars=0;printf("%dHI=$%s$\n",++i,yytext);}
-<<EOF>> {source_code_statements++; return;}
+<<EOF>> {source_code_statements++; printf("ECHOOOO"); return 0;}
 
 %% 
 
