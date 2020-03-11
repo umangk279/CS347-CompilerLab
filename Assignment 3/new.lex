@@ -12,11 +12,14 @@
     int i=0;
 %} 
 
+TYPE auto|const|unsigned|extern|signed|register|volatile|static|void|short|long|char|int|float|double|_Bool|complex
+
 %% 
+({TYPE}[ \t]+)*{TYPE}[ \t]*"*"*[_a-zA-Z_][a-zA-Z0-9_]*[ \t]*[=\[,]?([^\(\)\n])*; {var_dec++;printf("FUCK YOU=$%s$\n",yytext);}
 .  {chars++;}
-([ \t\n])*#[ \t\n]*"define"[ \t\n]   {macros++;printf("YYTEXT=$%s$\n",yytext);}
+([ \t\n])*#[ \t\n]*"define"[ \t\n]   {macros++;}
 .?\n    {source_code_statements++; if(chars==0) blank_lines++; chars=0;printf("%dHI=$%s$\n",++i,yytext);}
-<<EOF>> {source_code_statements++;printf("EOF\n");return;}
+<<EOF>> {source_code_statements++; return;}
 
 %% 
 
