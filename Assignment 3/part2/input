@@ -1,0 +1,7 @@
+SELECT <stat = "gte"> (A345)
+SELECT <stat <> "gte"> (A345)
+SELECT <stat = "gte" AND sthh < 34> (A345)
+SELECT <stat = "gte" OR (sthh != 34)> (A345)
+SELECT <NOT(stat = "gte")> (A345)
+SELECT <stat >= A.dgg> (A345)
+SELECT <a = b OR C > D AND vc = 67 AND (tdd < 544)> (tiptipt)
