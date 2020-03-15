@@ -11,12 +11,13 @@
     int chars = 0;
     int i=0;
     int j=0;
-	int a=0,b=0,c=0,d;
+	int a=0,b=0,c=0,d=0;
 	int total_multilines=0, cmnt_start=0;
 	int bl=0;
 %} 
 
 %x COMMENT
+%x BLANK
 TYPE auto|const|unsigned|extern|signed|register|volatile|static|void|short|long|char|int|float|double|_Bool|complex
 
 %% 
@@ -26,8 +27,8 @@ TYPE auto|const|unsigned|extern|signed|register|volatile|static|void|short|long|
 "*/"      {chars++;c++;total_multilines+=source_code_statements-cmnt_start+1;BEGIN(INITIAL);}
 [^*\n]+   {chars++;}
 "*"       {chars++;}
-\n { yylineno++;source_code_statements++;if(chars==0) bl++;chars=0; }
-\n[ \t]*/\n	{bl++; source_code_statements++;}
+\n { yylineno++;source_code_statements++;if(chars==0) blank_lines++;chars=0; }
+\n[ \t]*/\n	{blank_lines++; source_code_statements++;}
 }
 ({TYPE}[ \t]+)*{TYPE}([ \t"*"])+([ \t])*[_a-zA-Z_][a-zA-Z0-9_]*[ \t]*\(.*\);    {chars++; func_dec++; printf("LOL%s\n",yytext);}
 ({TYPE}[ \t]+)*{TYPE}([ \t"*"])+([ \t])*[_a-zA-Z_][a-zA-Z0-9_]*\(.*\)[ \t\n]*\{    {chars++; func_def++;printf("ALOOOOOOO=$%s$\n",yytext);printf("ahhhh=$%s$\n",yytext); for(j=0; j<yyleng; j++) {if(yytext[j]=='\n') source_code_statements++;}}
@@ -36,7 +37,10 @@ TYPE auto|const|unsigned|extern|signed|register|volatile|static|void|short|long|
 .  {chars++;}
 .?\n    {source_code_statements++; if(chars==0) blank_lines++; chars=0;printf("%dHI=$%s$\n",++i,yytext);}
 <<EOF>> {source_code_statements++; printf("ECHOOOO"); return 0;}
-\n[ \t]*/\n {bl++; source_code_statements++;}
+\n[ \t]*/\n {blank_lines++; source_code_statements++;}
+<BLANK>^[ \t]*\n		{bl++;}
+<BLANK>\n		{d++;}
+
 %% 
 
 int yywrap(){} 
@@ -49,7 +53,11 @@ int main(int argc, char* argv[])
 	yyin = fopen("Input.c", "r"); 
 	yyout = fopen("Output.txt", "w"); 
 	yylex(); 
-	printf("Source Code Statements: %d\n",source_code_statements);
+	fclose(yyin);
+	yyin = fopen("Input.c", "r");
+	BEGIN(BLANK);
+	yylex();
+	printf("Source Code Statements: %d\n",d);
 	printf("Blank Lines: %d\n",bl);
 	printf("Macros: %d\n",macros);
 	printf("Function Declarations: %d\n",func_dec);

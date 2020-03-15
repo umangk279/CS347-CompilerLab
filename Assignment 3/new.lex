@@ -32,7 +32,75 @@ int yywrap(){}
 int main() 
 { 
 
-	
+	file.open(Input.c); 
+	fstream file2;
+    file2.open("comment_strip.c",ios::out); 
+    enum states { TEXT, 
+                SAW_SLASH, 
+                SAW_STAR, 
+                SINGLE_COMMENT, 
+                MULTI_COMMENT } state = TEXT;
+    int multi  = 0;
+    int single = 0;
+
+    char c;
+	while (file.get(c))
+  	{
+	    switch( state )
+	    {
+	      case TEXT :
+	        switch( c )
+	        {
+	          case '/'  : state = SAW_SLASH; break;
+	          default   : file2.put(c); break;
+	        }
+	        break;
+
+	      case SAW_SLASH :
+	        switch( c )
+	        {
+	          case '/'  : state = SINGLE_COMMENT; break;
+	          case '*'  : state = MULTI_COMMENT; break;
+	          default   : file2.put(c); state = TEXT; break;
+	        }
+	        break;
+
+	      case SAW_STAR :
+	        switch( c )
+	        {
+	          case '/'  : state = TEXT; multi++; break;
+	          case '*'  : break;
+	          case '\n' : multi++; // fall through
+	          default   : state = MULTI_COMMENT; break;
+	        }
+	        break;
+
+	      case SINGLE_COMMENT :
+	        switch( c )
+	        {
+	          case '\n' : file2.put(c); state = TEXT; single++; // fall through
+	          default   : break;
+	        }
+	        break;
+
+	      case MULTI_COMMENT :
+	        switch( c )
+	        {
+	          case '*'  : state = SAW_STAR; break;
+	          case '\n' : multi++; // fall through
+	          default   : break;
+	        }
+	        break;
+
+	      default: // NOT REACHABLE
+	        break;
+	    }
+  	}
+
+  	comments=multi+single;
+  	file.close();
+    file2.close();
+
 	extern FILE *yyin, *yyout; 
 
 	yyin = fopen("Input.c", "r"); 

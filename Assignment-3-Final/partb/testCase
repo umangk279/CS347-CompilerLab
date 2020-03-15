@@ -19,6 +19,7 @@ SELECT <NOT(stat = "gte") AND s = b> (A345)
 SELECT <a = b OR C > D AND vc = 67 AND tdd < 544)> (tiptipt)
 SELECT <a = b OR C > D AND > (tiptipt)
 
+--
 projection
 
 PROJECT <safe, sryr, gtehj> (A)
@@ -29,6 +30,7 @@ PROJECT <ad sdf sdf sdf > (A)
 PROJECT (A) <safe, sryr, > 
 PROJECT <safe, sryr,"gtehj"> (A)
 
+--
 cartesian product 
 
 (AS) CARTESIAN_PRODUCT (346GG)
@@ -40,6 +42,7 @@ AS) CARTESIAN_PRODUCT (AS)
 (AS) CARTESIAN_PRODUCT ()
 (AS46) (AS) CARTESIAN_PRODUCT
 
+--
 equi join
 
 (RETT) EQUI_JOIN <stat = "gte" AND sthh = ghth> (TTT)
@@ -47,13 +50,15 @@ equi join
 (RETT) EQUI_JOIN <(at = "e") AND a.sh = 34 OR gh = a.d> (TTT)
 (RETT) EQUI_JOIN <a = b OR C = D AND vc = 67 AND (tdd = 544)> (TTT)
 
+
 (RT) EQUI_JOIN < a.stat = b.hrtj AND a.sthh < 34> (TTT)
 (RT) EQUI_JOIN < a. stat = B.HRTJ AND a.sthh 34> (TTT)
 (RT) EQUI_JOIN <> (GFF)
 (RT) EQUI_JOIN <tat = "gte" OR (sthh != 34)> (GFF)
 
-(Employee) EQUI _JOIN (Department)
-ELECT < salary<200 > (Employee)
+
+Mitansh:
+SELECT < salary<200 > (Employee)
 SELECT < name='John' AND salary<200 > (Employee)
 SELECT (Employee) < salary<200 >
 PROJECT < salary> (Employee)
@@ -67,4 +72,4 @@ CARTESIAN_PRODUCT (Employee) (Department)
 EQUI _JOIN (Employee) <Employee.empId = Department.eId>(Department)
 SELECT <  ( > (salary>200) AND (m='Asd')) OR asd=sad  (Employee)
 <Employee>  CARTESIAN_PRODUCT  (Department)
-(Employee) EQUI_JOIN <(Employee.empId = Department AND sa='we')>(Department)
+(Employee) EQUI_JOIN <(Employee.empId = Department AND sa='we')>(Department) 

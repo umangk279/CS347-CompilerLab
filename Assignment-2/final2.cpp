@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
     if(regex_search(line,re_var_dec))
     {
       //cout<<"hi"<<endl;
-      //cout<<line<<endl;
+      cout<<line<<endl;
       var_dec++;
     }
   }

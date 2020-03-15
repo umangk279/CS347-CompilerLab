@@ -1,50 +1,29 @@
 #include <stdio.h>
-#include <ctype.h>
-#include " "
+#define r 6
+
+unsigned long ack(unsigned long m, unsigned long n);
 
 
-int main (int a, int b)
+
+int main(){
+int i,j;
+int ans = 5;
+int a[5] = {1,2,3,4,5};
+for (i=0;i<6;i++)
+for (j=0;j<6;j++)
+printf (" ", i, j, ack(i, j));
+break;
+return 0;
+}
+
+unsigned long ack(unsigned long m, unsigned long n)
 {
-  int c;
-  
-  remove(" ");
-  remove(" ");
-
-  
-  FILE *fp_lexeme;
-  fp_lexeme = fopen(" ", " ");
-
-
-  
-  while(c=lex(fp_lexeme))
-  {
-    
-      switch(c)
-      {
-          case(0):fprintf(fp_lexeme," ");break;
-          case(1):fprintf(fp_lexeme," ");break;
-          case(2):fprintf(fp_lexeme," ");break;
-          case(3):fprintf(fp_lexeme," ");break;
-          case(4):fprintf(fp_lexeme," ");break;
-          case(5):fprintf(fp_lexeme," ");break;
-          case(6):fprintf(fp_lexeme," ");break;
-          case(7):fprintf(fp_lexeme," ");break;
-          case(8):fprintf(fp_lexeme," ");break;
-          case(9):fprintf(fp_lexeme," ");break;
-          case(10):fprintf(fp_lexeme," ");break;
-          case(11):fprintf(fp_lexeme," ");break;
-          case(12):fprintf(fp_lexeme," ");break;
-          case(13):fprintf(fp_lexeme," ");break;
-          case(14):fprintf(fp_lexeme," ");break;
-          case(15):fprintf(fp_lexeme," ");break;
-          case(16):fprintf(fp_lexeme," ");break;
-          case(17):fprintf(fp_lexeme," ");break;
-          case(18):break;
-          case(19):break;
-      case(20):fprintf(fp_lexeme," ");break;
-      }
-    }
-
-    
-  fclose(fp_lexeme);
+unsigned long ans;
+if(m==0){	
+ans = n + 1;
+}
+else if (n==0) 
+ans = ack(m -1 , 1);
+else ans = ack(m-1, ack(m , n -1));
+return ans;
 }

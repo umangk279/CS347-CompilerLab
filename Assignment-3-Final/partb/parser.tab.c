@@ -459,10 +459,10 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    21,    21,    22,    23,    23,    26,    29,    30,    31,
-      32,    33,    35,    38,    41,    44,    47,    48,    50,    51,
-      54,    55,    56,    59,    59,    59,    59,    59,    59,    62,
-      62,    65,    65,    68,    68,    71,    71,    74,    77,    78,
-      81,    82,    85,    86
+      32,    32,    35,    38,    41,    44,    47,    48,    51,    52,
+      55,    56,    57,    60,    60,    60,    60,    60,    60,    63,
+      63,    66,    66,    69,    69,    72,    72,    75,    78,    79,
+      82,    83,    86,    87
 };
 #endif
 
@@ -1296,98 +1296,8 @@ yyreduce:
 #line 1297 "parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 11:
-#line 33 "parser.y" /* yacc.c:1646  */
-    {printf("QUERY -> SELECTION | PROJECTION | CART_PRODUCT | EQ_JOIN\n");}
-#line 1303 "parser.tab.c" /* yacc.c:1646  */
-    break;
 
-  case 12:
-#line 36 "parser.y" /* yacc.c:1646  */
-    {printf("SELECTION -> SELECT LT CONDITIONS GT LB TABLE_NAME RB\n");}
-#line 1309 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 13:
-#line 39 "parser.y" /* yacc.c:1646  */
-    {printf("PROJECTION -> PROJECT LT ATTRIBUTE_LIST GT LB TABLE_NAME RB\n");}
-#line 1315 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 14:
-#line 42 "parser.y" /* yacc.c:1646  */
-    {printf("CART_PRODUCT -> LB TABLE_NAME RB CARTESIAN_PRODUCT LB TABLE_NAME RB\n");}
-#line 1321 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 15:
-#line 45 "parser.y" /* yacc.c:1646  */
-    {printf("EQ_JOIN -> LB TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS GT LB TABLE_NAME RB\n");}
-#line 1327 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 17:
-#line 49 "parser.y" /* yacc.c:1646  */
-    {printf("CONDITIONS -> CONDITION AND CONDITIONS | CONDITION OR CONDITIONS | NOT CONDITIONS | LB CONDITIONS RB | CONDITION\n");}
-#line 1333 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 22:
-#line 57 "parser.y" /* yacc.c:1646  */
-    {printf("CONDITION -> EXPRESSION OPR EXPRESSION | LB CONDITION RB\n");}
-#line 1339 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 28:
-#line 60 "parser.y" /* yacc.c:1646  */
-    {printf("OPR -> LT | GT | LTE | GTE | NEQ | EQ\n");}
-#line 1345 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 30:
-#line 63 "parser.y" /* yacc.c:1646  */
-    {printf("EXPRESSION -> ATTRIBUTE_LIST | DATA\n");}
-#line 1351 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 32:
-#line 66 "parser.y" /* yacc.c:1646  */
-    {printf("ATTRIBUTE_LIST -> ATTRIBUTE | ATTRIBUTE COMMA ATTRIBUTE_LIST\n");}
-#line 1357 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 34:
-#line 69 "parser.y" /* yacc.c:1646  */
-    {printf("ATTRIBUTE -> NAME | NAME DOT NAME\n");}
-#line 1363 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 36:
-#line 72 "parser.y" /* yacc.c:1646  */
-    {printf("DATA -> NUM | STR\n");}
-#line 1369 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 37:
-#line 75 "parser.y" /* yacc.c:1646  */
-    {printf("TABLE_NAME -> NAME\n");}
-#line 1375 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 39:
-#line 79 "parser.y" /* yacc.c:1646  */
-    {printf("EQUI_CONDITIONS -> EQUI_CONDITION AND EQUI_CONDITIONS | EQUI_CONDITION OR EQUI_CONDITIONS | LB EQUI_CONDITIONS RB | EQUI_CONDITION\n");}
-#line 1381 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 43:
-#line 87 "parser.y" /* yacc.c:1646  */
-    {printf("EQUI_CONDITION -> EXPRESSION EQ EXPRESSION | LB EQUI_CONDITION RB\n");}
-#line 1387 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-
-#line 1391 "parser.tab.c" /* yacc.c:1646  */
+#line 1301 "parser.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1615,7 +1525,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 88 "parser.y" /* yacc.c:1906  */
+#line 89 "parser.y" /* yacc.c:1906  */
 
 
 int main(int argc, char *argv[]){

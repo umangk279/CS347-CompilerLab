@@ -543,8 +543,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "test.lex"
-#line 2 "test.lex"
+#line 1 "analyzer.lex"
+#line 2 "analyzer.lex"
 	#include <stdlib.h>
 	#include <string.h>
 	#include "parser.tab.h"
@@ -766,7 +766,7 @@ YY_DECL
 		}
 
 	{
-#line 12 "test.lex"
+#line 12 "analyzer.lex"
 
 #line 772 "lex.yy.c"
 
@@ -828,124 +828,124 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 13 "test.lex"
+#line 13 "analyzer.lex"
 {yylineno++; return NEW_LINE;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 14 "test.lex"
+#line 14 "analyzer.lex"
 {return SELECT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 15 "test.lex"
+#line 15 "analyzer.lex"
 {return PROJECT;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 16 "test.lex"
+#line 16 "analyzer.lex"
 {return CARTESIAN_PRODUCT;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "test.lex"
+#line 17 "analyzer.lex"
 {return EQUI_JOIN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 18 "test.lex"
+#line 18 "analyzer.lex"
 {return AND;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 19 "test.lex"
+#line 19 "analyzer.lex"
 {return OR;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 20 "test.lex"
+#line 20 "analyzer.lex"
 {return NOT;}
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 21 "test.lex"
+#line 21 "analyzer.lex"
 {return STR;}
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 22 "test.lex"
+#line 22 "analyzer.lex"
 {return STR;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 23 "test.lex"
+#line 23 "analyzer.lex"
 {return NAME;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 24 "test.lex"
+#line 24 "analyzer.lex"
 {return NUM;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 25 "test.lex"
+#line 25 "analyzer.lex"
 {return LB;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 26 "test.lex"
+#line 26 "analyzer.lex"
 {return RB;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 27 "test.lex"
+#line 27 "analyzer.lex"
 {return LT;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 28 "test.lex"
+#line 28 "analyzer.lex"
 {return GT;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 29 "test.lex"
+#line 29 "analyzer.lex"
 {return LTE;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 30 "test.lex"
+#line 30 "analyzer.lex"
 {return GTE;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 31 "test.lex"
+#line 31 "analyzer.lex"
 {return EQ;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 32 "test.lex"
+#line 32 "analyzer.lex"
 {return NEQ;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 33 "test.lex"
+#line 33 "analyzer.lex"
 {return NEQ;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 34 "test.lex"
+#line 34 "analyzer.lex"
 {return COMMA;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 35 "test.lex"
+#line 35 "analyzer.lex"
 {return DOT;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 36 "test.lex"
+#line 36 "analyzer.lex"
 ECHO;
 	YY_BREAK
 #line 952 "lex.yy.c"
@@ -1953,5 +1953,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 36 "test.lex"
+#line 36 "analyzer.lex"
 

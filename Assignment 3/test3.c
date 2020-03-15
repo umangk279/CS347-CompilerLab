@@ -52,7 +52,7 @@ char* expr_prime()
 int term()
 {
     /* term -> factor term' */
-    #define
+    #define macro 8
     factor();
     term_prime();
 }
@@ -104,7 +104,7 @@ int looolllokl();
 auto * a,b;
 int* a,b;
 auto int * jhvcyjfcv   ;
-auto int * jhvcyjf=   
+auto int * jhvcyjf=12;
 const double *hgfyt[24];
 int y;
 

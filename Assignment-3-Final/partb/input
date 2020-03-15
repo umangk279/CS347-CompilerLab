@@ -7,6 +7,8 @@ SELECT <stat = "gte" OR (sthh != 34)> (A345)
 SELECT <NOT(stat = "gte")> (A345)
 SELECT <stat >= A.dgg> (A345)
 SELECT <a = b OR C > D AND vc = 67 AND (tdd < 544)> (tiptipt)
+SELECT <stat = "gte" OR (sthh = 3)> (A345)
+SELECT <NOT(stat = "gte") AND s = b> (A345)
 
 SELECT <stat> (A345)
 SELECT <"gte"> (A345)
@@ -14,8 +16,6 @@ SELECT <stat <> "gte"> ()
 SELECT (A345)  <stat <> "gte"> 
 ussi57eo8e
 SELECT <NOT(stat == "gte")> (A345)
-SELECT <stat = "gte" OR (sthh = 3)> (A345)
-SELECT <NOT(stat = "gte") AND s = b> (A345)
 SELECT <a = b OR C > D AND vc = 67 AND tdd < 544)> (tiptipt)
 SELECT <a = b OR C > D AND > (tiptipt)
 

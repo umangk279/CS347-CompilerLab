@@ -6,8 +6,11 @@
 #include <sstream>
 
 
+
 using namespace std;
 
+
+int main(int argc, char* argv[]);
 int main(int argc, char* argv[])
 {
      int count=0;
@@ -26,8 +29,7 @@ int main(int argc, char* argv[])
     regex words_regex("(([a-zA-Z_][a-zA-Z_0-9]*[\\s\\*]*?)\\(([^!@#$+%^;\\{\\}]*?)\\)[\\s]*\\{)");
     regex var_dec("((auto\\s*|const\\s*|unsigned\\s*|extern\\s*|signed\\s*|register\\s*|volatile\\s*|static\\s*|void\\s*|short\\s*|long\\s*|char\\s*|int\\s*|float\\s*|double\\s*|_Bool\\s*|complex\\s*)+)[\\s\\*]*?([a-zA-Z_][a-zA-Z_0-9]*[\\s\\*]*?)\\(([^!@#$+%^;\\{\\}]*?)\\)[\\s]*\\{");
     //regex words_regex("(([a-zA-Z_][a-zA-Z_0-9]*)[\\s\\*]*?)\\(");
-    auto words_begin = 
-        sregex_iterator(str.begin(), str.end(), macro);
+    auto words_begin = sregex_iterator(str.begin(), str.end(), macro);
     auto words_end = sregex_iterator();
     cout<<typeid(words_regex).name()<<endl;
     cout << "Found " 
