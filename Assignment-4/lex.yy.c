@@ -542,10 +542,11 @@ char *yytext;
 	    char* att_name;
 	    struct attributes_in_query* next;
 	};
+	
 	struct attributes_in_query* aiq_front = NULL;
 	struct attributes_in_query* aiq_end = NULL;
-#line 548 "lex.yy.c"
 #line 549 "lex.yy.c"
+#line 550 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -762,9 +763,9 @@ YY_DECL
 		}
 
 	{
-#line 22 "analyzer.lex"
+#line 24 "analyzer.lex"
 
-#line 768 "lex.yy.c"
+#line 769 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -824,59 +825,59 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 23 "analyzer.lex"
+#line 25 "analyzer.lex"
 {strcat(query,yytext); yylineno++; return NEW_LINE;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 24 "analyzer.lex"
+#line 26 "analyzer.lex"
 {strcat(query,yytext); return SELECT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 25 "analyzer.lex"
+#line 27 "analyzer.lex"
 {strcat(query,yytext); return PROJECT;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 26 "analyzer.lex"
+#line 28 "analyzer.lex"
 {strcat(query,yytext); return CARTESIAN_PRODUCT;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 27 "analyzer.lex"
+#line 29 "analyzer.lex"
 {strcat(query,yytext); return EQUI_JOIN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 28 "analyzer.lex"
+#line 30 "analyzer.lex"
 {strcat(query,"&&"); return AND;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 29 "analyzer.lex"
+#line 31 "analyzer.lex"
 {strcat(query,"||"); return OR;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 30 "analyzer.lex"
+#line 32 "analyzer.lex"
 {strcat(query,"!"); return NOT;}
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 31 "analyzer.lex"
+#line 33 "analyzer.lex"
 {yytext[0]='"'; yytext[yyleng-1]='"'; strcat(query,yytext); return STR;}
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 32 "analyzer.lex"
+#line 34 "analyzer.lex"
 {strcat(query,yytext); return STR;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 33 "analyzer.lex"
+#line 35 "analyzer.lex"
 {strcat(query,yytext); 
 					struct attributes_in_query* temp = (struct attributes_in_query* )malloc(sizeof(struct attributes_in_query));
 					temp->att_name = (char*) malloc(50*sizeof(char));
@@ -888,70 +889,70 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 41 "analyzer.lex"
+#line 43 "analyzer.lex"
 {strcat(query,yytext); return NUM;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 42 "analyzer.lex"
+#line 44 "analyzer.lex"
 {strcat(query,yytext); return LB;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 43 "analyzer.lex"
+#line 45 "analyzer.lex"
 {strcat(query,yytext); return RB;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 44 "analyzer.lex"
+#line 46 "analyzer.lex"
 {strcat(query,yytext); return LT;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 45 "analyzer.lex"
+#line 47 "analyzer.lex"
 {strcat(query,yytext); return GT;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 46 "analyzer.lex"
+#line 48 "analyzer.lex"
 {strcat(query,yytext); return LTE;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 47 "analyzer.lex"
+#line 49 "analyzer.lex"
 {strcat(query,yytext); return GTE;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 48 "analyzer.lex"
+#line 50 "analyzer.lex"
 {strcat(query,"=="); return EQ;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 49 "analyzer.lex"
+#line 51 "analyzer.lex"
 {strcat(query,yytext); return NEQ;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 50 "analyzer.lex"
+#line 52 "analyzer.lex"
 {strcat(query,yytext); return NEQ;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 51 "analyzer.lex"
+#line 53 "analyzer.lex"
 {strcat(query,yytext); return COMMA;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 52 "analyzer.lex"
+#line 54 "analyzer.lex"
 {strcat(query,yytext); return DOT;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 53 "analyzer.lex"
+#line 55 "analyzer.lex"
 ECHO;
 	YY_BREAK
-#line 955 "lex.yy.c"
+#line 956 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1956,5 +1957,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 53 "analyzer.lex"
+#line 55 "analyzer.lex"
+
 

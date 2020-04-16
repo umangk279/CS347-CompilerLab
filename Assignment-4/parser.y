@@ -38,6 +38,9 @@ extern struct attributes_in_query* aiq_end;
 struct attribute_list* al_front = NULL;
 struct attribute_list* al_end = NULL;
 
+struct attribute_list* al2_front = NULL;
+struct attribute_list* al2_end = NULL;
+
 void yyerror(char *s){
 }
 int yywrap()
@@ -137,7 +140,7 @@ int check_numeric(char* token)
     return 1;
 }
 
-void get_all_table_attributes(FILE* fp)
+void get_all_table_attributes(FILE* fp, int i)
 {
     char str[500];
     if(fgets(str,500,fp)!=NULL)
@@ -151,15 +154,31 @@ void get_all_table_attributes(FILE* fp)
             temp->att_type = numeric;
             temp->in_query = 0;
             temp->next = NULL;
-            if(al_front == NULL && al_end == NULL)
+            if (i == 0)
             {
-                al_front = temp;
-                al_end = temp;
+                if(al_front == NULL && al_end == NULL)
+                {
+                    al_front = temp;
+                    al_end = temp;
+                }
+                else
+                {
+                    al_end->next = temp;
+                    al_end = temp;
+                }
             }
             else
             {
-                al_end->next = temp;
-                al_end = temp;
+                if(al2_front == NULL && al2_end == NULL)
+                {
+                    al2_front = temp;
+                    al2_end = temp;
+                }
+                else
+                {
+                    al2_end->next = temp;
+                    al2_end = temp;
+                }
             }
             token = strtok(NULL,",\n");
         }
@@ -168,7 +187,9 @@ void get_all_table_attributes(FILE* fp)
     if(fgets(str,500,fp)!=NULL)
     {
         char* token = strtok(str,",\n");
-        struct attribute_list* temp = al_front;
+        struct attribute_list* temp;
+        if (i == 0) temp = al_front;
+        else temp = al2_front;
         while(token!=NULL)
         {
             if(!check_numeric(token))
@@ -209,6 +230,51 @@ int validate_attributes(char* fname)
     return 1;
 }
 
+int validate_attributes2(char* fname, char* fname2)
+{
+    fname[strlen(fname)-4]='\0';
+    fname2[strlen(fname2)-4]='\0';
+    struct attributes_in_query* temp = aiq_front;
+
+    while(temp!=NULL)
+    {
+        if(strcmp(temp->att_name,fname)==0 || strcmp(temp->att_name,fname2)==0)
+        {
+            temp = temp->next;
+            continue;
+        }
+        //printf("%s\n",temp->att_name);
+        struct attribute_list* t = al_front;
+
+        while(t!=NULL)
+        {
+            if(strcmp(t->att_name,temp->att_name)==0)
+            {
+                t->in_query = 1;
+                break;
+            }
+            t = t->next;
+        }
+        if(t==NULL)
+        {
+            struct attribute_list* t2 = al2_front;
+            while(t2!=NULL)
+            {
+                if(strcmp(t2->att_name,temp->att_name)==0)
+                {
+                    t2->in_query = 1;
+                    break;
+                }
+                t2 = t2->next;
+            }
+            if(t2==NULL)
+                return 0;
+        }
+        temp=temp->next;
+    }
+    return 1;
+}
+
 void process_query(char* query, int query_type)
 {
     if(query_type==selection)
@@ -225,7 +291,7 @@ void process_query(char* query, int query_type)
         i++;
         while(i<j)
         {
-            if(query[i]!=' '&&query[i]!='\t')
+            if(query[i]!=' ' && query[i]!='\t')
                 condition[k++] = query[i];
             i++;
         }
@@ -255,7 +321,7 @@ void process_query(char* query, int query_type)
             return;
         }
 
-        get_all_table_attributes(fp);
+        get_all_table_attributes(fp,0);
 
         if(validate_attributes(fname)==0)
         {
@@ -320,8 +386,97 @@ void process_query(char* query, int query_type)
 
         fclose(fp);
     }
+
     else if(query_type==projection)
-    {printf("HERE\n");}
+    {
+        int i =0;
+        int len = strlen(query);
+
+        while(query[i]!='(' && i<len)
+            i++;
+        i++;
+        
+        int k=0;
+        char* fname = (char*)malloc(500*sizeof(char));
+        while(i<len && query[i]!=')')
+        {
+            if(query[i]!=' '&&query[i]!='\t')
+                fname[k++] = query[i];
+            i++;
+        }
+        fname[k]='\0';
+        strcat(fname,".csv");
+        printf("%s",fname);
+
+        FILE* fp = fopen(fname,"r");
+        if(fp==NULL) 
+        {
+            printf("File %s does not exist\n", fname);
+            return;
+        }
+
+        get_all_table_attributes(fp,0);
+
+        if(validate_attributes(fname)==0)
+        {
+            printf("Attributes in the input query are not correct.\n");
+            return;
+        }
+
+        else
+        {
+            FILE* fp2 = fopen("output.cpp","w");
+            fprintf(fp2, "#include<bits/stdc++.h>\nusing namespace std;\n\n");
+            fprintf(fp2,"int main()\n{\n");
+            fprintf(fp2,"\tFILE* fp = fopen(\"%s.csv\", \"r\");\n",fname);
+            fprintf(fp2,"\tchar* ptr;\n\n");
+
+            struct attribute_list* temp = al_front;
+            
+            fprintf(fp2,"\n\tchar str[200];\n");
+            fprintf(fp2,"\twhile(fgets(str,200,fp)!=NULL)\n\t{\n");
+            fprintf(fp2,"\t\tchar temp[200];\n");
+            fprintf(fp2,"\t\tstrcpy(temp,str);\n");
+
+            temp = al_front;
+            int i=0;
+            while(temp!=NULL)
+            {
+                if (temp->in_query == 1)
+                {
+                    if(i==0)
+                    {
+                        fprintf(fp2,"\t\tchar* token = strtok(str,\",\\n\");\n");
+                        fputs("\t\tprintf(\"\%s\",token);\n",fp2);
+                        i++;
+                    }
+                    else
+                    {
+                        fprintf(fp2,"\t\ttoken = strtok(NULL,\",\\n\");\n");
+                        fputs("\t\tprintf(\",\%s\",token);\n",fp2);
+                    }
+                }
+                else
+                {
+                    if(i==0)
+                    {
+                        fprintf(fp2,"\t\tchar* token = strtok(str,\",\\n\");\n");
+                        i++;
+                    }
+                    else
+                    {
+                        fprintf(fp2,"\t\ttoken = strtok(NULL,\",\\n\");\n");
+                    }
+                }
+                temp=temp->next;
+            }
+            fputs("\t\tprintf(\"\\n\");\n\t}\n",fp2);
+            fprintf(fp2,"\treturn 0;\n}\n");
+            fclose(fp2);
+        }
+
+        fclose(fp);
+    }
 
 
     else if(query_type==cart_product)
@@ -404,7 +559,195 @@ void process_query(char* query, int query_type)
 
     }
     else if(query_type==eq_join)
-    {}
+    {
+        int i =0;
+        int len = strlen(query);
+        int j=len-1;
+        while(query[i]!='<')
+            i++;
+        while(query[j]!='>')
+            j--;
+        char* condition = (char*)malloc(500*sizeof(char));
+        int k=0;
+        i++;
+        while(i<j)
+        {
+            if(query[i]!=' ' && query[i]!='\t')
+                condition[k++] = query[i];
+            i++;
+        }
+        condition[k] = '\0';
+        printf("Condition: %s\n",condition); //1
+
+        i=0;
+        while(query[i]!='(')
+            i++;
+        i++;
+        k=0;
+        char* fname = (char*)malloc(500*sizeof(char));
+        while(i<len && query[i]!=')')
+        {
+            if(query[i]!=' '&&query[i]!='\t')
+                fname[k++] = query[i];
+            i++;
+        }
+        fname[k]='\0';
+        strcat(fname,".csv");
+        printf("%s\n",fname); //2
+
+        while(query[i]!='(')
+            i++;
+        i++;
+        k=0;
+        char* fname2 = (char*)malloc(500*sizeof(char));
+        while(i<len && query[i]!=')')
+        {
+            if(query[i]!=' '&&query[i]!='\t')
+                fname2[k++] = query[i];
+            i++;
+        }
+        fname2[k]='\0';
+        strcat(fname2,".csv");
+        printf("%s\n",fname2); //3
+
+        FILE* fp = fopen(fname,"r");
+        if(fp==NULL) 
+        {
+            printf("File %s does not exist\n", fname);
+            return;
+        }
+
+        get_all_table_attributes(fp,0);
+
+        FILE* fp2 = fopen(fname,"r");
+        if(fp2==NULL) 
+        {
+            printf("File %s does not exist\n", fname2);
+            return;
+        }
+
+        get_all_table_attributes(fp2,1);
+
+        if(validate_attributes2(fname, fname2)==0)
+        {
+            printf("Attributes in the input query are not correct.\n");
+            return;
+        }
+
+        else
+        {
+            fp = fopen("output.cpp","w");
+            fprintf(fp, "#include<bits/stdc++.h>\nusing namespace std;\n\n");
+
+            fprintf(fp,"class _%s {\n",fname);
+            fprintf(fp,"public :\n");
+            struct attribute_list* temp = al_front;
+            while(temp!=NULL)
+            {
+                if(temp->att_type == numeric)
+                    fprintf(fp,"\tdouble %s;\n",temp->att_name);
+                else if(temp->att_type == isString)
+                {
+                    fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
+                    fprintf(fp,"\tstring %s;\n",temp->att_name);
+                }
+                temp = temp->next;
+            }
+            fprintf(fp,"};\n");
+
+            fprintf(fp,"class _%s {\n",fname2);
+            fprintf(fp,"public :\n");
+            temp = al2_front;
+            while(temp!=NULL)
+            {
+                if(temp->att_type == numeric)
+                    fprintf(fp,"\tdouble %s;\n",temp->att_name);
+                else if(temp->att_type == isString)
+                {
+                    fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
+                    fprintf(fp,"\tstring %s;\n",temp->att_name);
+                }
+                temp = temp->next;
+            }
+            fprintf(fp,"};\n");
+
+            fprintf(fp,"int main()\n{\n");
+            fprintf(fp,"\tFILE* fp = fopen(\"%s\", \"r\");\n",fname);
+            fprintf(fp,"\tFILE* fp2 = fopen(\"%s\", \"r\");\n\n",fname2);
+            fprintf(fp,"\tchar* ptr;\n\n");
+
+            fprintf(fp,"\t_%s %s;\n",fname,fname);
+            fprintf(fp,"\t_%s %s;\n",fname2,fname2);
+
+            fprintf(fp,"\tchar str[200];\n");
+            fprintf(fp,"\tchar str2[200];\n\n");
+            fprintf(fp,"\tfgets(str,200,fp);\n");
+            fprintf(fp,"\tfgets(str2,200,fp2);\n");
+            fprintf(fp,"\tstr[strlen(str)-1]=\'\\0\';\n\n");
+            fputs("\tprintf(\"\%s,\%s\",str,str2);\n\n",fp);
+            fprintf(fp,"\tfclose(fp2);\n\n");
+            fprintf(fp,"\twhile(fgets(str,200,fp)!=NULL)\n\t{\n");
+            fprintf(fp,"\t\tstr[strlen(str)-1]=\'\\0\';\n");
+
+            temp = al_front;
+            int i=0;
+            while(temp!=NULL)
+            {
+                if(i==0)
+                {
+                    fprintf(fp,"\t\tchar* token = strtok(str,\",\\n\");\n");
+                    i++;
+                }
+                else
+                    fprintf(fp,"\t\ttoken = strtok(NULL,\",\\n\");\n");
+                if(temp->att_type == numeric)
+                {
+                    fprintf(fp,"\t\t%s.%s = strtod(token,&ptr);\n",fname,temp->att_name);
+                }
+                else
+                {
+                    fprintf(fp,"\t\tstrcpy(%s.%s2,token);\n",fname,temp->att_name);
+                    fprintf(fp,"\t\t%s.%s = %s.%s2;\n",fname,temp->att_name,fname,temp->att_name);
+                }
+                temp=temp->next;
+            }
+
+	        fprintf(fp,"\t\tfp2 = fopen(\"%s\", \"r\");\n\n",fname2);
+	        fprintf(fp,"\t\tfgets(str2,200,fp2);\n");
+	        fprintf(fp,"\t\twhile(fgets(str2,200,fp2)!=NULL)\n\t\t{\n");
+
+	        temp = al2_front;
+            i=0;
+	        while(temp!=NULL)
+            {
+                if(i==0)
+                {
+                    fprintf(fp,"\t\t\tchar* token = strtok(str2,\",\\n\");\n");
+                    i++;
+                }
+                else
+                    fprintf(fp,"\t\t\ttoken = strtok(NULL,\",\\n\");\n");
+                if(temp->att_type == numeric)
+                {
+                    fprintf(fp,"\t\t\t%s.%s = strtod(token,&ptr);\n",fname2,temp->att_name);
+                }
+                else
+                {
+                    fprintf(fp,"\t\t\tstrcpy(%s.%s2,token);\n",fname2,temp->att_name);
+                    fprintf(fp,"\t\t\t%s.%s = %s.%s2;\n",fname2,temp->att_name,fname2,temp->att_name);
+                }
+                temp=temp->next;
+            }
+
+            fprintf(fp,"\t\t\tif(%s)\n",condition);
+	        fputs("\t\t\t\tprintf(\"\%s,\%s\",str,str2);\n\t\t}\n",fp);
+	        fprintf(fp,"\t\tfclose(fp2);\n\t}\n");
+	        fprintf(fp,"\tfclose(fp);\n\n");
+	        fprintf(fp,"\treturn 0;\n}\n");
+            fclose(fp);
+        }
+
+    }
 
 }
 
@@ -415,3 +758,4 @@ int main(int argc, char *argv[]){
   yyparse();
   return 0;
 }
+

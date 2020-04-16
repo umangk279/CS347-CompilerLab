@@ -10,9 +10,11 @@
 	    char* att_name;
 	    struct attributes_in_query* next;
 	};
+	
 	struct attributes_in_query* aiq_front = NULL;
 	struct attributes_in_query* aiq_end = NULL;
 %}
+
 ws				[ \t]*
 name		    {ws}[a-zA-Z][0-9a-zA-Z_]*{ws}
 digits 						([0-9]+)

@@ -103,16 +103,13 @@ extern struct attributes_in_query* aiq_end;
 struct attribute_list* al_front = NULL;
 struct attribute_list* al_end = NULL;
 
-struct attribute_list* al2_front = NULL;
-struct attribute_list* al2_end = NULL;
-
 void yyerror(char *s){
 }
 int yywrap()
 { }
 
 
-#line 116 "parser.tab.c" /* yacc.c:339  */
+#line 113 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -130,10 +127,7 @@ int yywrap()
 # define YYERROR_VERBOSE 0
 #endif
 
-/* In a future release of Bison, this section will be replaced
-   by #include "parser.tab.h".  */
-#ifndef YY_YY_PARSER_TAB_H_INCLUDED
-# define YY_YY_PARSER_TAB_H_INCLUDED
+
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -170,16 +164,38 @@ extern int yydebug;
     DOT = 278
   };
 #endif
+/* Tokens.  */
+#define NEW_LINE 258
+#define SELECT 259
+#define PROJECT 260
+#define CARTESIAN_PRODUCT 261
+#define EQUI_JOIN 262
+#define STR 263
+#define NAME 264
+#define NUM 265
+#define AND 266
+#define OR 267
+#define NOT 268
+#define LB 269
+#define RB 270
+#define LT 271
+#define GT 272
+#define LTE 273
+#define GTE 274
+#define EQ 275
+#define NEQ 276
+#define COMMA 277
+#define DOT 278
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 51 "parser.y" /* yacc.c:355  */
+#line 48 "parser.y" /* yacc.c:355  */
  char Char;
 
-#line 183 "parser.tab.c" /* yacc.c:355  */
+#line 199 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -192,11 +208,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */
+
 
 /* Copy the second part of user declarations.  */
 
-#line 200 "parser.tab.c" /* yacc.c:358  */
+#line 216 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -495,11 +511,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    58,    58,    59,    60,    60,    63,    70,    71,    72,
-      73,    74,    77,    80,    83,    86,    89,    90,    93,    94,
-      97,    98,    99,   102,   102,   102,   102,   102,   102,   105,
-     105,   108,   108,   111,   111,   114,   114,   117,   120,   121,
-     124,   125,   128,   129
+       0,    55,    55,    56,    57,    57,    60,    67,    68,    69,
+      70,    71,    74,    77,    80,    83,    86,    87,    90,    91,
+      94,    95,    96,    99,    99,    99,    99,    99,    99,   102,
+     102,   105,   105,   108,   108,   111,   111,   114,   117,   118,
+     121,   122,   125,   126
 };
 #endif
 
@@ -1322,46 +1338,46 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 60 "parser.y" /* yacc.c:1646  */
+#line 57 "parser.y" /* yacc.c:1646  */
     {printf ("%d: INVALID SYNTAX\n",i++);}
-#line 1328 "parser.tab.c" /* yacc.c:1646  */
+#line 1344 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 64 "parser.y" /* yacc.c:1646  */
+#line 61 "parser.y" /* yacc.c:1646  */
     { 
           printf("Query: %s\n",query);
           process_query(query, query_type);
         }
-#line 1337 "parser.tab.c" /* yacc.c:1646  */
+#line 1353 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 70 "parser.y" /* yacc.c:1646  */
+#line 67 "parser.y" /* yacc.c:1646  */
     { query_type = selection; printf("%d: VALID SYNTAX\n",i++); printf("Processing SELECT QUERY\n"); }
-#line 1343 "parser.tab.c" /* yacc.c:1646  */
+#line 1359 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 71 "parser.y" /* yacc.c:1646  */
+#line 68 "parser.y" /* yacc.c:1646  */
     { query_type = projection; printf("%d: VALID SYNTAX\n",i++); printf("Processing PROJECT QUERY\n"); }
-#line 1349 "parser.tab.c" /* yacc.c:1646  */
+#line 1365 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 72 "parser.y" /* yacc.c:1646  */
+#line 69 "parser.y" /* yacc.c:1646  */
     { query_type = cart_product; printf("%d: VALID SYNTAX\n",i++); printf("Processing CARTESIAN_PRODUCT QUERY\n");  }
-#line 1355 "parser.tab.c" /* yacc.c:1646  */
+#line 1371 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 73 "parser.y" /* yacc.c:1646  */
+#line 70 "parser.y" /* yacc.c:1646  */
     { query_type = eq_join; printf("%d: VALID SYNTAX\n",i++); printf("Processing EQUI_JOIN QUERY\n");  }
-#line 1361 "parser.tab.c" /* yacc.c:1646  */
+#line 1377 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1365 "parser.tab.c" /* yacc.c:1646  */
+#line 1381 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1589,7 +1605,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 131 "parser.y" /* yacc.c:1906  */
+#line 128 "parser.y" /* yacc.c:1906  */
 
 
 int check_numeric(char* token)
@@ -1602,7 +1618,7 @@ int check_numeric(char* token)
     return 1;
 }
 
-void get_all_table_attributes(FILE* fp, int i)
+void get_all_table_attributes(FILE* fp)
 {
     char str[500];
     if(fgets(str,500,fp)!=NULL)
@@ -1616,31 +1632,15 @@ void get_all_table_attributes(FILE* fp, int i)
             temp->att_type = numeric;
             temp->in_query = 0;
             temp->next = NULL;
-            if (i == 0)
+            if(al_front == NULL && al_end == NULL)
             {
-                if(al_front == NULL && al_end == NULL)
-                {
-                    al_front = temp;
-                    al_end = temp;
-                }
-                else
-                {
-                    al_end->next = temp;
-                    al_end = temp;
-                }
+                al_front = temp;
+                al_end = temp;
             }
             else
             {
-                if(al2_front == NULL && al2_end == NULL)
-                {
-                    al2_front = temp;
-                    al2_end = temp;
-                }
-                else
-                {
-                    al2_end->next = temp;
-                    al2_end = temp;
-                }
+                al_end->next = temp;
+                al_end = temp;
             }
             token = strtok(NULL,",\n");
         }
@@ -1649,9 +1649,7 @@ void get_all_table_attributes(FILE* fp, int i)
     if(fgets(str,500,fp)!=NULL)
     {
         char* token = strtok(str,",\n");
-        struct attribute_list* temp;
-        if (i == 0) temp = al_front;
-        else temp = al2_front;
+        struct attribute_list* temp = al_front;
         while(token!=NULL)
         {
             if(!check_numeric(token))
@@ -1687,51 +1685,6 @@ int validate_attributes(char* fname)
         }
         if(t==NULL)
             return 0;
-        temp=temp->next;
-    }
-    return 1;
-}
-
-int validate_attributes2(char* fname, char* fname2)
-{
-    fname[strlen(fname)-4]='\0';
-    fname2[strlen(fname2)-4]='\0';
-    struct attributes_in_query* temp = aiq_front;
-
-    while(temp!=NULL)
-    {
-        if(strcmp(temp->att_name,fname)==0 || strcmp(temp->att_name,fname2)==0)
-        {
-            temp = temp->next;
-            continue;
-        }
-        //printf("%s\n",temp->att_name);
-        struct attribute_list* t = al_front;
-
-        while(t!=NULL)
-        {
-            if(strcmp(t->att_name,temp->att_name)==0)
-            {
-                t->in_query = 1;
-                break;
-            }
-            t = t->next;
-        }
-        if(t==NULL)
-        {
-            struct attribute_list* t2 = al2_front;
-            while(t2!=NULL)
-            {
-                if(strcmp(t2->att_name,temp->att_name)==0)
-                {
-                    t2->in_query = 1;
-                    break;
-                }
-                t2 = t2->next;
-            }
-            if(t2==NULL)
-                return 0;
-        }
         temp=temp->next;
     }
     return 1;
@@ -1783,7 +1736,7 @@ void process_query(char* query, int query_type)
             return;
         }
 
-        get_all_table_attributes(fp,0);
+        get_all_table_attributes(fp);
 
         if(validate_attributes(fname)==0)
         {
@@ -1858,7 +1811,7 @@ void process_query(char* query, int query_type)
             i++;
         i++;
         
-        int k=0;
+        k=0;
         char* fname = (char*)malloc(500*sizeof(char));
         while(i<len && query[i]!=')')
         {
@@ -1877,7 +1830,7 @@ void process_query(char* query, int query_type)
             return;
         }
 
-        get_all_table_attributes(fp,0);
+        get_all_table_attributes(fp);
 
         if(validate_attributes(fname)==0)
         {
@@ -2021,195 +1974,7 @@ void process_query(char* query, int query_type)
 
     }
     else if(query_type==eq_join)
-    {
-        int i =0;
-        int len = strlen(query);
-        int j=len-1;
-        while(query[i]!='<')
-            i++;
-        while(query[j]!='>')
-            j--;
-        char* condition = (char*)malloc(500*sizeof(char));
-        int k=0;
-        i++;
-        while(i<j)
-        {
-            if(query[i]!=' ' && query[i]!='\t')
-                condition[k++] = query[i];
-            i++;
-        }
-        condition[k] = '\0';
-        printf("Condition: %s\n",condition); //1
-
-        i=0;
-        while(query[i]!='(')
-            i++;
-        i++;
-        k=0;
-        char* fname = (char*)malloc(500*sizeof(char));
-        while(i<len && query[i]!=')')
-        {
-            if(query[i]!=' '&&query[i]!='\t')
-                fname[k++] = query[i];
-            i++;
-        }
-        fname[k]='\0';
-        strcat(fname,".csv");
-        printf("%s\n",fname); //2
-
-        while(query[i]!='(')
-            i++;
-        i++;
-        k=0;
-        char* fname2 = (char*)malloc(500*sizeof(char));
-        while(i<len && query[i]!=')')
-        {
-            if(query[i]!=' '&&query[i]!='\t')
-                fname2[k++] = query[i];
-            i++;
-        }
-        fname2[k]='\0';
-        strcat(fname2,".csv");
-        printf("%s\n",fname2); //3
-
-        FILE* fp = fopen(fname,"r");
-        if(fp==NULL) 
-        {
-            printf("File %s does not exist\n", fname);
-            return;
-        }
-
-        get_all_table_attributes(fp,0);
-
-        FILE* fp2 = fopen(fname,"r");
-        if(fp2==NULL) 
-        {
-            printf("File %s does not exist\n", fname2);
-            return;
-        }
-
-        get_all_table_attributes(fp2,1);
-
-        if(validate_attributes2(fname, fname2)==0)
-        {
-            printf("Attributes in the input query are not correct.\n");
-            return;
-        }
-
-        else
-        {
-            fp = fopen("output.cpp","w");
-            fprintf(fp, "#include<bits/stdc++.h>\nusing namespace std;\n\n");
-
-            fprintf(fp,"class _%s {\n",fname);
-            fprintf(fp,"public :\n");
-            struct attribute_list* temp = al_front;
-            while(temp!=NULL)
-            {
-                if(temp->att_type == numeric)
-                    fprintf(fp,"\tdouble %s;\n",temp->att_name);
-                else if(temp->att_type == isString)
-                {
-                    fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
-                    fprintf(fp,"\tstring %s;\n",temp->att_name);
-                }
-                temp = temp->next;
-            }
-            fprintf(fp,"};\n");
-
-            fprintf(fp,"class _%s {\n",fname2);
-            fprintf(fp,"public :\n");
-            temp = al2_front;
-            while(temp!=NULL)
-            {
-                if(temp->att_type == numeric)
-                    fprintf(fp,"\tdouble %s;\n",temp->att_name);
-                else if(temp->att_type == isString)
-                {
-                    fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
-                    fprintf(fp,"\tstring %s;\n",temp->att_name);
-                }
-                temp = temp->next;
-            }
-            fprintf(fp,"};\n");
-
-            fprintf(fp,"int main()\n{\n");
-            fprintf(fp,"\tFILE* fp = fopen(\"%s\", \"r\");\n",fname);
-            fprintf(fp,"\tFILE* fp2 = fopen(\"%s\", \"r\");\n\n",fname2);
-            fprintf(fp,"\tchar* ptr;\n\n");
-
-            fprintf(fp,"\t_%s %s;\n",fname,fname);
-            fprintf(fp,"\t_%s %s;\n",fname2,fname2);
-
-            fprintf(fp,"\tchar str[200];\n");
-            fprintf(fp,"\tchar str2[200];\n\n");
-            fprintf(fp,"\tfgets(str,200,fp);\n");
-            fprintf(fp,"\tfgets(str2,200,fp2);\n");
-            fprintf(fp,"\tstr[strlen(str)-1]=\'\\0\';\n\n");
-            fputs("\tprintf(\"\%s,\%s\",str,str2);\n\n",fp);
-            fprintf(fp,"\tfclose(fp2);\n\n");
-            fprintf(fp,"\twhile(fgets(str,200,fp)!=NULL)\n\t{\n");
-            fprintf(fp,"\t\tstr[strlen(str)-1]=\'\\0\';\n");
-
-            temp = al_front;
-            int i=0;
-            while(temp!=NULL)
-            {
-                if(i==0)
-                {
-                    fprintf(fp,"\t\tchar* token = strtok(str,\",\\n\");\n");
-                    i++;
-                }
-                else
-                    fprintf(fp,"\t\ttoken = strtok(NULL,\",\\n\");\n");
-                if(temp->att_type == numeric)
-                {
-                    fprintf(fp,"\t\t%s.%s = strtod(token,&ptr);\n",fname,temp->att_name);
-                }
-                else
-                {
-                    fprintf(fp,"\t\tstrcpy(%s.%s2,token);\n",fname,temp->att_name);
-                    fprintf(fp,"\t\t%s.%s = %s.%s2;\n",fname,temp->att_name,fname,temp->att_name);
-                }
-                temp=temp->next;
-            }
-
-	        fprintf(fp,"\t\tfp2 = fopen(\"%s\", \"r\");\n\n",fname2);
-	        fprintf(fp,"\t\tfgets(str2,200,fp2);\n");
-	        fprintf(fp,"\t\twhile(fgets(str2,200,fp2)!=NULL)\n\t\t{\n");
-
-	        temp = al2_front;
-            i=0;
-	        while(temp!=NULL)
-            {
-                if(i==0)
-                {
-                    fprintf(fp,"\t\t\tchar* token = strtok(str2,\",\\n\");\n");
-                    i++;
-                }
-                else
-                    fprintf(fp,"\t\t\ttoken = strtok(NULL,\",\\n\");\n");
-                if(temp->att_type == numeric)
-                {
-                    fprintf(fp,"\t\t\t%s.%s = strtod(token,&ptr);\n",fname2,temp->att_name);
-                }
-                else
-                {
-                    fprintf(fp,"\t\t\tstrcpy(%s.%s2,token);\n",fname2,temp->att_name);
-                    fprintf(fp,"\t\t\t%s.%s = %s.%s2;\n",fname2,temp->att_name,fname2,temp->att_name);
-                }
-                temp=temp->next;
-            }
-
-            fprintf(fp,"\t\t\tif(%s)\n",condition);
-	        fputs("\t\t\t\tprintf(\"\%s,\%s\",str,str2);\n\t\t}\n",fp);
-	        fprintf(fp,"\t\tfclose(fp2);\n\t}\n");
-	        fprintf(fp,"\tfclose(fp);\n\n");
-	        fprintf(fp,"\treturn 0;\n}\n");
-            fclose(fp);
-        }
-
-    }
+    {}
 
 }
 
@@ -2220,4 +1985,3 @@ int main(int argc, char *argv[]){
   yyparse();
   return 0;
 }
-
