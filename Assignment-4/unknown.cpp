@@ -1,10 +1,10 @@
-#include<bits/stdc++.h>
+#include<bits/stdc++.h> 
 using namespace std;
 
 int main()
 {
-	FILE* fp = fopen("Employee.csv", "r");
-	FILE* fp2 = fopen("Employee2.csv", "r");
+	FILE* fp = fopen("Employee.csv","r");
+	FILE* fp2 = fopen("Employee.csv","r");
 
 	char str[200];
 	char str2[200];
@@ -20,8 +20,7 @@ int main()
 	while(fgets(str,200,fp)!=NULL)
 	{
 		str[strlen(str)-1]='\0';
-		fp2 = fopen("Employee2.csv", "r");
-
+		fp2 = fopen("Employee.csv","r");
 		fgets(str2,200,fp2);
 		while(fgets(str2,200,fp2)!=NULL)
 		{

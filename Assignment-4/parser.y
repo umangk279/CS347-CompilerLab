@@ -62,7 +62,7 @@ SMT:    QUERY
           printf("Query: %s\n",query);
           process_query(query, query_type);
         }
-         ;
+        ;
 
 QUERY:  SELECTION { query_type = selection; printf("%d: VALID SYNTAX\n",i++); printf("Processing SELECT QUERY\n"); }
         | PROJECTION { query_type = projection; printf("%d: VALID SYNTAX\n",i++); printf("Processing PROJECT QUERY\n"); }
@@ -322,8 +322,87 @@ void process_query(char* query, int query_type)
     }
     else if(query_type==projection)
     {printf("HERE\n");}
+
+
     else if(query_type==cart_product)
-    {}
+    {
+        int i=0;
+        int len = strlen(query);
+
+        while(query[i]!='(')
+            i++;
+        i++;
+        int k=0;
+        char* fname = (char*)malloc(500*sizeof(char));
+        while(i<len && query[i]!=')')
+        {
+            if(query[i]!=' '&&query[i]!='\t')
+                fname[k++] = query[i];
+            i++;
+        }
+        fname[k]='\0';
+        strcat(fname,".csv");
+        printf("%s\n",fname);
+
+        k=len-1;
+        while(query[i]!='(')
+            i++;
+        i++;
+        k=0;
+        char* fname2 = (char*)malloc(500*sizeof(char));
+        while(i<len && query[i]!=')')
+        {
+            if(query[i]!=' '&&query[i]!='\t')
+                fname2[k++] = query[i];
+            i++;
+        }
+        fname2[k]='\0';
+        strcat(fname2,".csv");
+        printf("%s\n",fname2);
+
+        FILE* fp = fopen(fname,"r");
+        if(fp==NULL)
+        {
+            printf("%s not found.\n",fname);
+            return;
+        }
+        else
+            fclose(fp);
+
+        fp = fopen(fname2,"r");
+        if(fp==NULL)
+        {
+            printf("%s not found.\n",fname2);
+            return;
+        }
+        else
+            fclose(fp);
+
+        fp = fopen("output.cpp","w");
+        fprintf(fp, "#include<bits/stdc++.h>\nusing namespace std;\n\n");
+        fprintf(fp,"int main()\n{\n");
+        fprintf(fp,"\tFILE* fp = fopen(\"%s\", \"r\");\n",fname);
+        fprintf(fp,"\tFILE* fp2 = fopen(\"%s\", \"r\");\n\n",fname2);
+        fprintf(fp,"\tchar str[200];\n");
+        fprintf(fp,"\tchar str2[200];\n\n");
+        fprintf(fp,"\tfgets(str,200,fp);\n");
+        fprintf(fp,"\tfgets(str2,200,fp2);\n");
+        fprintf(fp,"\tstr[strlen(str)-1]=\'\\0\';\n\n");
+        fputs("\tprintf(\"\%s,\%s\",str,str2);\n\n",fp);
+        fprintf(fp,"\tfclose(fp2);\n\n");
+        fprintf(fp,"\twhile(fgets(str,200,fp)!=NULL)\n\t{\n");
+        fprintf(fp,"\t\tstr[strlen(str)-1]=\'\\0\';\n");
+        fprintf(fp,"\t\tfp2 = fopen(\"%s\", \"r\");\n\n",fname2);
+        fprintf(fp,"\t\tfgets(str2,200,fp2);\n");
+        fprintf(fp,"\t\twhile(fgets(str2,200,fp2)!=NULL)\n\t\t{\n");
+        fputs("\t\t\tprintf(\"\%s,\%s\",str,str2);\n\t\t}\n",fp);
+        fprintf(fp,"\t\tfclose(fp2);\n\t}\n");
+        fprintf(fp,"\tfclose(fp);\n\n");
+        fprintf(fp,"\treturn 0;\n}\n");
+
+        fclose(fp);
+
+    }
     else if(query_type==eq_join)
     {}
 
