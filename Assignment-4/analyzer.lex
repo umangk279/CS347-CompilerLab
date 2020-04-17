@@ -16,13 +16,13 @@
 %}
 
 ws				[ \t]*
-name		    [a-zA-Z][0-9a-zA-Z_]*
+name		    [a-zA-Z0-9][0-9a-zA-Z_]*
 digits 						([0-9]+)
 float             ([0-9]*\.?[0-9]+|[0-9]+)
 number                ({digits}|{float})
 
 %%
-"\n"                        {strcat(query,yytext); yylineno++; return NEW_LINE;}
+"\n"                        {strcat(query,yytext); return NEW_LINE;}
 {ws}"SELECT"{ws}            {strcat(query,yytext); return SELECT;}
 {ws}"PROJECT"{ws}           {strcat(query,yytext); return PROJECT;}
 {ws}"CARTESIAN_PRODUCT"{ws} {strcat(query,yytext); return CARTESIAN_PRODUCT;}
@@ -48,7 +48,7 @@ number                ({digits}|{float})
 {ws}"<="{ws}    {strcat(query,yytext); return LTE;}
 {ws}">="{ws}    {strcat(query,yytext); return GTE;}
 {ws}"="{ws}     {strcat(query,"=="); return EQ;}
-{ws}"<>"{ws}    {strcat(query,yytext); return NEQ;}
+{ws}"<>"{ws}    {strcat(query,"!="); return NEQ;}
 {ws}"!="{ws}    {strcat(query,yytext); return NEQ;}
 {ws}","{ws}		{strcat(query,yytext); return COMMA;}
 {ws}"."{ws}		{strcat(query,yytext); return DOT;}

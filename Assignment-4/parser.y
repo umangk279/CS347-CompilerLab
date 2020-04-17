@@ -58,17 +58,16 @@ int yywrap()
 
 SMT:    QUERY
         { 
-          printf("Query: %s\n",query);
           process_query(query, query_type);
           return 0;
         }
-        | error {printf ("%d: INVALID SYNTAX\n",i++); return 0;}
+        | error {remove("output.cpp"); remove("output");printf ("INVALID SYNTAX\n"); return 0;}
         ;
 
-QUERY:  SELECTION { query_type = selection; printf("%d: VALID SYNTAX\n",i++); printf("Processing SELECT QUERY\n"); }
-        | PROJECTION { query_type = projection; printf("%d: VALID SYNTAX\n",i++); printf("Processing PROJECT QUERY\n"); }
-        | CART_PRODUCT { query_type = cart_product; printf("%d: VALID SYNTAX\n",i++); printf("Processing CARTESIAN_PRODUCT QUERY\n");  }
-        | EQ_JOIN { query_type = eq_join; printf("%d: VALID SYNTAX\n",i++); printf("Processing EQUI_JOIN QUERY\n");  }       
+QUERY:  SELECTION { query_type = selection; printf("VALID SYNTAX\n"); printf("Processing SELECT QUERY\n"); }
+        | PROJECTION { query_type = projection; printf("VALID SYNTAX\n"); printf("Processing PROJECT QUERY\n"); }
+        | CART_PRODUCT { query_type = cart_product; printf("VALID SYNTAX\n"); printf("Processing CARTESIAN_PRODUCT QUERY\n");  }
+        | EQ_JOIN { query_type = eq_join; printf("VALID SYNTAX\n"); printf("Processing EQUI_JOIN QUERY\n");  }       
         |
         ;
 
@@ -275,8 +274,8 @@ int validate_attributes2(char* fname, char* fname2)
 
 void process_query(char* query, int query_type)
 {
-    int ret = remove("output.cpp");
-    printf("Ret: %d\n",ret);
+    remove("output.cpp");
+    remove("output");
     if(query_type==selection)
     {
         int i =0;
@@ -296,7 +295,6 @@ void process_query(char* query, int query_type)
             i++;
         }
         condition[k] = '\0';
-        printf("Condition: %s\n",condition);
 
         while(query[i]!='(' && i<len)
             i++;
@@ -312,7 +310,6 @@ void process_query(char* query, int query_type)
         }
         fname[k]='\0';
         strcat(fname,".csv");
-        printf("%s",fname);
 
         FILE* fp = fopen(fname,"r");
         if(fp==NULL) 
@@ -406,7 +403,6 @@ void process_query(char* query, int query_type)
         }
         fname[k]='\0';
         strcat(fname,".csv");
-        printf("%s",fname);
 
         FILE* fp = fopen(fname,"r");
         if(fp==NULL) 
@@ -497,7 +493,6 @@ void process_query(char* query, int query_type)
         }
         fname[k]='\0';
         strcat(fname,".csv");
-        printf("%s\n",fname);
 
         k=len-1;
         while(query[i]!='(')
@@ -513,12 +508,11 @@ void process_query(char* query, int query_type)
         }
         fname2[k]='\0';
         strcat(fname2,".csv");
-        printf("%s\n",fname2);
 
         FILE* fp = fopen(fname,"r");
         if(fp==NULL)
         {
-            printf("%s not found.\n",fname);
+            printf("File %s does not exist.\n",fname);
             return;
         }
         else
@@ -527,7 +521,7 @@ void process_query(char* query, int query_type)
         fp = fopen(fname2,"r");
         if(fp==NULL)
         {
-            printf("%s not found.\n",fname2);
+            printf("File %s does not exist.\n",fname2);
             return;
         }
         else

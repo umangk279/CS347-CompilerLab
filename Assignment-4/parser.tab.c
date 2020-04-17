@@ -495,11 +495,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    59,    59,    65,    68,    69,    70,    71,    72,    75,
-      78,    81,    84,    87,    88,    91,    92,    95,    96,    97,
-     100,   100,   100,   100,   100,   100,   103,   103,   106,   106,
-     109,   109,   112,   112,   115,   118,   119,   122,   123,   126,
-     127
+       0,    59,    59,    64,    67,    68,    69,    70,    71,    74,
+      77,    80,    83,    86,    87,    90,    91,    94,    95,    96,
+      99,    99,    99,    99,    99,    99,   102,   102,   105,   105,
+     108,   108,   111,   111,   114,   117,   118,   121,   122,   125,
+     126
 };
 #endif
 
@@ -1322,45 +1322,44 @@ yyreduce:
         case 2:
 #line 60 "parser.y" /* yacc.c:1646  */
     { 
-          printf("Query: %s\n",query);
           process_query(query, query_type);
           return 0;
         }
-#line 1330 "parser.tab.c" /* yacc.c:1646  */
+#line 1329 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 65 "parser.y" /* yacc.c:1646  */
-    {printf ("%d: INVALID SYNTAX\n",i++); return 0;}
-#line 1336 "parser.tab.c" /* yacc.c:1646  */
+#line 64 "parser.y" /* yacc.c:1646  */
+    {remove("output.cpp"); remove("output");printf ("INVALID SYNTAX\n"); return 0;}
+#line 1335 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 68 "parser.y" /* yacc.c:1646  */
-    { query_type = selection; printf("%d: VALID SYNTAX\n",i++); printf("Processing SELECT QUERY\n"); }
-#line 1342 "parser.tab.c" /* yacc.c:1646  */
+#line 67 "parser.y" /* yacc.c:1646  */
+    { query_type = selection; printf("VALID SYNTAX\n"); printf("Processing SELECT QUERY\n"); }
+#line 1341 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 69 "parser.y" /* yacc.c:1646  */
-    { query_type = projection; printf("%d: VALID SYNTAX\n",i++); printf("Processing PROJECT QUERY\n"); }
-#line 1348 "parser.tab.c" /* yacc.c:1646  */
+#line 68 "parser.y" /* yacc.c:1646  */
+    { query_type = projection; printf("VALID SYNTAX\n"); printf("Processing PROJECT QUERY\n"); }
+#line 1347 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 70 "parser.y" /* yacc.c:1646  */
-    { query_type = cart_product; printf("%d: VALID SYNTAX\n",i++); printf("Processing CARTESIAN_PRODUCT QUERY\n");  }
-#line 1354 "parser.tab.c" /* yacc.c:1646  */
+#line 69 "parser.y" /* yacc.c:1646  */
+    { query_type = cart_product; printf("VALID SYNTAX\n"); printf("Processing CARTESIAN_PRODUCT QUERY\n");  }
+#line 1353 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 71 "parser.y" /* yacc.c:1646  */
-    { query_type = eq_join; printf("%d: VALID SYNTAX\n",i++); printf("Processing EQUI_JOIN QUERY\n");  }
-#line 1360 "parser.tab.c" /* yacc.c:1646  */
+#line 70 "parser.y" /* yacc.c:1646  */
+    { query_type = eq_join; printf("VALID SYNTAX\n"); printf("Processing EQUI_JOIN QUERY\n");  }
+#line 1359 "parser.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1364 "parser.tab.c" /* yacc.c:1646  */
+#line 1363 "parser.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1588,7 +1587,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 129 "parser.y" /* yacc.c:1906  */
+#line 128 "parser.y" /* yacc.c:1906  */
 
 
 int check_numeric(char* token)
@@ -1738,8 +1737,8 @@ int validate_attributes2(char* fname, char* fname2)
 
 void process_query(char* query, int query_type)
 {
-    int ret = remove("output.cpp");
-    printf("Ret: %d\n",ret);
+    remove("output.cpp");
+    remove("output");
     if(query_type==selection)
     {
         int i =0;
@@ -1759,7 +1758,6 @@ void process_query(char* query, int query_type)
             i++;
         }
         condition[k] = '\0';
-        printf("Condition: %s\n",condition);
 
         while(query[i]!='(' && i<len)
             i++;
@@ -1775,7 +1773,6 @@ void process_query(char* query, int query_type)
         }
         fname[k]='\0';
         strcat(fname,".csv");
-        printf("%s",fname);
 
         FILE* fp = fopen(fname,"r");
         if(fp==NULL) 
@@ -1869,7 +1866,6 @@ void process_query(char* query, int query_type)
         }
         fname[k]='\0';
         strcat(fname,".csv");
-        printf("%s",fname);
 
         FILE* fp = fopen(fname,"r");
         if(fp==NULL) 
@@ -1960,7 +1956,6 @@ void process_query(char* query, int query_type)
         }
         fname[k]='\0';
         strcat(fname,".csv");
-        printf("%s\n",fname);
 
         k=len-1;
         while(query[i]!='(')
@@ -1976,12 +1971,11 @@ void process_query(char* query, int query_type)
         }
         fname2[k]='\0';
         strcat(fname2,".csv");
-        printf("%s\n",fname2);
 
         FILE* fp = fopen(fname,"r");
         if(fp==NULL)
         {
-            printf("%s not found.\n",fname);
+            printf("File %s does not exist.\n",fname);
             return;
         }
         else
@@ -1990,7 +1984,7 @@ void process_query(char* query, int query_type)
         fp = fopen(fname2,"r");
         if(fp==NULL)
         {
-            printf("%s not found.\n",fname2);
+            printf("File %s does not exist.\n",fname2);
             return;
         }
         else
