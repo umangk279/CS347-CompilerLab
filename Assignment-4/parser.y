@@ -52,19 +52,17 @@ int yywrap()
 
 %token <Char> NEW_LINE SELECT PROJECT CARTESIAN_PRODUCT EQUI_JOIN STR NAME NUM AND OR NOT LB RB LT GT LTE GTE EQ NEQ COMMA DOT
 
-%start SMT_LIST
+%start SMT
 
 %%
-SMT_LIST: SMT NEW_LINE SMT_LIST 
-    | SMT 
-    | error NEW_LINE {printf ("%d: INVALID SYNTAX\n",i++);} SMT_LIST    
-    ;
 
 SMT:    QUERY
         { 
           printf("Query: %s\n",query);
           process_query(query, query_type);
+          return 0;
         }
+        | error {printf ("%d: INVALID SYNTAX\n",i++); return 0;}
         ;
 
 QUERY:  SELECTION { query_type = selection; printf("%d: VALID SYNTAX\n",i++); printf("Processing SELECT QUERY\n"); }
@@ -277,6 +275,8 @@ int validate_attributes2(char* fname, char* fname2)
 
 void process_query(char* query, int query_type)
 {
+    int ret = remove("output.cpp");
+    printf("Ret: %d\n",ret);
     if(query_type==selection)
     {
         int i =0;
