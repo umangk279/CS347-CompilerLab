@@ -17,8 +17,8 @@ public :
 };
 int main()
 {
-	FILE* fp = fopen("Employee", "r");
-	FILE* fp2 = fopen("Employee2", "r");
+	FILE* fp = fopen("Employee.csv", "r");
+	FILE* fp2 = fopen("Employee2.csv", "r");
 
 	char* ptr;
 
@@ -26,6 +26,9 @@ int main()
 	_Employee2 Employee2;
 	char str[200];
 	char str2[200];
+
+	char temp[200];
+	char temp2[200];
 
 	fgets(str,200,fp);
 	fgets(str2,200,fp2);
@@ -37,34 +40,30 @@ int main()
 
 	while(fgets(str,200,fp)!=NULL)
 	{
-		str[strlen(str)-1]='\0';
-
+		strcpy(temp,str);
+		temp[strlen(temp)-1]='\0';
 		char* token = strtok(str,",\n");
 		Employee.id = strtod(token,&ptr);
-
 		token = strtok(NULL,",\n");
 		strcpy(Employee.name2,token);
 		Employee.name = Employee.name2;
-
 		token = strtok(NULL,",\n");
 		Employee.salary = strtod(token,&ptr);
-
-		fp2 = fopen("Employee2", "r");
+		fp2 = fopen("Employee2.csv", "r");
 
 		fgets(str2,200,fp2);
 		while(fgets(str2,200,fp2)!=NULL)
 		{
+			strcpy(temp2,str2);
 			char* token = strtok(str2,",\n");
 			Employee2.id = strtod(token,&ptr);
-
 			token = strtok(NULL,",\n");
 			strcpy(Employee2.name2,token);
 			Employee2.name = Employee2.name2;
-			
 			token = strtok(NULL,",\n");
 			Employee2.salary = strtod(token,&ptr);
 			if(Employee.id==Employee2.id)
-				printf("%s,%s",str,str2);
+				printf("%s,%s",temp,temp2);
 		}
 		fclose(fp2);
 	}

@@ -636,115 +636,261 @@ void process_query(char* query, int query_type)
 
         else
         {
-            fp = fopen("output.cpp","w");
-            fprintf(fp, "#include<bits/stdc++.h>\nusing namespace std;\n\n");
-
-            fprintf(fp,"class _%s {\n",fname);
-            fprintf(fp,"public :\n");
-            struct attribute_list* temp = al_front;
-            while(temp!=NULL)
+            if(strcmp(fname,fname2)==0)
             {
-                if(temp->att_type == numeric)
-                    fprintf(fp,"\tdouble %s;\n",temp->att_name);
-                else if(temp->att_type == isString)
+                fp = fopen("output.cpp","w");
+                fprintf(fp, "#include<bits/stdc++.h>\nusing namespace std;\n\n");
+                fprintf(fp,"class _%s {\n",fname);
+                fprintf(fp,"public :\n");
+                struct attribute_list* temp = al_front;
+                while(temp!=NULL)
                 {
-                    fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
-                    fprintf(fp,"\tstring %s;\n",temp->att_name);
+                    if(temp->att_type == numeric)
+                        fprintf(fp,"\tdouble %s;\n",temp->att_name);
+                    else if(temp->att_type == isString)
+                    {
+                        fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
+                        fprintf(fp,"\tstring %s;\n",temp->att_name);
+                    }
+                    temp = temp->next;
                 }
-                temp = temp->next;
-            }
-            fprintf(fp,"};\n");
+                fprintf(fp,"};\n\n");
 
-            fprintf(fp,"class _%s {\n",fname2);
-            fprintf(fp,"public :\n");
-            temp = al2_front;
-            while(temp!=NULL)
+                fprintf(fp,"int main()\n{\n");
+                fprintf(fp,"\tFILE* fp = fopen(\"%s.csv\", \"r\");\n",fname);
+                fprintf(fp,"\tFILE* fp2 = fopen(\"%s.csv\", \"r\");\n\n",fname2);
+                fprintf(fp,"\tchar* ptr;\n\n");
+
+                fprintf(fp,"\t_%s %s;\n",fname,fname);
+                fprintf(fp,"\t_%s %s2;\n\n",fname,fname);
+
+                fprintf(fp,"\tchar str[200];\n");
+                fprintf(fp,"\tchar str2[200];\n\n");
+                fprintf(fp,"\tchar temp[200];\n");
+                fprintf(fp,"\tchar temp2[200];\n\n");
+                fprintf(fp,"\tfgets(str,200,fp);\n");
+                fprintf(fp,"\tfgets(str2,200,fp2);\n");
+                fprintf(fp,"\tstr[strlen(str)-1]=\'\\0\';\n\n");
+                fputs("\tprintf(\"\%s,\%s\",str,str2);\n\n",fp);
+                fprintf(fp,"\tfclose(fp2);\n\n");
+
+                fprintf(fp,"\twhile(fgets(str,200,fp)!=NULL)\n\t{\n");
+                fprintf(fp,"\t\tstrcpy(temp,str);\n");
+                fprintf(fp,"\t\ttemp[strlen(temp)-1]=\'\\0\';\n\n");
+
+                temp = al_front;
+                int i=0;
+                while(temp!=NULL)
+                {
+                    if(i==0)
+                    {
+                        fprintf(fp,"\t\tchar* token = strtok(str,\",\\n\");\n");
+                        i++;
+                    }
+                    else
+                        fprintf(fp,"\t\ttoken = strtok(NULL,\",\\n\");\n");
+                    if(temp->att_type == numeric)
+                    {
+                        fprintf(fp,"\t\t%s.%s = strtod(token,&ptr);\n\n",fname,temp->att_name);
+                    }
+                    else
+                    {
+                        fprintf(fp,"\t\tstrcpy(%s.%s2,token);\n",fname,temp->att_name);
+                        fprintf(fp,"\t\t%s.%s = %s.%s2;\n\n",fname,temp->att_name,fname,temp->att_name);
+                    }
+                    temp=temp->next;
+                }
+
+                fprintf(fp,"\t\tfp2 = fopen(\"%s.csv\", \"r\");\n\n",fname2);
+                fprintf(fp,"\t\tfgets(str2,200,fp2);\n");
+                fprintf(fp,"\t\twhile(fgets(str2,200,fp2)!=NULL)\n\t\t{\n");
+                fprintf(fp,"\t\t\tstrcpy(temp2,str2);\n");
+
+                temp = al2_front;
+                i=0;
+                while(temp!=NULL)
+                {
+                    if(i==0)
+                    {
+                        fprintf(fp,"\t\t\tchar* token = strtok(str2,\",\\n\");\n");
+                        i++;
+                    }
+                    else
+                        fprintf(fp,"\t\t\ttoken = strtok(NULL,\",\\n\");\n");
+                    if(temp->att_type == numeric)
+                    {
+                        fprintf(fp,"\t\t\t%s2.%s = strtod(token,&ptr);\n\n",fname2,temp->att_name);
+                    }
+                    else
+                    {
+                        fprintf(fp,"\t\t\tstrcpy(%s2.%s2,token);\n",fname2,temp->att_name);
+                        fprintf(fp,"\t\t\t%s2.%s = %s2.%s2;\n\n",fname2,temp->att_name,fname2,temp->att_name);
+                    }
+                    temp=temp->next;
+                }
+
+                char* condition_changed = (char*) malloc(200*sizeof(char));
+                int k = 0;
+                int lhs = 1;
+                for(i=0; i<=strlen(condition)-strlen(fname); i++)
+                {
+                    int found = 1;
+                    for(int j=0; j<strlen(fname); j++)
+                    {
+                        if(condition[i+j]!=fname[j])
+                        {
+                            found = 0;
+                            break;
+                        }
+                    }
+                    if(found==0)
+                        condition_changed[k++] = condition[i];
+                    else
+                    {
+                        for(int x=i; x<i+strlen(fname); x++)
+                        {
+                            condition_changed[k++] = condition[x];
+                        }
+                        if(lhs==0)
+                        {
+                            condition_changed[k++] = '2';
+                            lhs=1;
+                        }
+                        else lhs=0;
+                        i=i+strlen(fname)-1;
+                    }
+                }
+                while(i<strlen(condition))
+                    condition_changed[k++] = condition[i++];
+                condition_changed[k]='\0';
+                fprintf(fp,"\t\t\t//Changed condition: %s\n", condition_changed);
+                fprintf(fp,"\t\t\tif(%s)\n",condition_changed);
+                fputs("\t\t\t\tprintf(\"\%s,\%s\",temp,temp2);\n\t\t}\n",fp);
+                fprintf(fp,"\t\tfclose(fp2);\n\t}\n");
+                fprintf(fp,"\tfclose(fp);\n\n");
+                fprintf(fp,"\treturn 0;\n}\n");
+
+                fclose(fp);
+            }
+
+            else
             {
-                if(temp->att_type == numeric)
-                    fprintf(fp,"\tdouble %s;\n",temp->att_name);
-                else if(temp->att_type == isString)
+
+                fp = fopen("output.cpp","w");
+                fprintf(fp, "#include<bits/stdc++.h>\nusing namespace std;\n\n");
+
+                fprintf(fp,"class _%s {\n",fname);
+                fprintf(fp,"public :\n");
+                struct attribute_list* temp = al_front;
+                while(temp!=NULL)
                 {
-                    fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
-                    fprintf(fp,"\tstring %s;\n",temp->att_name);
+                    if(temp->att_type == numeric)
+                        fprintf(fp,"\tdouble %s;\n",temp->att_name);
+                    else if(temp->att_type == isString)
+                    {
+                        fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
+                        fprintf(fp,"\tstring %s;\n",temp->att_name);
+                    }
+                    temp = temp->next;
                 }
-                temp = temp->next;
+                fprintf(fp,"};\n");
+
+                fprintf(fp,"class _%s {\n",fname2);
+                fprintf(fp,"public :\n");
+                temp = al2_front;
+                while(temp!=NULL)
+                {
+                    if(temp->att_type == numeric)
+                        fprintf(fp,"\tdouble %s;\n",temp->att_name);
+                    else if(temp->att_type == isString)
+                    {
+                        fprintf(fp,"\tchar %s2[50];\n",temp->att_name);
+                        fprintf(fp,"\tstring %s;\n",temp->att_name);
+                    }
+                    temp = temp->next;
+                }
+                fprintf(fp,"};\n");
+
+                fprintf(fp,"int main()\n{\n");
+                fprintf(fp,"\tFILE* fp = fopen(\"%s.csv\", \"r\");\n",fname);
+                fprintf(fp,"\tFILE* fp2 = fopen(\"%s.csv\", \"r\");\n\n",fname2);
+                fprintf(fp,"\tchar* ptr;\n\n");
+
+                fprintf(fp,"\t_%s %s;\n",fname,fname);
+                fprintf(fp,"\t_%s %s;\n",fname2,fname2);
+
+                fprintf(fp,"\tchar str[200];\n");
+                fprintf(fp,"\tchar str2[200];\n\n");
+                fprintf(fp,"\tchar temp[200];\n");
+                fprintf(fp,"\tchar temp2[200];\n\n");
+                fprintf(fp,"\tfgets(str,200,fp);\n");
+                fprintf(fp,"\tfgets(str2,200,fp2);\n");
+                fprintf(fp,"\tstr[strlen(str)-1]=\'\\0\';\n\n");
+                fputs("\tprintf(\"\%s,\%s\",str,str2);\n\n",fp);
+                fprintf(fp,"\tfclose(fp2);\n\n");
+                fprintf(fp,"\twhile(fgets(str,200,fp)!=NULL)\n\t{\n");
+                fprintf(fp,"\t\tstrcpy(temp,str);\n");
+                fprintf(fp,"\t\ttemp[strlen(temp)-1]=\'\\0\';\n");
+
+                temp = al_front;
+                int i=0;
+                while(temp!=NULL)
+                {
+                    if(i==0)
+                    {
+                        fprintf(fp,"\t\tchar* token = strtok(str,\",\\n\");\n");
+                        i++;
+                    }
+                    else
+                        fprintf(fp,"\t\ttoken = strtok(NULL,\",\\n\");\n");
+                    if(temp->att_type == numeric)
+                    {
+                        fprintf(fp,"\t\t%s.%s = strtod(token,&ptr);\n",fname,temp->att_name);
+                    }
+                    else
+                    {
+                        fprintf(fp,"\t\tstrcpy(%s.%s2,token);\n",fname,temp->att_name);
+                        fprintf(fp,"\t\t%s.%s = %s.%s2;\n",fname,temp->att_name,fname,temp->att_name);
+                    }
+                    temp=temp->next;
+                }
+
+                fprintf(fp,"\t\tfp2 = fopen(\"%s.csv\", \"r\");\n\n",fname2);
+                fprintf(fp,"\t\tfgets(str2,200,fp2);\n");
+                fprintf(fp,"\t\twhile(fgets(str2,200,fp2)!=NULL)\n\t\t{\n");
+                fprintf(fp,"\t\t\tstrcpy(temp2,str2);\n");
+
+                temp = al2_front;
+                i=0;
+                while(temp!=NULL)
+                {
+                    if(i==0)
+                    {
+                        fprintf(fp,"\t\t\tchar* token = strtok(str2,\",\\n\");\n");
+                        i++;
+                    }
+                    else
+                        fprintf(fp,"\t\t\ttoken = strtok(NULL,\",\\n\");\n");
+                    if(temp->att_type == numeric)
+                    {
+                        fprintf(fp,"\t\t\t%s.%s = strtod(token,&ptr);\n",fname2,temp->att_name);
+                    }
+                    else
+                    {
+                        fprintf(fp,"\t\t\tstrcpy(%s.%s2,token);\n",fname2,temp->att_name);
+                        fprintf(fp,"\t\t\t%s.%s = %s.%s2;\n",fname2,temp->att_name,fname2,temp->att_name);
+                    }
+                    temp=temp->next;
+                }
+
+                fprintf(fp,"\t\t\tif(%s)\n",condition);
+                fputs("\t\t\t\tprintf(\"\%s,\%s\",temp,temp2);\n\t\t}\n",fp);
+                fprintf(fp,"\t\tfclose(fp2);\n\t}\n");
+                fprintf(fp,"\tfclose(fp);\n\n");
+                fprintf(fp,"\treturn 0;\n}\n");
+                fclose(fp);
             }
-            fprintf(fp,"};\n");
-
-            fprintf(fp,"int main()\n{\n");
-            fprintf(fp,"\tFILE* fp = fopen(\"%s\", \"r\");\n",fname);
-            fprintf(fp,"\tFILE* fp2 = fopen(\"%s\", \"r\");\n\n",fname2);
-            fprintf(fp,"\tchar* ptr;\n\n");
-
-            fprintf(fp,"\t_%s %s;\n",fname,fname);
-            fprintf(fp,"\t_%s %s;\n",fname2,fname2);
-
-            fprintf(fp,"\tchar str[200];\n");
-            fprintf(fp,"\tchar str2[200];\n\n");
-            fprintf(fp,"\tfgets(str,200,fp);\n");
-            fprintf(fp,"\tfgets(str2,200,fp2);\n");
-            fprintf(fp,"\tstr[strlen(str)-1]=\'\\0\';\n\n");
-            fputs("\tprintf(\"\%s,\%s\",str,str2);\n\n",fp);
-            fprintf(fp,"\tfclose(fp2);\n\n");
-            fprintf(fp,"\twhile(fgets(str,200,fp)!=NULL)\n\t{\n");
-            fprintf(fp,"\t\tstr[strlen(str)-1]=\'\\0\';\n");
-
-            temp = al_front;
-            int i=0;
-            while(temp!=NULL)
-            {
-                if(i==0)
-                {
-                    fprintf(fp,"\t\tchar* token = strtok(str,\",\\n\");\n");
-                    i++;
-                }
-                else
-                    fprintf(fp,"\t\ttoken = strtok(NULL,\",\\n\");\n");
-                if(temp->att_type == numeric)
-                {
-                    fprintf(fp,"\t\t%s.%s = strtod(token,&ptr);\n",fname,temp->att_name);
-                }
-                else
-                {
-                    fprintf(fp,"\t\tstrcpy(%s.%s2,token);\n",fname,temp->att_name);
-                    fprintf(fp,"\t\t%s.%s = %s.%s2;\n",fname,temp->att_name,fname,temp->att_name);
-                }
-                temp=temp->next;
-            }
-
-	        fprintf(fp,"\t\tfp2 = fopen(\"%s\", \"r\");\n\n",fname2);
-	        fprintf(fp,"\t\tfgets(str2,200,fp2);\n");
-	        fprintf(fp,"\t\twhile(fgets(str2,200,fp2)!=NULL)\n\t\t{\n");
-
-	        temp = al2_front;
-            i=0;
-	        while(temp!=NULL)
-            {
-                if(i==0)
-                {
-                    fprintf(fp,"\t\t\tchar* token = strtok(str2,\",\\n\");\n");
-                    i++;
-                }
-                else
-                    fprintf(fp,"\t\t\ttoken = strtok(NULL,\",\\n\");\n");
-                if(temp->att_type == numeric)
-                {
-                    fprintf(fp,"\t\t\t%s.%s = strtod(token,&ptr);\n",fname2,temp->att_name);
-                }
-                else
-                {
-                    fprintf(fp,"\t\t\tstrcpy(%s.%s2,token);\n",fname2,temp->att_name);
-                    fprintf(fp,"\t\t\t%s.%s = %s.%s2;\n",fname2,temp->att_name,fname2,temp->att_name);
-                }
-                temp=temp->next;
-            }
-
-            fprintf(fp,"\t\t\tif(%s)\n",condition);
-	        fputs("\t\t\t\tprintf(\"\%s,\%s\",str,str2);\n\t\t}\n",fp);
-	        fprintf(fp,"\t\tfclose(fp2);\n\t}\n");
-	        fprintf(fp,"\tfclose(fp);\n\n");
-	        fprintf(fp,"\treturn 0;\n}\n");
-            fclose(fp);
+            
         }
 
     }

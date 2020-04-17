@@ -16,7 +16,7 @@
 %}
 
 ws				[ \t]*
-name		    {ws}[a-zA-Z][0-9a-zA-Z_]*{ws}
+name		    [a-zA-Z][0-9a-zA-Z_]*
 digits 						([0-9]+)
 float             ([0-9]*\.?[0-9]+|[0-9]+)
 number                ({digits}|{float})
