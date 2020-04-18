@@ -2039,7 +2039,6 @@ void process_query(char* query, int query_type)
             i++;
         }
         condition[k] = '\0';
-        printf("Condition: %s\n",condition); //1
 
         i=0;
         while(query[i]!='(')
