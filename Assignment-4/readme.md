@@ -5,10 +5,10 @@ To use the bash script:
 	The result is displayed on stdout.
 
 The syntax of queries is as follows:
-	SELECT < condition > (Table-name)
+	SELECT < condition > (Table-name) where conditions can only have column names and numbers or string.
 	PROJECT < attribute-list > (Table-name) where attribute list are attributes seperated by commas
 	(Table-name-1) CARTESIAN_PRODUCT (Table-name-2)
-	(Table-name-1) EQUI_JOIN < join-condition > (Table-name-2)
+	(Table-name-1) EQUI_JOIN < join-condition > (Table-name-2) where join-condition is a logical combination of equality conditions consisting of table.attribute. 
 
 Sample input queries are given in file testcases.
 

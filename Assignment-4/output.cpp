@@ -4,30 +4,32 @@ using namespace std;
 int main()
 {
 	FILE* fp = fopen("Employee.csv", "r");
-	char* ptr;
-
-	double id;
-	char name2[50];
-	string name;
-	double salary;
+	FILE* fp2 = fopen("Employee2.csv", "r");
 
 	char str[200];
-	fgets(str,200,fp);
+	char str2[200];
 
-	printf("%s",str);
+	fgets(str,200,fp);
+	fgets(str2,200,fp2);
+	str[strlen(str)-1]='\0';
+
+	printf("%s,%s",str,str2);
+
+	fclose(fp2);
+
 	while(fgets(str,200,fp)!=NULL)
 	{
-		char temp[200];
-		strcpy(temp,str);
-		char* token = strtok(str,",\n");
-		id = strtod(token,&ptr);
-		token = strtok(NULL,",\n");
-		strcpy(name2,token);
-		name = name2;
-		token = strtok(NULL,",\n");
-		salary = strtod(token,&ptr);
-		if(id==1)
-			printf("%s",temp);
+		str[strlen(str)-1]='\0';
+		fp2 = fopen("Employee2.csv", "r");
+
+		fgets(str2,200,fp2);
+		while(fgets(str2,200,fp2)!=NULL)
+		{
+			printf("%s,%s",str,str2);
+		}
+		fclose(fp2);
 	}
+	fclose(fp);
+
 	return 0;
 }
