@@ -16,6 +16,8 @@ elif [[ $VAR == *"File"*"exist"* ]]; then
 	echo "Enter correct database."
 elif [[ $VAR == *"INVALID SYNTAX"* ]]; then
 	printf ""
+elif [[ $VAR == *"Attributes"* ]]; then
+	printf ""
 else
-	echo "Type mismatch in attributes in the input query."
+	echo "Type mismatch in attributes in the input query. Check the condition in the input query."
 fi

@@ -2055,7 +2055,6 @@ void process_query(char* query, int query_type)
         }
         fname[k]='\0';
         strcat(fname,".csv");
-        printf("%s\n",fname); //2
 
         while(query[i]!='(')
             i++;
@@ -2070,7 +2069,6 @@ void process_query(char* query, int query_type)
         }
         fname2[k]='\0';
         strcat(fname2,".csv");
-        printf("%s\n",fname2); //3
 
         FILE* fp = fopen(fname,"r");
         if(fp==NULL) 
@@ -2081,7 +2079,7 @@ void process_query(char* query, int query_type)
 
         get_all_table_attributes(fp,0);
 
-        FILE* fp2 = fopen(fname,"r");
+        FILE* fp2 = fopen(fname2,"r");
         if(fp2==NULL) 
         {
             printf("File %s does not exist\n", fname2);
