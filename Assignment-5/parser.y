@@ -42,7 +42,7 @@ stmt: RETURN SEMI
 	  | SEMI
 	  ;
 
-var_dec: var_type var_list;
+var_dec: type var_list;
 
 var_list: var_list COMMA id_array
 		  | id_array
@@ -51,7 +51,7 @@ var_list: var_list COMMA id_array
 func_dec:	func_header LCURLY stmt_list RCURLY
 			;
 
-func_header: return_type ID LB func_params RB
+func_header: type ID LB func_params RB
 			 ;
 
 func_params: param_decl
@@ -62,15 +62,12 @@ param_decl: param_decl COMMA decl
 			| decl
 			;
 
-decl: var_type ID
-	  | var_type ID LSQ RSQ
+decl: type ID
+	  | type ID LSQ RSQ
 	  ;
 
-return_type: INT | FLOAT | VOID
+type: INT | FLOAT | VOID
 			;
-
-var_type: INT | FLOAT
-		  ;
 
 if_block:	if_condition stmt ELSE stmt
 			| if_condition stmt;
