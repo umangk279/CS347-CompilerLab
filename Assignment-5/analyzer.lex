@@ -1,7 +1,12 @@
 %{
+	#include <bits/stdc++.h>
 	#include <stdlib.h>
 	#include <string.h>
 	#include "parser.tab.h"
+	#include "struct.h"
+	using namespace std;
+
+	extern int lineno;
 
 %}
 
@@ -13,9 +18,12 @@ int		[0-9]+
 %%
 "//"[^\n]*			{	/* do nothing for comment */}
 
-"int"			{ return(INT); }
-"float"			{ return(FLOAT); }
-"void"			{ return(VOID); }
+"int"			{ yylval.type = INT;
+					return(INT); }
+"float"			{ yylval.type = FLOAT;
+					return(FLOAT); }
+"void"			{ yylval.type = VOID;
+					return(VOID); }
 
 "if"			{ return(IF); }
 "else"			{ return(ELSE); }
@@ -61,12 +69,15 @@ int		[0-9]+
 "++"			{ return(INCREMENT); }
 "--"			{ return(DECREMENT); }
 
-{id}			{ return(ID); }
-{int}			{ return(NUM_INT); }
-{float}			{ return(NUM_FLOAT); }
+{id}			{   yylval.Char = strdup(yytext);
+					return(ID); }
+{int}			{ yylval.int_val = atoi(yytext);
+					return(NUM_INT); }
+{float}			{ yylval.int_val = atoi(yytext);
+					return(NUM_FLOAT); }
 {ws}			{  }
-\n 				{  }
-.				{ printf("Unrecognized token\n"); }
+\n 				{  lineno++; }
+.				{ printf("Unrecognized token at line %d\n",lineno); exit(0); }
 
 %%
 

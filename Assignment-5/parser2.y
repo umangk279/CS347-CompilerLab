@@ -55,14 +55,11 @@ stmt_list: stmt_list stmt
 
 stmt: RETURN SEMI
 	  | RETURN bool_conditions SEMI
-	  | BREAK SEMI
-	  | CONTINUE SEMI
 	  | var_dec SEMI
 	  | func_dec
 	  | if_block
 	  | loop_block
 	  | stmt_block
-	  | switch_case_statement
 	  | assignment SEMI
 	  | SEMI
 	  ;
@@ -78,20 +75,9 @@ func_dec:	func_header left_curly stmt_list right_curly
 
 func_header: type ID LB func_params RB
 			{
-				string name = $2;
-				if(ST.search_function(name)==1)
-				{
-					yyerror("Function already declared");
-					active_function_index = -1;
-				}
-				else
-				{
-					active_function_index = ST.add_function(name,$1);
-					cout<<"Function added successfully"<<endl;
-				}
-				// string s = $2;
-				// cout<<"$1:type: "<<$1<<endl;
-				// cout<<"$2:id: "<<s<<endl;
+				string s($2);
+				cout<<"$1:type: "<<$1<<endl;
+				cout<<"$2:id: "<<s<<endl;
 			}
 			;
 
@@ -108,8 +94,8 @@ decl: type ID
 	  ;
 
 type: INT { $$ = INT_TYPE; }
-	  | FLOAT { $$ = FLOAT_TYPE; }
-	  | VOID { $$ = VOID_TYPE; }
+	  | FLOAT 
+	  | VOID 
 	  ;
 
 if_block:	if_condition stmt ELSE stmt
@@ -129,23 +115,6 @@ for_condition: FOR LB bool_conditions SEMI bool_conditions SEMI bool_conditions 
 
 stmt_block: left_curly stmt_list right_curly
 			;
-
-switch_case_statement: SWITCH LB operation RB left_curly case_statement_block right_curly
-					;
-
-case_statement_block: case_list default_statemnt
-				| case_list
-				;
-
-case_list: case_list case_statement
-			| case_statement
-			;
-
-case_statement: CASE operation COLON stmt
-				;
-
-default_statemnt: DEFAULT COLON stmt
-					;
 
 assignment:	id_array ASSIGN bool_conditions
 			;
