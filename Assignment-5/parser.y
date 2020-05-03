@@ -7,6 +7,9 @@
 	#define INT_TYPE 1
 	#define FLOAT_TYPE 2
 	#define VOID_TYPE 3
+	#define ERROR -1
+	#define SIMPLE 4
+	#define ARRAY 5
 	using namespace std;
 
 	extern int yylex();
@@ -20,13 +23,22 @@
 	symbol_table ST;
 	int active_function_index = 0;
 	int level = 0;
+	intermediate_code code;
 %}
+
+%code requires{
+	#ifndef _STRUCT_H_INCLUDED_
+	#define _STRUCT_H_INCLUDED_
+	#include "struct.h"
+	#endif
+}
 
 %union{ 
 	char* Char;
 	int int_val;
 	float float_val;
 	int type;
+	varList * variable_list;
 }
 
 %token<type> INT FLOAT VOID
@@ -43,6 +55,9 @@
 %left PLUS MINUS MULTIPLY DIVIDE NOT
 
 %type<type> type
+%type<type> func_header 
+%type<int_val> id_array
+%type<variable_list> var_list
 
 %%
 
@@ -67,10 +82,26 @@ stmt: RETURN SEMI
 	  | SEMI
 	  ;
 
-var_dec: type var_list;
+var_dec: type var_list
+		{
+			if(active_function_index!=-1)
+			{
+				ST.change_type(active_function_index,$2->indices,$1);
+			}
+		}
+		;
 
 var_list: var_list COMMA id_array
+		  {
+		  		$$ = new varList();
+		  		$$->indices = $1->indices;
+		  		$$->indices.push_back($3);
+		  }
 		  | id_array
+		  {
+		  		$$ = new varList();
+		  		$$->indices.push_back($1);
+		  }
 		  ;
 
 func_dec:	func_header left_curly stmt_list right_curly
@@ -81,17 +112,19 @@ func_header: type ID LB func_params RB
 				string name = $2;
 				if(ST.search_function(name)==1)
 				{
+					$$ = ERROR;
 					yyerror("Function already declared");
 					active_function_index = -1;
 				}
 				else
 				{
+					$$ = $1;
 					active_function_index = ST.add_function(name,$1);
+					level =1;
+					string s = "function_"+name+":";
+					code.insert(s);
 					cout<<"Function added successfully"<<endl;
 				}
-				// string s = $2;
-				// cout<<"$1:type: "<<$1<<endl;
-				// cout<<"$2:id: "<<s<<endl;
 			}
 			;
 
@@ -115,17 +148,17 @@ type: INT { $$ = INT_TYPE; }
 if_block:	if_condition stmt ELSE stmt
 			| if_condition stmt;
 
-if_condition: IF LB bool_conditions RB
+if_condition: IF LB assignment RB
 			  ;
 
 loop_block:	while_condition stmt
 			| for_condition stmt
 			;
 
-while_condition: WHILE LB bool_conditions RB
+while_condition: WHILE LB assignment RB
 				;
 
-for_condition: FOR LB bool_conditions SEMI bool_conditions SEMI bool_conditions RB
+for_condition: FOR LB assignment SEMI assignment SEMI assignment RB
 
 stmt_block: left_curly stmt_list right_curly
 			;
@@ -148,6 +181,7 @@ default_statemnt: DEFAULT COLON stmt
 					;
 
 assignment:	id_array ASSIGN bool_conditions
+			| bool_conditions
 			;
 
 bool_conditions:	bool_conditions AND condition
@@ -192,10 +226,99 @@ expression: NUM_FLOAT
 			;
 
 id_array: ID 
-		  | ID LSQ condition RSQ
+		  {
+				if(active_function_index!=-1)
+				{
+					string s = $1;
+					variable* v = ST.search_cur_var(active_function_index, level, s);
+
+					if(v==NULL)
+					{
+						int index = ST.add_variable(active_function_index,s,level,SIMPLE,INT_TYPE,0);
+						$$ = index;
+					}
+					else
+					{
+						if(v->decl_level != level)
+						{
+							if(level!=2)
+							{
+								int index = ST.add_variable(active_function_index,s,level,SIMPLE,INT_TYPE,0);
+								$$ = index;
+							}
+
+							else
+							{
+								if(ST.search_parameter(s,active_function_index) == 0)
+								{
+									int index = ST.add_variable(active_function_index,s,level,SIMPLE,INT_TYPE,0);
+									$$ = index;
+								}
+								else
+								{
+									yyerror("variable re-declared");
+								}
+							}
+						
+						}
+						else
+						{
+							yyerror("variable re-declared");
+						}
+
+					}
+				}  
+		  }
+		  | ID LSQ NUM_INT RSQ
+		  {
+		  		if(active_function_index!=-1)
+		  		{
+		  			string s = $1;
+					variable* v = ST.search_cur_var(active_function_index, level, s);
+
+					if(v==NULL)
+					{
+						int index = ST.add_variable(active_function_index,s,level,ARRAY,INT_TYPE,$3);
+						$$ = index;
+					}
+					else
+					{
+						if(v->decl_level != level)
+						{
+							if(level!=2)
+							{
+								int index = ST.add_variable(active_function_index,s,level,ARRAY,INT_TYPE,$3);
+								$$ = index;
+							}
+
+							else
+							{
+								if(ST.search_parameter(s,active_function_index) == 0)
+								{
+									int index = ST.add_variable(active_function_index,s,level,ARRAY,INT_TYPE,$3);
+									$$ = index;
+								}
+								else
+								{
+									yyerror("variable re-declared");
+								}
+							}
+						
+						}
+						else
+						{
+							yyerror("variable re-declared");
+						}
+
+					}
+					cout<<"variable "<<$1<<" added successfully"<<endl;
+		  		}
+		  }
 		  ;
 
-left_curly : LCURLY;
+left_curly : LCURLY
+			{ level++; }
+			;
 
 right_curly: RCURLY;
 %%
@@ -203,4 +326,5 @@ right_curly: RCURLY;
 int main()
 {
 	yyparse();
+	ST.display_symbol_table();
 }

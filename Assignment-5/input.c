@@ -1,11 +1,12 @@
-int a,b,c[5*9];
+int a,b,c[5];
 int main(){
-	int f;
+	int f[6];
 	float e;
+}
 
-	switch(f)
-	{
-		case 1: {return 0;  break;}
-		case 2: break;
-	}
+void dummy()
+{
+	float g,a,o,w;
+	float f;
+	int j;
 }
