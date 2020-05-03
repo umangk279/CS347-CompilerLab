@@ -113,3 +113,22 @@ void symbol_table::change_type(int active_function_index, vector<int>& indices,i
 		global_symbol_table[active_function_index]->var_list[indices[i]]->num_type = type;
 	}
 }
+
+int symbol_table::add_parameter(int active_function_index, string name, int type, int num_type)
+{
+	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
+		return -1;
+
+	parameter* p = new parameter(name, type, num_type);
+	global_symbol_table[active_function_index]->param_list.push_back(p);
+	return global_symbol_table[active_function_index]->param_list.size()-1;
+}
+
+void symbol_table::set_no_of_parameters(int active_function_index, int no_of_parameters)
+{
+	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
+		return;
+
+	global_symbol_table[active_function_index]->no_of_parameters = no_of_parameters;
+	return;
+}

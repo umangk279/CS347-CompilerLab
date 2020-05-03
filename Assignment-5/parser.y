@@ -39,6 +39,7 @@
 	float float_val;
 	int type;
 	varList * variable_list;
+	int no_of_parameters;
 }
 
 %token<type> INT FLOAT VOID
@@ -58,6 +59,9 @@
 %type<type> func_header 
 %type<int_val> id_array
 %type<variable_list> var_list
+%type<type> decl
+%type<no_of_parameters> param_decl
+%type<no_of_parameters> func_params
 
 %%
 
@@ -129,15 +133,65 @@ func_header: type ID LB func_params RB
 			;
 
 func_params: param_decl
+			 {
+			 	$$ = $1;
+			 	ST.set_no_of_parameters(active_function_index,$$);
+			 }
 			 |
+			 {
+			 	$$ = 0;
+			 	ST.set_no_of_parameters(active_function_index,$$);
+			 }
 			 ;
 
 param_decl: param_decl COMMA decl
+			{
+				if($3!=ERROR)
+				{
+					$$ = $1+1;
+				}
+				else
+					$$ = $1;
+			}
 			| decl
+			{
+				if($3!=ERROR)
+				{
+					$$ = 1;
+				}
+				else
+					$$ = 0;
+			}
 			;
 
 decl: type ID
+	  {
+	  		string name = $2;
+	  		if(ST.search_parameter(name,active_function_index) == 0)
+	  		{
+	  			int index = ST.add_parameter(active_function_index, name, SIMPLE, $1);
+	  			$$ = $1;
+	  		}
+	  		else
+	  		{
+	  			$$ = ERROR;
+	  			yyerror("Variable previously listed as argument");
+	  		}
+	  }
 	  | type ID LSQ RSQ
+	  {
+	  		string name = $2;
+	  		if(ST.search_parameter(name,active_function_index) == 0)
+	  		{
+	  			int index = ST.add_parameter(active_function_index, name, ARRAY, $1);
+	  			$$ = $1;
+	  		}
+	  		else
+	  		{
+	  			$$ = ERROR;
+	  			yyerror("Variable previously listed as argument");
+	  		}
+	  }
 	  ;
 
 type: INT { $$ = INT_TYPE; }

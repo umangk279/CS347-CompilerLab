@@ -1,10 +1,10 @@
-int a,b,c[5];
+int a,b,ca[5];
 int main(){
 	int f[6];
 	float e;
 }
 
-void dummy()
+void dummy(int p)
 {
 	float g,a,o,w;
 	float f;

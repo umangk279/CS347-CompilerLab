@@ -10,10 +10,12 @@ class parameter
 public:
 	string name;
 	int type;
-	parameter(string name, int type)
+	int num_type;
+	parameter(string name, int type, int num_type)
 	{
 		this->name = name;
 		this->type = type;
+		this->num_type = num_type;
 	} 
 };
 
@@ -42,10 +44,12 @@ public:
 	int return_type;
 	vector<parameter* > param_list;
 	vector<variable* > var_list;
+	int no_of_parameters;
 	func(string name, int return_type)
 	{
 		this->name = name;
 		this->return_type = return_type;
+		this->no_of_parameters = 0;
 	}
 };
 
@@ -61,7 +65,9 @@ public:
 	variable* search_cur_var(int active_function_index, int decl_level, string name);
 	int add_variable(int active_function_index, string name, int level, int type, int num_type, int dimension);
 	int search_parameter(string name, int active_function_index);
+	int add_parameter(int active_function_index, string name, int type, int num_type);
 	void change_type(int active_function_index, vector<int> &indices,int type);
+	void set_no_of_parameters(int active_function_index,int no_of_parameters);
 };
 
 class intermediate_code

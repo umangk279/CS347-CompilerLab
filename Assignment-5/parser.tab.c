@@ -512,14 +512,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    64,    64,    67,    68,    71,    72,    73,    74,    75,
-      76,    77,    78,    79,    80,    81,    82,    85,    94,   100,
-     107,   110,   131,   132,   135,   136,   139,   140,   143,   144,
-     145,   148,   149,   151,   154,   155,   158,   161,   163,   166,
-     169,   170,   173,   174,   177,   180,   183,   184,   187,   188,
-     189,   192,   192,   195,   196,   197,   198,   199,   200,   203,
-     204,   205,   208,   209,   210,   213,   215,   216,   217,   218,
-     219,   222,   223,   224,   225,   228,   272,   319,   323
+       0,    65,    65,    68,    69,    72,    73,    74,    75,    76,
+      77,    78,    79,    80,    81,    82,    83,    86,    95,   101,
+     108,   111,   132,   133,   136,   137,   140,   154,   170,   171,
+     172,   175,   176,   178,   181,   182,   185,   188,   190,   193,
+     196,   197,   200,   201,   204,   207,   210,   211,   214,   215,
+     216,   219,   219,   222,   223,   224,   225,   226,   227,   230,
+     231,   232,   235,   236,   237,   240,   242,   243,   244,   245,
+     246,   249,   250,   251,   252,   255,   299,   346,   350
 };
 #endif
 
@@ -1401,13 +1401,13 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 64 "parser.y" /* yacc.c:1646  */
+#line 65 "parser.y" /* yacc.c:1646  */
     { printf("Accepted\n"); }
 #line 1407 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 86 "parser.y" /* yacc.c:1646  */
+#line 87 "parser.y" /* yacc.c:1646  */
     {
 			if(active_function_index!=-1)
 			{
@@ -1418,7 +1418,7 @@ yyreduce:
     break;
 
   case 18:
-#line 95 "parser.y" /* yacc.c:1646  */
+#line 96 "parser.y" /* yacc.c:1646  */
     {
 		  		(yyval.variable_list) = new varList();
 		  		(yyval.variable_list)->indices = (yyvsp[-2].variable_list)->indices;
@@ -1428,7 +1428,7 @@ yyreduce:
     break;
 
   case 19:
-#line 101 "parser.y" /* yacc.c:1646  */
+#line 102 "parser.y" /* yacc.c:1646  */
     {
 		  		(yyval.variable_list) = new varList();
 		  		(yyval.variable_list)->indices.push_back((yyvsp[0].int_val));
@@ -1437,7 +1437,7 @@ yyreduce:
     break;
 
   case 21:
-#line 111 "parser.y" /* yacc.c:1646  */
+#line 112 "parser.y" /* yacc.c:1646  */
     {
 				string name = (yyvsp[-3].Char);
 				if(ST.search_function(name)==1)
@@ -1459,26 +1459,62 @@ yyreduce:
 #line 1460 "parser.tab.c" /* yacc.c:1646  */
     break;
 
-  case 28:
-#line 143 "parser.y" /* yacc.c:1646  */
-    { (yyval.type) = INT_TYPE; }
-#line 1466 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 29:
-#line 144 "parser.y" /* yacc.c:1646  */
-    { (yyval.type) = FLOAT_TYPE; }
-#line 1472 "parser.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 30:
-#line 145 "parser.y" /* yacc.c:1646  */
-    { (yyval.type) = VOID_TYPE; }
+  case 26:
+#line 141 "parser.y" /* yacc.c:1646  */
+    {
+	  		string name = (yyvsp[0].Char);
+	  		if(ST.search_parameter(name,active_function_index) == 0)
+	  		{
+	  			int index = ST.add_parameter(active_function_index, name, SIMPLE, (yyvsp[-1].type));
+	  			(yyval.type) = (yyvsp[-1].type);
+	  		}
+	  		else
+	  		{
+	  			(yyval.type) = ERROR;
+	  			yyerror("Variable previously listed as argument");
+	  		}
+	  }
 #line 1478 "parser.tab.c" /* yacc.c:1646  */
     break;
 
+  case 27:
+#line 155 "parser.y" /* yacc.c:1646  */
+    {
+	  		string name = (yyvsp[-2].Char);
+	  		if(ST.search_parameter(name,active_function_index) == 0)
+	  		{
+	  			int index = ST.add_parameter(active_function_index, name, ARRAY, (yyvsp[-3].type));
+	  			(yyval.type) = (yyvsp[-3].type);
+	  		}
+	  		else
+	  		{
+	  			(yyval.type) = ERROR;
+	  			yyerror("Variable previously listed as argument");
+	  		}
+	  }
+#line 1496 "parser.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 28:
+#line 170 "parser.y" /* yacc.c:1646  */
+    { (yyval.type) = INT_TYPE; }
+#line 1502 "parser.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 171 "parser.y" /* yacc.c:1646  */
+    { (yyval.type) = FLOAT_TYPE; }
+#line 1508 "parser.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 172 "parser.y" /* yacc.c:1646  */
+    { (yyval.type) = VOID_TYPE; }
+#line 1514 "parser.tab.c" /* yacc.c:1646  */
+    break;
+
   case 75:
-#line 229 "parser.y" /* yacc.c:1646  */
+#line 256 "parser.y" /* yacc.c:1646  */
     {
 				if(active_function_index!=-1)
 				{
@@ -1522,11 +1558,11 @@ yyreduce:
 					}
 				}  
 		  }
-#line 1526 "parser.tab.c" /* yacc.c:1646  */
+#line 1562 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 273 "parser.y" /* yacc.c:1646  */
+#line 300 "parser.y" /* yacc.c:1646  */
     {
 		  		if(active_function_index!=-1)
 		  		{
@@ -1571,17 +1607,17 @@ yyreduce:
 					cout<<"variable "<<(yyvsp[-3].Char)<<" added successfully"<<endl;
 		  		}
 		  }
-#line 1575 "parser.tab.c" /* yacc.c:1646  */
+#line 1611 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 320 "parser.y" /* yacc.c:1646  */
+#line 347 "parser.y" /* yacc.c:1646  */
     { level++; }
-#line 1581 "parser.tab.c" /* yacc.c:1646  */
+#line 1617 "parser.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1585 "parser.tab.c" /* yacc.c:1646  */
+#line 1621 "parser.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1809,7 +1845,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 324 "parser.y" /* yacc.c:1906  */
+#line 351 "parser.y" /* yacc.c:1906  */
 
 
 int main()
