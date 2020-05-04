@@ -6,7 +6,8 @@ void dummy(int p, int q)
 	int j;
 }
 int main(){
-	int f[6];
-	float e;
+	int e;
+	e = 5;
+	if(e>0)
+	{}
 }
-

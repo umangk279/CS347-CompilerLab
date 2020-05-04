@@ -3,6 +3,30 @@
 
 using namespace std;
 
+int get_compatible_type_term(int type1, int type2)
+{
+	if(type1==ERROR || type2==ERROR)
+		return ERROR;
+	if(type1==VOID_TYPE || type2==VOID_TYPE)
+		return ERROR;
+	if(type1==BOOL_TYPE || type1==BOOL_TYPE)
+		return ERROR;
+	if(type1==FLOAT_TYPE || type2==FLOAT_TYPE)
+		return FLOAT_TYPE;
+	if(type1==INT_TYPE && type2 == INT_TYPE)
+		return INT_TYPE;
+
+	return ERROR;
+}
+
+int get_compatible_type_comparison(int type1, int type2)
+{
+	if(type1==ERROR || type2==ERROR)
+		return ERROR;
+
+	return BOOL_TYPE;
+}
+
 int symbol_table::search_function(string name)
 {
 	int size = this->global_symbol_table.size();

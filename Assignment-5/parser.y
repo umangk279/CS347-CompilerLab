@@ -4,12 +4,6 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "struct.h"
-	#define INT_TYPE 1
-	#define FLOAT_TYPE 2
-	#define VOID_TYPE 3
-	#define ERROR -1
-	#define SIMPLE 4
-	#define ARRAY 5
 	using namespace std;
 
 	extern int yylex();
@@ -44,6 +38,7 @@
 	varList * variable_list;
 	int no_of_parameters;
 	expression_* exp;
+	id_array_* ia_;
 }
 
 %token<type> INT FLOAT VOID
@@ -68,6 +63,14 @@
 %type<no_of_parameters> param_decl
 %type<no_of_parameters> func_params
 %type<exp> expression
+%type<ia_> id_array
+%type<exp> unary_expression
+%type<exp> term
+%type<exp> factor
+%type<exp> operation
+%type<exp> comparison
+%type<exp> condition
+%type<exp> bool_conditions
 
 %%
 
@@ -263,38 +266,285 @@ assignment:	id_array ASSIGN bool_conditions
 			;
 
 bool_conditions:	bool_conditions AND condition
+					{
+						int type = get_compatible_type_comparison($1->type,$3->type);
+						$$ = new expression_(type);
+						if(type!=ERROR)
+						{
+							code.insert2("&&",$1->temp_name,$3->temp_name,$$->temp_name);
+						}
+					}
 					| bool_conditions OR condition
+					{
+						int type = get_compatible_type_comparison($1->type,$3->type);
+						$$ = new expression_(type);
+						if(type!=ERROR)
+						{
+							code.insert2("||",$1->temp_name,$3->temp_name,$$->temp_name);
+						}
+					}
 					| condition
+					{
+						$$ = new expression_($1->type);
+						if($1->type!=ERROR)
+						{
+							code.insert2("=",$1->temp_name," ",$$->temp_name);
+						}
+					}
 					;
 
-condition: comparison | operation
-		   ;
+condition: comparison
+		  {
+		  		$$ = new expression_($1->type);
+		  		if($1->type!=ERROR)
+		  		{
+		  			code.insert2("=",$1->temp_name," ",$$->temp_name);
+		  		}
+		  }
+		  | operation
+		  {
+		  		$$ = new expression_($1->type);
+		  		if($1->type!=ERROR)
+		  		{
+		  			code.insert2("=",$1->temp_name," ",$$->temp_name);
+		  		}
+		  }
+		  ;
 
 comparison: operation GT operation
+			{
+				int type = get_compatible_type_comparison($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2(">",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Relational operation on non-compatible data types.");
+				}
+			}
 			| operation GTE operation
+			{
+				int type = get_compatible_type_comparison($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2(">=",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Relational operation on non-compatible data types.");
+				}
+			}
 			| operation LT operation
+			{
+				int type = get_compatible_type_comparison($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2("<",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Relational operation on non-compatible data types.");
+				}
+			}
 			| operation LTE operation
+			{
+				int type = get_compatible_type_comparison($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2("<=",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Relational operation on non-compatible data types.");
+				}
+			}
 			| operation EQ operation
+			{
+				int type = get_compatible_type_comparison($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2("==",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Relational operation on non-compatible data types.");
+				}
+			}
 			| operation NEQ operation
+			{
+				int type = get_compatible_type_comparison($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2("!=",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Relational operation on non-compatible data types.");
+				}
+			}
 			;
 
 operation: operation PLUS term
+			{
+				int type = get_compatible_type_term($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2("+",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Addition operation on non-compatible data types.");
+				}
+			}
 		   | operation MINUS term
+		   {
+		   		int type = get_compatible_type_term($1->type,$3->type);
+				$$ = new expression_(type);
+				if(type!=ERROR)
+				{
+					code.insert2("-",$1->temp_name," ",$3->temp_name);
+				}
+				else
+				{
+					yyerror("Subtraction operation on non-compatible data types.");
+				}
+		   }
 		   | term
+		   {
+		   		$$ = new expression_($1->type);
+		   		if($1->type!=ERROR)
+		   		{
+		   			code.insert2("=",$1->temp_name," ",$$->temp_name);
+		   		}
+		   }
 		   ;
 
 term: term MULTIPLY factor
+	  {
+	  	int type = get_compatible_type_term($1->type,$3->type);
+	  	$$ = new expression_(type);
+	  	if(type!=ERROR)
+	  	{
+	  		code.insert2("*",$1->temp_name," ",$$->temp_name);
+	  	}
+	  	else
+	  	{
+	  		yyerror("Multiply operation on non-compatible data types");
+	  	}
+	  }
 	  | term DIVIDE factor
+	  {
+	  	int type = get_compatible_type_term($1->type,$3->type);
+	  	$$ = new expression_(type);
+	  	if(type!=ERROR)
+	  	{
+	  		code.insert2("/",$1->temp_name," ",$$->temp_name);
+	  	}
+	  	else
+	  	{
+	  		yyerror("Division operation on non-compatible data types");
+	  	}
+	  }
 	  | factor
+	  {
+	  	$$ = new expression_($1->type);
+	  	if($1->type!=ERROR)
+	  	{
+	  		code.insert2("=",$1->temp_name," ",$$->temp_name);
+	  	}
+	  }
 	  ;
 
-factor: unary_expression;
+factor: unary_expression
+		{
+			$$ = new expression_($1->type);
+			if($1->type!=ERROR)
+			{
+				code.insert2("=",$1->temp_name," ",$$->temp_name);
+			}
+		}
+		;
 
 unary_expression: expression
+				{
+					$$ = new expression_($1->type);
+					if($1->type != ERROR)
+					{
+						code.insert2("=",$1->temp_name," ",$$->temp_name);
+					}
+				}
 				| NOT unary_expression
+				{
+					if($2->type==FLOAT_TYPE)
+					{
+						$$ = new expression_(ERROR);
+						yyerror("Invalid opaeration.");
+					}
+					else
+					{
+						$$ = new expression_($2->type);
+						if($2->type!=ERROR)
+						{
+							code.insert2("NOT",$2->temp_name," ",$$->temp_name);
+						}
+					}
+				}
 				| MINUS unary_expression
+				{
+					if($2->type!=BOOL_TYPE)
+					{
+						$$ = new expression_($2->type);
+						if($2->type != ERROR)
+						{
+							code.insert2("MINUS",$2->temp_name," ",$$->temp_name);
+						}
+					}
+					else
+					{
+						yyerror("Invalid operation");
+						$$ = new expression_(ERROR);
+					}
+				}
 				| DECREMENT unary_expression
+				{
+					if($2->type!=BOOL_TYPE && $2->type!=FLOAT_TYPE)
+					{
+						$$ = new expression_($2->type);
+						if($2->type!=ERROR)
+						{
+							code.insert2("-",$2->temp_name," 1 ",$$->temp_name);
+						}
+					}
+					else
+					{
+						$$ = new expression_(ERROR);
+						yyerror("Invalid operation.");
+					}
+				}
 				| INCREMENT unary_expression
+				{
+					if($2->type!=BOOL_TYPE && $2->type!=FLOAT_TYPE)
+					{
+						$$ = new expression_($2->type);
+						if($2->type!=ERROR)
+						{
+							code.insert2("+",$2->temp_name," 1 ",$$->temp_name);
+						}
+					}
+					else
+					{
+						$$ = new expression_(ERROR);
+						yyerror("Invalid operation.");
+					}
+				}
 				;
 
 expression: NUM_FLOAT
@@ -309,7 +559,17 @@ expression: NUM_FLOAT
 			}
 			| id_array
 			{
-				$$ = new expression_(0);
+				if($1->var == NULL)
+				{
+					yyerror("Variable not declared");
+					$$ = new expression_(ERROR);
+				}
+				else 
+				{
+					$$ = new expression_($1->var->num_type);
+					code.insert2("=", $1->var->name," ",$$->temp_name);
+				}
+				
 			}
 			| LB bool_conditions RB
 			{
@@ -350,6 +610,7 @@ decl_id_array: ID
 								else
 								{
 									yyerror("variable re-declared");
+									$$ = -1;
 								}
 							}
 						
@@ -357,6 +618,7 @@ decl_id_array: ID
 						else
 						{
 							yyerror("variable re-declared");
+							$$ = -1;
 						}
 
 					}
@@ -394,6 +656,7 @@ decl_id_array: ID
 								else
 								{
 									yyerror("variable re-declared");
+									$$ = -1;
 								}
 							}
 						
@@ -401,6 +664,7 @@ decl_id_array: ID
 						else
 						{
 							yyerror("variable re-declared");
+							$$ =-1;
 						}
 
 					}
@@ -422,6 +686,7 @@ id_array: ID
 		  			}
 		  			else
 		  			{
+		  				$$ = new id_array_(v);
 		  			}
 		  		}
 		  }

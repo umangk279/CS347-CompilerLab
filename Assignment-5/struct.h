@@ -6,6 +6,17 @@
 using namespace std;
 extern int gtemp;
 
+#define INT_TYPE 1
+#define FLOAT_TYPE 2
+#define VOID_TYPE 3
+#define BOOL_TYPE 4
+#define ERROR -1
+#define SIMPLE 4
+#define ARRAY 5
+
+int get_compatible_type_term(int type1, int type2);
+int get_compatible_type_comparison(int type1, int type2);
+
 class temp_data
 {
 public:
@@ -106,6 +117,7 @@ class expression_
 public:
 	string temp_name;
 	int type;
+	variable* var;
 	expression_(int type)
 	{
 		this->type = type;
@@ -123,6 +135,70 @@ public:
 				this->temp_name = "_T"+temp;				
 				all_temp_var.temp_var_name.push_back(this->temp_name);
 			}
+			this->var = NULL;
+		}
+		else
+		{
+			this->temp_name = "ERROR";
+			this->var = NULL;
+		}
+	}
+	expression_(int type, string name)
+	{
+		this->type = type;
+		if(type!=-1)
+		{
+			this->temp_name = name;
+		}
+		else
+			this->temp_name = "ERROR";
+		this->var = NULL;
+	}
+};
+
+class id_array_
+{
+public:
+	variable* var;
+	id_array_(variable* v1)
+	{
+		this->var = v1;
+	}
+};
+
+class bool_conditions_
+{
+public:
+	int type;
+	string temp_name;
+	bool_conditions_(int type)
+	{
+		this->type = type;
+		if(type!=-1)
+		{
+			string temp = to_string(gtemp);
+			gtemp++;
+			if(type == 1)
+			{
+				this->temp_name = "_T"+temp;
+				all_temp_var.temp_var_name.push_back(this->temp_name);
+			}
+			else
+			{
+				this->temp_name = "_F"+temp;
+				all_temp_var.temp_var_name.push_back(this->temp_name);
+			}
+			
+		}
+		else
+				this->temp_name = "ERROR";
+	}
+	bool_conditions_(int type, string name)
+	{
+		this->type = type;
+		if(type!=-1)
+		{
+			this->temp_name = name;
 		}
 		else
 			this->temp_name = "ERROR";
