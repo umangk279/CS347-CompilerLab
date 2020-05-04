@@ -15,15 +15,18 @@
 	extern int yylex();
 
 	int lineno = 0;
-	void yyerror(char *s)
+	void yyerror(string s)
 	{
-		fprintf(stderr,"Error at line %d\n%s", lineno,s);
+		//fprintf(stderr,"Error at line %d\n%s", lineno,s);
+		cerr<<"Error at line "<<lineno<<endl<<s<<endl;
 	}
 
 	symbol_table ST;
 	int active_function_index = 0;
 	int level = 0;
 	intermediate_code code;
+	int gtemp = 0;
+	temp_data all_temp_var;
 %}
 
 %code requires{
@@ -40,6 +43,7 @@
 	int type;
 	varList * variable_list;
 	int no_of_parameters;
+	expression_* exp;
 }
 
 %token<type> INT FLOAT VOID
@@ -56,12 +60,14 @@
 %left PLUS MINUS MULTIPLY DIVIDE NOT
 
 %type<type> type
-%type<type> func_header 
-%type<int_val> id_array
+%type<type> func_header
+%type<type> func_type_id 
+%type<int_val> decl_id_array
 %type<variable_list> var_list
 %type<type> decl
 %type<no_of_parameters> param_decl
 %type<no_of_parameters> func_params
+%type<exp> expression
 
 %%
 
@@ -95,13 +101,13 @@ var_dec: type var_list
 		}
 		;
 
-var_list: var_list COMMA id_array
+var_list: var_list COMMA decl_id_array
 		  {
 		  		$$ = new varList();
 		  		$$->indices = $1->indices;
 		  		$$->indices.push_back($3);
 		  }
-		  | id_array
+		  | decl_id_array
 		  {
 		  		$$ = new varList();
 		  		$$->indices.push_back($1);
@@ -111,7 +117,10 @@ var_list: var_list COMMA id_array
 func_dec:	func_header left_curly stmt_list right_curly
 			;
 
-func_header: type ID LB func_params RB
+func_header: func_type_id LB func_params RB
+			;
+
+func_type_id: type ID
 			{
 				string name = $2;
 				if(ST.search_function(name)==1)
@@ -146,51 +155,66 @@ func_params: param_decl
 
 param_decl: param_decl COMMA decl
 			{
-				if($3!=ERROR)
+				if(active_function_index!=-1)
 				{
-					$$ = $1+1;
+						if($3!=ERROR)
+					{
+						$$ = $1+1;
+					}
+					else
+						$$ = $1;
 				}
-				else
-					$$ = $1;
 			}
 			| decl
 			{
-				if($3!=ERROR)
+				if(active_function_index!=-1)
 				{
-					$$ = 1;
+					if($1!=ERROR)
+					{
+						$$ = 1;
+					}
+					else
+						$$ = 0;
 				}
-				else
-					$$ = 0;
 			}
 			;
 
 decl: type ID
 	  {
-	  		string name = $2;
-	  		if(ST.search_parameter(name,active_function_index) == 0)
-	  		{
-	  			int index = ST.add_parameter(active_function_index, name, SIMPLE, $1);
-	  			$$ = $1;
-	  		}
-	  		else
-	  		{
-	  			$$ = ERROR;
-	  			yyerror("Variable previously listed as argument");
-	  		}
+		  	if(active_function_index!=-1)
+		  	{
+		  		string name($2);
+		  		//cout<<"decl: active_function_index: "<<active_function_index<<endl;
+		  		if(ST.search_parameter(name,active_function_index) == -1)
+		  		{
+		  			int index = ST.add_parameter(active_function_index, name, SIMPLE, $1);
+		  			//cout<< "Parameter "<<name <<"added at index "<<index<<"for active_function_index: "<<active_function_index<<endl;
+		  			$$ = $1;
+		  		}
+		  		else
+		  		{
+		  			//cout<<"I came here!"<< name<<endl;
+		  			$$ = ERROR;
+		  			yyerror("Variable previously listed as argument");
+		  		}
+		  	}
 	  }
 	  | type ID LSQ RSQ
 	  {
-	  		string name = $2;
-	  		if(ST.search_parameter(name,active_function_index) == 0)
-	  		{
-	  			int index = ST.add_parameter(active_function_index, name, ARRAY, $1);
-	  			$$ = $1;
-	  		}
-	  		else
-	  		{
-	  			$$ = ERROR;
-	  			yyerror("Variable previously listed as argument");
-	  		}
+		  	if(active_function_index!=-1)
+		  	{
+		  		string name = $2;
+		  		if(ST.search_parameter(name,active_function_index) == -1)
+		  		{
+		  			int index = ST.add_parameter(active_function_index, name, ARRAY, $1);
+		  			$$ = $1;
+		  		}
+		  		else
+		  		{
+		  			$$ = ERROR;
+		  			yyerror("Variable previously listed as argument");
+		  		}
+		  	}
 	  }
 	  ;
 
@@ -274,12 +298,27 @@ unary_expression: expression
 				;
 
 expression: NUM_FLOAT
+			{
+				$$ = new expression_(FLOAT_TYPE);
+				code.insert2("=",to_string($1)," ",$$->temp_name);
+			}
 			| NUM_INT
+			{
+				$$ = new expression_(INT_TYPE);
+				code.insert2("=",to_string($1)," ",$$->temp_name);
+			}
 			| id_array
+			{
+				$$ = new expression_(0);
+			}
 			| LB bool_conditions RB
+			{
+
+				$$ = new expression_(0);
+			}
 			;
 
-id_array: ID 
+decl_id_array: ID 
 		  {
 				if(active_function_index!=-1)
 				{
@@ -303,7 +342,7 @@ id_array: ID
 
 							else
 							{
-								if(ST.search_parameter(s,active_function_index) == 0)
+								if(ST.search_parameter(s,active_function_index) == -1)
 								{
 									int index = ST.add_variable(active_function_index,s,level,SIMPLE,INT_TYPE,0);
 									$$ = index;
@@ -347,7 +386,7 @@ id_array: ID
 
 							else
 							{
-								if(ST.search_parameter(s,active_function_index) == 0)
+								if(ST.search_parameter(s,active_function_index) == -1)
 								{
 									int index = ST.add_variable(active_function_index,s,level,ARRAY,INT_TYPE,$3);
 									$$ = index;
@@ -366,6 +405,54 @@ id_array: ID
 
 					}
 					cout<<"variable "<<$1<<" added successfully"<<endl;
+		  		}
+		  }
+		  ;
+
+id_array: ID
+		  {
+		  		if(active_function_index!=-1)
+		  		{
+		  			string s = $1;
+		  			variable* v = ST.search_global_var(active_function_index,level,s);
+		  			if(v==NULL)
+		  			{
+		  				string err = "Variable "+s+" not declared.";
+		  				yyerror(err);
+		  			}
+		  			else
+		  			{
+		  			}
+		  		}
+		  }
+		  | ID LSQ NUM_INT RSQ
+		  {
+		  		if(active_function_index!=-1)
+		  		{
+		  			string s($1);
+		  			variable* v = ST.search_global_var(active_function_index,level,s);
+		  			if(v == NULL)
+		  			{
+		  				string err = "Variable "+s+" not declared.";
+		  				yyerror(err);
+		  			}
+
+		  			if(v!=NULL)
+		  			{
+		  				if(v->type != ARRAY)
+		  				{
+		  					string err = "Variable "+s+" not declared as array.";
+		  					yyerror(err);
+		  				}
+		  			}
+
+		  			if(v!=NULL)
+		  			{
+		  				string temp = "_T"+to_string(gtemp);
+		  				gtemp++;
+		  				code.insert2("=",to_string($3)," ",temp);
+		  				all_temp_var.temp_var_name.push_back(temp);
+		  			}
 		  		}
 		  }
 		  ;

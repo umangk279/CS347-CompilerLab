@@ -64,15 +64,17 @@ int symbol_table::add_variable(int active_function_index, string name, int level
 
 int symbol_table::search_parameter(string name, int active_function_index)
 {
+	//cout<<"Searching parameter for active_function_index: "<<active_function_index<<endl;
 	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
-		return 0;
+		return -1;
+	//cout<<"Begin"<<endl;
 	int size = this->global_symbol_table[active_function_index]->param_list.size();
 	for(int i=0; i<size; i++)
 	{
 		if(global_symbol_table[active_function_index]->param_list[i]->name == name)
-			return 1;
+			return i;
 	}
-	return 0;
+	return -1;
 }
 
 void symbol_table::display_symbol_table()
@@ -116,9 +118,11 @@ void symbol_table::change_type(int active_function_index, vector<int>& indices,i
 
 int symbol_table::add_parameter(int active_function_index, string name, int type, int num_type)
 {
+	//cout<<"Adddddddddddd at active_function_index: "<<active_function_index<<" Size:"<<global_symbol_table.size()<<endl;
 	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
 		return -1;
 
+	//cout<<"Adding parameter"<<endl;
 	parameter* p = new parameter(name, type, num_type);
 	global_symbol_table[active_function_index]->param_list.push_back(p);
 	return global_symbol_table[active_function_index]->param_list.size()-1;
@@ -131,4 +135,51 @@ void symbol_table::set_no_of_parameters(int active_function_index, int no_of_par
 
 	global_symbol_table[active_function_index]->no_of_parameters = no_of_parameters;
 	return;
+}
+
+void intermediate_code::insert2(string s, string op, string op2, string result)
+{
+	string str = s+" "+op+" "+op2+" "+result;
+	this->insert(str);
+}
+
+variable* symbol_table::search_global_var(int active_function_index, int decl_level, string name)
+{
+	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
+		return NULL;
+
+	variable* index = this->search_cur_var(active_function_index,decl_level,name);
+	if(index!=NULL)
+		return index;
+
+	else
+	{
+		int parameter = search_parameter(name,active_function_index);
+		if(parameter == -1)
+		{
+			return this->search_cur_var(0,decl_level,name);
+		}
+		else
+		{
+			if(global_symbol_table[active_function_index]->param_list[parameter]->type == 5)
+			{
+				index = new variable("_Tparam",global_symbol_table[active_function_index]->param_list[parameter]->type,1,global_symbol_table[active_function_index]->param_list[parameter]->num_type,1);
+				
+			}
+			else
+			{
+				if(global_symbol_table[active_function_index]->param_list[parameter]->num_type == 1)
+				{
+					index = new variable("_Tparam",global_symbol_table[active_function_index]->param_list[parameter]->type,1,global_symbol_table[active_function_index]->param_list[parameter]->num_type,1);
+				}
+				if(global_symbol_table[active_function_index]->param_list[parameter]->num_type == 2)
+				{
+					index = new variable("_Fparam",global_symbol_table[active_function_index]->param_list[parameter]->type,1,global_symbol_table[active_function_index]->param_list[parameter]->num_type,1);
+				
+				}
+			}
+
+			return index;
+		}
+	}
 }

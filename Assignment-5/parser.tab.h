@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 29 "parser.y" /* yacc.c:1909  */
+#line 32 "parser.y" /* yacc.c:1909  */
 
 	#ifndef _STRUCT_H_INCLUDED_
 	#define _STRUCT_H_INCLUDED_
@@ -105,15 +105,17 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 36 "parser.y" /* yacc.c:1909  */
+#line 39 "parser.y" /* yacc.c:1909  */
  
 	char* Char;
 	int int_val;
 	float float_val;
 	int type;
 	varList * variable_list;
+	int no_of_parameters;
+	expression_* exp;
 
-#line 117 "parser.tab.h" /* yacc.c:1909  */
+#line 119 "parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

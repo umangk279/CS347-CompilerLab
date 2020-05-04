@@ -73,7 +73,7 @@ int		[0-9]+
 					return(ID); }
 {int}			{ yylval.int_val = atoi(yytext);
 					return(NUM_INT); }
-{float}			{ yylval.int_val = atoi(yytext);
+{float}			{ yylval.float_val = atof(yytext);
 					return(NUM_FLOAT); }
 {ws}			{  }
 \n 				{  lineno++; }

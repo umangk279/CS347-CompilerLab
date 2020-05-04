@@ -4,6 +4,15 @@
 
 #include<bits/stdc++.h>
 using namespace std;
+extern int gtemp;
+
+class temp_data
+{
+public:
+	vector<string> temp_var_name; 
+};
+
+extern temp_data all_temp_var;
 
 class parameter
 {
@@ -63,6 +72,7 @@ public:
 	int search_function(string name);
 	int add_function(string name, int return_type);
 	variable* search_cur_var(int active_function_index, int decl_level, string name);
+	variable* search_global_var(int active_function_index, int decl_level, string name);
 	int add_variable(int active_function_index, string name, int level, int type, int num_type, int dimension);
 	int search_parameter(string name, int active_function_index);
 	int add_parameter(int active_function_index, string name, int type, int num_type);
@@ -80,6 +90,7 @@ public:
 		this->index = 0;
 	}
 	void insert(string s);
+	void insert2(string s, string op, string op2, string result);
 };
 
 class varList
@@ -88,6 +99,34 @@ public:
 	vector<int> indices;
 	varList()
 	{}
+};
+
+class expression_
+{
+public:
+	string temp_name;
+	int type;
+	expression_(int type)
+	{
+		this->type = type;
+		if(type!=-1)
+		{
+			string temp = to_string(gtemp);
+			gtemp++;
+			if(type==2)
+			{
+				this->temp_name = "_F"+temp;
+				all_temp_var.temp_var_name.push_back(this->temp_name);
+			}
+			else
+			{
+				this->temp_name = "_T"+temp;				
+				all_temp_var.temp_var_name.push_back(this->temp_name);
+			}
+		}
+		else
+			this->temp_name = "ERROR";
+	}
 };
 
 

@@ -1020,7 +1020,7 @@ YY_RULE_SETUP
 case 44:
 YY_RULE_SETUP
 #line 76 "analyzer.lex"
-{ yylval.int_val = atoi(yytext);
+{ yylval.float_val = atof(yytext);
 					return(NUM_FLOAT); }
 	YY_BREAK
 case 45:
