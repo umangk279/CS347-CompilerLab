@@ -22,6 +22,8 @@
 	int gtemp = 0;
 	int cond_tag = 0;
 	temp_data all_temp_var;
+	int function_call_index = -1;
+	int max_param = 0;
 %}
 
 %code requires{
@@ -45,6 +47,7 @@
 	case_list_* cl;
 	d_* dc;
 	stmt_* statement;
+	plist_list_* pll;
 }
 
 %token<type> INT FLOAT VOID
@@ -87,6 +90,9 @@
 %type<statement> stmt 
 %type<statement> stmt_list
 %type<cl> default_statemnt
+%type<pll> plist_list
+%type<pll> plist
+%type<exp> function_call
 
 %%
 
@@ -706,9 +712,69 @@ expression: NUM_FLOAT
 			| LB bool_conditions RB
 			{
 
-				$$ = new expression_(0);
+				$$ = new expression_($2->type,$2->temp_name);
+			}
+			| function_call
+			{
+				$$ = new expression_($1->type,$1->temp_name);
 			}
 			;
+
+function_call: ID LB plist RB
+			{
+				string name($1);
+				function_call_index = ST.search_function(name);
+				if(function_call_index != -1)
+				{
+					int compatiblity = ST.check_parameter_compatibility(function_call_index,$3->type_list);
+					if(compatiblity!=-1)
+					{
+						string result_func = ST.generate_function_call(function_call_index,$3);
+						$$ = new expression_(compatiblity,result_func);
+					}
+					else
+					{
+						$$ = new expression_(ERROR,"ERROR");
+					}
+				}
+				else
+				{
+					yyerror("Function "+name+" not declared");
+					$$ = new expression_(ERROR,"ERROR");
+				}
+			}
+
+			 ;
+
+plist: plist_list 
+		{
+			$$ = new plist_list_();
+			$$->type_list = $1->type_list;
+			$$->name_list = $1->name_list;
+		}
+		| 
+		{
+			$$ = new plist_list_();
+			$$->type_list.clear();
+			$$->name_list.clear();
+		}
+		;
+
+plist_list: plist_list COMMA condition
+		{
+			$$ = new plist_list_();
+			$$->type_list.insert($$->type_list.end(),$1->type_list.begin(),$1->type_list.end());
+			$$->name_list.insert($$->name_list.end(),$1->name_list.begin(),$1->name_list.end());
+			$$->type_list.push_back($3->type);
+			$$->name_list.push_back($3->temp_name);
+		}
+		| condition
+		{
+			$$ = new plist_list_();
+			$$->type_list.push_back($1->type);
+			$$->name_list.push_back($1->temp_name);
+		}
+		;
 
 decl_id_array: ID 
 		  {

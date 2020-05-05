@@ -3,6 +3,8 @@
 
 using namespace std;
 
+extern intermediate_code code;
+
 int get_compatible_type_term(int type1, int type2)
 {
 	if(type1==ERROR || type2==ERROR)
@@ -306,5 +308,80 @@ void intermediate_code::patch_switch(string tag, vector<int> indices)
 		if(indices[i]<0 || indices[i]>=this->output.size())
 			continue;
 		this->back_patch_special("_prev","_prev",tag,"_prev",indices[i]);
+	}
+}
+
+int symbol_table::check_parameter_compatibility(int call_function_index,vector<int> type_list)
+{
+	if(call_function_index<0 || call_function_index>=this->global_symbol_table.size())
+			return -1;
+
+	if(this->global_symbol_table[call_function_index]->param_list.size()!=type_list.size())
+	{
+		yyerror("Arguments of function call does not match defition.");
+		return -1;
+	}
+
+	else
+	{
+		bool flag = true;
+		for(int i=0; i<type_list.size(); i++)
+		{
+			if(type_list[i]!=this->global_symbol_table[call_function_index]->param_list[i]->num_type)
+			{
+				yyerror("Arguments of function call does not match defition.");
+				flag = false;
+			}
+		}
+
+		if(flag == false)
+			return -1;
+		else
+			return this->global_symbol_table[call_function_index]->return_type;
+	}
+}
+
+
+string symbol_table::generate_function_call(int call_function_index, plist_list_* temp)
+{
+	if(call_function_index<0 || call_function_index>=this->global_symbol_table.size())
+			return "ERROR";
+
+	for(int i=0; i<temp->type_list.size(); i++)
+	{
+		if(this->global_symbol_table[call_function_index]->param_list[i]->type == SIMPLE)
+		{
+			code.insert2("param",temp->name_list[i]," ", " ");
+		}
+		else
+			code.insert2("refparam",temp->name_list[i]," ", " ");
+	}
+
+	if(this->global_symbol_table[call_function_index]->return_type!=VOID_TYPE)
+	{
+		string t = to_string(gtemp);
+		gtemp++;
+
+		string temp_name;
+		if(this->global_symbol_table[call_function_index]->return_type == INT_TYPE)
+		{
+			temp_name = "_T"+t;
+		}
+		else
+			temp_name = "_F"+t;
+		all_temp_var.temp_var_name.push_back(temp_name);
+		code.insert2("refparam",temp_name," "," ");
+		code.insert2("call",this->global_symbol_table[call_function_index]->name,to_string(temp->type_list.size()),"--");
+		if(max_param < temp->type_list.size())
+			max_param = temp->type_list.size();
+		return temp_name;
+	}
+
+	else
+	{
+		code.insert2("call",this->global_symbol_table[call_function_index]->name,to_string(temp->type_list.size()),"--");
+		if(max_param < temp->type_list.size())
+			max_param = temp->type_list.size();
+		return "ERROR";
 	}
 }

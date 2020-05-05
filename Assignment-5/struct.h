@@ -4,8 +4,10 @@
 
 #include<bits/stdc++.h>
 using namespace std;
+extern void yyerror(string s);
 extern int gtemp;
 extern int cond_tag;
+extern int max_param;
 
 #define INT_TYPE 1
 #define FLOAT_TYPE 2
@@ -76,6 +78,13 @@ public:
 	}
 };
 
+class plist_list_
+{
+public:
+	vector<int> type_list;
+	vector<string> name_list;
+};
+
 class symbol_table
 {
 public:
@@ -92,6 +101,8 @@ public:
 	int add_parameter(int active_function_index, string name, int type, int num_type);
 	void change_type(int active_function_index, vector<int> &indices,int type);
 	void set_no_of_parameters(int active_function_index,int no_of_parameters);
+	int check_parameter_compatibility(int call_function_index,vector<int> type_list);
+	string generate_function_call(int call_function_index, plist_list_* temp);
 };
 
 class intermediate_code
