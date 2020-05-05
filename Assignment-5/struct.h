@@ -5,6 +5,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 extern int gtemp;
+extern int cond_tag;
 
 #define INT_TYPE 1
 #define FLOAT_TYPE 2
@@ -16,6 +17,8 @@ extern int gtemp;
 
 int get_compatible_type_term(int type1, int type2);
 int get_compatible_type_comparison(int type1, int type2);
+
+string get_conditional_tag();
 
 class temp_data
 {
@@ -102,6 +105,11 @@ public:
 	}
 	void insert(string s);
 	void insert2(string s, string op, string op2, string result);
+	int get_index();
+	void back_patch_special(string op,string op1,string op2,string result,int index);
+	void put_tag(int index, string tag);
+	void patch_tag(string tag, vector<int>indices, int index);
+	void patch_switch(string tag, vector<int> indices);
 };
 
 class varList
@@ -205,5 +213,71 @@ public:
 	}
 };
 
+class assignment_
+{
+public:
+	int type;
+	string temp_name;
+	int valid_global;
+	assignment_(int type, string temp_name)
+	{
+		this->type = type;
+		this->temp_name = temp_name;
+		this->valid_global = 0;
+	}
+};
+
+class case_
+{
+public:
+	int first_address;
+	case_(int first_address)
+	{
+		this->first_address = first_address;
+	}
+};
+
+class case_list_
+{
+public:
+	int first_address;
+	int second_address;
+	vector<int> next;
+	vector<int> break_list;
+	vector<int> continue_list;
+	vector<int> false_list;
+	case_list_(int first_address, int second_address)
+	{
+		this->first_address = first_address;
+		this->second_address = second_address;
+	}
+};
+
+class d_
+{
+public:
+	int position;
+	d_(int position)
+	{
+		this->position = position;
+	}
+};
+
+class stmt_
+{
+public:
+	vector<int> next;
+	vector<int> break_list;
+	vector<int> continue_list;
+	int valid_global;
+	int error;
+	int loop;
+	stmt_(int valid_global)
+	{
+		this->valid_global = valid_global;
+		this->error = false;
+		this->loop = false;
+	}
+};
 
 #endif

@@ -27,6 +27,13 @@ int get_compatible_type_comparison(int type1, int type2)
 	return BOOL_TYPE;
 }
 
+string get_conditional_tag()
+{
+	string t = "COND" + to_string(cond_tag) + ":";
+	cond_tag++;
+	return t;
+}
+
 int symbol_table::search_function(string name)
 {
 	int size = this->global_symbol_table.size();
@@ -205,5 +212,99 @@ variable* symbol_table::search_global_var(int active_function_index, int decl_le
 
 			return index;
 		}
+	}
+}
+
+int intermediate_code::get_index()
+{
+	return this->index;
+}
+
+
+void intermediate_code::back_patch_special(string op,string op1,string op2,string result,int index)
+{
+	vector<string>v(4,"");
+	string s = this->output[index];
+	int d = s.length();
+	int i = 0;
+	int count = 0;
+	string temp = "";
+	while(i<d)
+	{
+		if(s[i] == ' ')
+		{
+			if(i>0)
+			{
+				if(s[i] == ' ' && s[i-1]!= ' ')
+				{
+					if(count<=3)
+					{
+						v[count] = temp;
+					}
+					count++;
+
+					temp = "";
+				}
+			}
+		}
+		else
+		{
+			temp+=s[i];
+		}
+		i++;
+		if(i == d && count<=3)
+		{
+			v[count] = temp;
+		}
+	}
+
+	if(op!="_prev")
+	{
+		v[0] = op;
+	}
+	if(op1!="_prev")
+	{
+		v[1] = op1;
+	}
+	if(op2!="_prev")
+	{
+		v[2] = op2;
+	}
+	if(result!="_prev")
+	{
+		v[3] = result;
+	}
+	string final = v[0] + " " + v[1] + " " + v[2] + " " + v[3];
+	this->output[index] = final;
+
+}
+
+void intermediate_code::put_tag(int index, string tag)
+{
+	if(index<0 || index>=this->output.size())
+		return;
+	this->output[index] = tag;
+}
+
+void intermediate_code::patch_tag(string tag, vector<int>indices, int index)
+{
+	if(index<0 || index>=this->output.size())
+		return;
+	this->put_tag(index,tag);
+	for(int i=0; i<indices.size(); i++)
+	{
+		if(indices[i]<0 || indices[i]>=this->output.size())
+			continue;
+		this->back_patch_special("_prev","_prev","_prev",tag,indices[i]);
+	}
+}
+
+void intermediate_code::patch_switch(string tag, vector<int> indices)
+{
+	for(int i=0; i<indices.size(); i++)
+	{
+		if(indices[i]<0 || indices[i]>=this->output.size())
+			continue;
+		this->back_patch_special("_prev","_prev",tag,"_prev",indices[i]);
 	}
 }

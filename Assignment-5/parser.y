@@ -20,6 +20,7 @@
 	int level = 0;
 	intermediate_code code;
 	int gtemp = 0;
+	int cond_tag = 0;
 	temp_data all_temp_var;
 %}
 
@@ -39,6 +40,11 @@
 	int no_of_parameters;
 	expression_* exp;
 	id_array_* ia_;
+	assignment_* ass;
+	case_* casee;
+	case_list_* cl;
+	d_* dc;
+	stmt_* statement;
 }
 
 %token<type> INT FLOAT VOID
@@ -71,6 +77,16 @@
 %type<exp> comparison
 %type<exp> condition
 %type<exp> bool_conditions
+%type<ass> assignment
+%type<casee> c
+%type<cl> case_statement
+%type<dc> d
+%type<cl> case_list
+%type<cl> case_statement_block
+%type<statement> switch_case_statement
+%type<statement> stmt 
+%type<statement> stmt_list
+%type<cl> default_statemnt
 
 %%
 
@@ -244,25 +260,141 @@ for_condition: FOR LB assignment SEMI assignment SEMI assignment RB
 stmt_block: left_curly stmt_list right_curly
 			;
 
-switch_case_statement: SWITCH LB operation RB left_curly case_statement_block right_curly
+switch_case_statement: SWITCH LB operation RB LCURLY case_statement_block RCURLY
+					{
+						$$ = new stmt_(1);
+						$$->next.insert($$->next.end(),$6->false_list.begin(),$6->false_list.end());
+						$$->next.insert($$->next.end(),$6->break_list.begin(),$6->break_list.end());
+						$$->next.insert($$->next.end(),$6->next.begin(),$6->next.end());
+						$$->break_list.clear();
+						$$->continue_list.clear();
+						if(active_function_index <= 0)
+						{
+								yyerror("Switches can not be global");
+						}
+						code.patch_switch($3->temp_name,$6->false_list);
+					}
 					;
 
 case_statement_block: case_list default_statemnt
+				{
+					string tag1 = get_conditional_tag();
+					string tag2 = get_conditional_tag();
+					code.patch_tag(tag2,$1->next,$2->second_address);
+					code.patch_tag(tag1,$1->false_list,$2->first_address);
+					$$ = new case_list_($2->first_address,$2->second_address);
+					$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
+					$$->false_list.insert($$->false_list.end(),$2->false_list.begin(),$2->false_list.end());
+					$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
+					$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+					$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
+				}
 				| case_list
+				{
+					$$ = new case_list_($1->first_address,$1->second_address);
+					$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
+					$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+					$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
+					if(!($$->false_list.empty()))
+					{
+						$$->next.push_back($$->false_list.back());
+					}
+				}
 				;
 
 case_list: case_list case_statement
+			{
+				string tag1 = get_conditional_tag();
+				string tag2 = get_conditional_tag();
+				code.patch_tag(tag2,$1->next,$2->second_address);
+				code.patch_tag(tag1,$1->false_list,$2->first_address);
+				$$ = new case_list_($2->first_address,$2->second_address);
+				$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
+				$$->false_list.insert($$->false_list.end(),$2->false_list.begin(),$2->false_list.end());
+				$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
+				$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+				$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
+			}
 			| case_statement
+			{
+				$$ = new case_list_($1->first_address,$1->second_address);
+				$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
+				$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
+				$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+			}
 			;
 
-case_statement: CASE operation COLON stmt
+case_statement: CASE c operation COLON  d d stmt
+				{
+					$$ = new case_list_($2->first_address,$6->position);
+					$$->false_list.push_back($5->position);
+					code.back_patch_special("!=",$3->temp_name,"--","--",$5->position);
+					//continue check
+					int jump = code.get_index();
+					code.insert2("goto"," "," "," ");
+					$$->next.insert($$->next.end(),$7->next.begin(),$7->next.end());
+					$$->next.push_back(jump);
+					$$->break_list.insert($$->break_list.end(),$7->break_list.begin(),$7->break_list.end());
+				}
 				;
 
-default_statemnt: DEFAULT COLON stmt
+c:  
+	{
+		$$ = new case_(code.get_index());
+		code.insert("");
+	};
+
+d:
+	{
+		$$ = new d_(code.get_index());
+		code.insert("");
+	}
+
+default_statemnt: DEFAULT COLON c stmt
+					{
+						$$ = new case_list_($3->first_address,$3->first_address);
+						$$->false_list.clear();
+						//check continue
+						int jump = code.get_index();
+						code.insert2("goto"," "," "," ");
+						$$->next.insert($$->next.end(),$4->next.begin(),$4->next.end());
+						$$->next.push_back(jump);
+						$$->break_list.insert($$->break_list.end(),$4->break_list.begin(),$4->break_list.end());
+						$$->false_list.clear();
+					}
 					;
 
 assignment:	id_array ASSIGN bool_conditions
+			{
+				if($1->var!=NULL)
+				{
+					int type = get_compatible_type_term($1->var->num_type,$3->type);
+					if(type!=ERROR)
+					{
+						if($1->var->type==SIMPLE)
+						{
+							code.insert2("=",$3->temp_name," ",$1->var->name);
+						}
+						else
+						{
+							string t = "T"+to_string(gtemp);
+							gtemp++;
+							code.insert2("addr",$1->var->name," ",t);
+							code.insert2("=", $3->temp_name," ",t);
+						}
+						$$ = new assignment_(type,"ERROR");
+					}
+					else
+					{
+						$$ = new assignment_(ERROR,"ERROR");
+						yyerror("Incompatible data tyoes for assignment");
+					}
+				}
+			}
 			| bool_conditions
+			{
+				$$ = new assignment_($1->type,$1->temp_name);
+			}
 			;
 
 bool_conditions:	bool_conditions AND condition
@@ -285,29 +417,29 @@ bool_conditions:	bool_conditions AND condition
 					}
 					| condition
 					{
-						$$ = new expression_($1->type);
-						if($1->type!=ERROR)
-						{
-							code.insert2("=",$1->temp_name," ",$$->temp_name);
-						}
+						$$ = new expression_($1->type,$1->temp_name);
+						// if($1->type!=ERROR)
+						// {
+						// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+						// }
 					}
 					;
 
 condition: comparison
 		  {
-		  		$$ = new expression_($1->type);
-		  		if($1->type!=ERROR)
-		  		{
-		  			code.insert2("=",$1->temp_name," ",$$->temp_name);
-		  		}
+		  		$$ = new expression_($1->type,$1->temp_name);
+		  		// if($1->type!=ERROR)
+		  		// {
+		  		// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+		  		// }
 		  }
 		  | operation
 		  {
-		  		$$ = new expression_($1->type);
-		  		if($1->type!=ERROR)
-		  		{
-		  			code.insert2("=",$1->temp_name," ",$$->temp_name);
-		  		}
+		  		$$ = new expression_($1->type,$1->temp_name);
+		  		// if($1->type!=ERROR)
+		  		// {
+		  		// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+		  		// }
 		  }
 		  ;
 
@@ -419,11 +551,11 @@ operation: operation PLUS term
 		   }
 		   | term
 		   {
-		   		$$ = new expression_($1->type);
-		   		if($1->type!=ERROR)
-		   		{
-		   			code.insert2("=",$1->temp_name," ",$$->temp_name);
-		   		}
+		   		$$ = new expression_($1->type,$1->temp_name);
+		   		// if($1->type!=ERROR)
+		   		// {
+		   		// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+		   		// }
 		   }
 		   ;
 
@@ -455,31 +587,31 @@ term: term MULTIPLY factor
 	  }
 	  | factor
 	  {
-	  	$$ = new expression_($1->type);
-	  	if($1->type!=ERROR)
-	  	{
-	  		code.insert2("=",$1->temp_name," ",$$->temp_name);
-	  	}
+	  	$$ = new expression_($1->type,$1->temp_name);
+	  	// if($1->type!=ERROR)
+	  	// {
+	  	// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+	  	// }
 	  }
 	  ;
 
 factor: unary_expression
 		{
-			$$ = new expression_($1->type);
-			if($1->type!=ERROR)
-			{
-				code.insert2("=",$1->temp_name," ",$$->temp_name);
-			}
+			$$ = new expression_($1->type,$1->temp_name);
+			// if($1->type!=ERROR)
+			// {
+			// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+			// }
 		}
 		;
 
 unary_expression: expression
 				{
-					$$ = new expression_($1->type);
-					if($1->type != ERROR)
-					{
-						code.insert2("=",$1->temp_name," ",$$->temp_name);
-					}
+					$$ = new expression_($1->type,$1->temp_name);
+					// if($1->type != ERROR)
+					// {
+					// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+					// }
 				}
 				| NOT unary_expression
 				{
@@ -561,7 +693,7 @@ expression: NUM_FLOAT
 			{
 				if($1->var == NULL)
 				{
-					yyerror("Variable not declared");
+					//yyerror("Variable not declared");
 					$$ = new expression_(ERROR);
 				}
 				else 
@@ -686,8 +818,13 @@ id_array: ID
 		  			}
 		  			else
 		  			{
-		  				$$ = new id_array_(v);
+		  				if(v->type!=SIMPLE)
+		  				{
+		  					v=NULL;
+		  					yyerror("Variable "+s+" declared as array");
+		  				}
 		  			}
+		  			$$ = new id_array_(v);
 		  		}
 		  }
 		  | ID LSQ NUM_INT RSQ
@@ -706,6 +843,7 @@ id_array: ID
 		  			{
 		  				if(v->type != ARRAY)
 		  				{
+		  					v= NULL;
 		  					string err = "Variable "+s+" not declared as array.";
 		  					yyerror(err);
 		  				}
@@ -718,6 +856,8 @@ id_array: ID
 		  				code.insert2("=",to_string($3)," ",temp);
 		  				all_temp_var.temp_var_name.push_back(temp);
 		  			}
+
+		  		$$ = new id_array_(v);
 		  		}
 		  }
 		  ;
@@ -726,7 +866,9 @@ left_curly : LCURLY
 			{ level++; }
 			;
 
-right_curly: RCURLY;
+right_curly: RCURLY
+			{ level--; }
+			;
 %%
 
 int main()
