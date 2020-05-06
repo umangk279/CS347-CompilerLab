@@ -8,6 +8,7 @@ extern void yyerror(string s);
 extern int gtemp;
 extern int cond_tag;
 extern int loop_tag;
+extern int rel_tag;
 extern int max_param;
 
 #define INT_TYPE 1
@@ -23,6 +24,7 @@ int get_compatible_type_comparison(int type1, int type2);
 
 string get_conditional_tag();
 string get_loop_tag();
+string get_rel_tag();
 
 class temp_data
 {
@@ -99,12 +101,14 @@ public:
 	variable* search_cur_var(int active_function_index, int decl_level, string name);
 	variable* search_global_var(int active_function_index, int decl_level, string name);
 	int add_variable(int active_function_index, string name, int level, int type, int num_type, int dimension);
-	int search_parameter(string name, int active_function_index);
+	bool search_parameter(string name, int active_function_index);
+	int search_parameter_index(string name, int active_function_index);
 	int add_parameter(int active_function_index, string name, int type, int num_type);
 	void change_type(int active_function_index, vector<int> &indices,int type);
 	void set_no_of_parameters(int active_function_index,int no_of_parameters);
 	int check_parameter_compatibility(int call_function_index,vector<int> type_list);
 	string generate_function_call(int call_function_index, plist_list_* temp);
+	bool clear_var_list(int active_function_index,int level);
 };
 
 class intermediate_code
@@ -126,6 +130,7 @@ public:
 	void patch_tag_no_put(string tag,vector<int> indices,int index);
 	void gen_at_pos(string tag,int index);
 	void print();
+	void gen_relational_op(string op,string operand1,string operand2,string result);
 };
 
 class varList
@@ -322,6 +327,20 @@ public:
 	loop_(int index,int jump_back_address){
 		this->false_list.push_back(index);
 		this->jump_back_address = jump_back_address;
+	}
+};
+
+class func_end_tag_genarator{
+public:
+	int tag_no;
+	func_end_tag_genarator(){
+			tag_no =0;
+	}
+	string get_func_end_tag(){
+		string t = "func_end";
+		t = t + to_string(this->tag_no)+ ":";
+		tag_no++;
+		return t;
 	}
 };
 

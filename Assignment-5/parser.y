@@ -22,9 +22,11 @@
 	int gtemp = 0;
 	int cond_tag = 0;
 	int loop_tag = 0;
+	int rel_tag = 0;
 	temp_data all_temp_var;
 	int function_call_index = -1;
 	int max_param = 0;
+	func_end_tag_genarator func_end_tag;
 %}
 
 %code requires{
@@ -110,8 +112,27 @@
 prog: stmt_list { printf("Accepted\n"); }
 	  ;
 
-stmt_list: stmt_list stmt
+stmt_list: stmt_list d stmt
+			{
+				$$ = new stmt_($1->valid_global);
+				if(!($1->next.empty()))
+				{
+					string tag = get_conditional_tag();
+					code.patch_tag(tag,$1->next,$2->position);
+				}
+				$$->next.insert($$->next.end(),$3->next.begin(),$3->next.end());
+				$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+				$$->break_list.insert($$->break_list.end(),$3->break_list.begin(),$3->break_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$1->continue_list.begin(),$1->continue_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$3->continue_list.begin(),$3->continue_list.end());
+			}
 		   |
+		   {
+		   		$$ = new stmt_(0);
+		   		$$->next.clear();
+				$$->break_list.clear();
+				$$->continue_list.clear();
+		   }
 		   ;
 
 stmt: RETURN SEMI
@@ -147,8 +168,19 @@ stmt: RETURN SEMI
 			$$->break_list.clear();
 	  }
 	  | var_dec SEMI
+	  {
+	  	$$ = new stmt_(0);
+		$$->next.clear();
+		$$->break_list.clear();
+		$$->continue_list.clear();
+	  }
 	  | func_dec
 	  {
+	  	if(active_function_index != 0)
+	  	{
+			yyerror("can not define function within a function\nAborting");
+			exit(1);
+		}
 	  		$$ = new stmt_(2);
 	  		$$->next.clear();
 			$$->break_list.clear();
@@ -159,10 +191,17 @@ stmt: RETURN SEMI
 	  		$$ = new stmt_(1);
 	  		$$->error = false;
 			$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
+			$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+			$$->continue_list.insert($$->continue_list.end(),$1->continue_list.begin(),$1->continue_list.end());
+	
+	  }
+	  | loop_block
+	  {
+	  		$$ = new stmt_(1);
+	  		$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
 			$$->break_list.clear();
 			$$->continue_list.clear();
 	  }
-	  | loop_block
 	  | stmt_block
 	  {
 	  	$$ = $1;
@@ -172,8 +211,9 @@ stmt: RETURN SEMI
 	  		$$ = new stmt_(1);
 	  		$$->error = false;
 			$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
-			$$->break_list.clear();
-			$$->continue_list.clear();
+			$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+			$$->continue_list.insert($$->continue_list.end(),$1->continue_list.begin(),$1->continue_list.end());
+
 	  }
 	  | assignment SEMI
 	  {
@@ -208,6 +248,24 @@ var_list: var_list COMMA decl_id_array
 		  ;
 
 func_dec:	func_header left_curly stmt_list right_curly
+			{
+				string tag = func_end_tag.get_func_end_tag();
+				code.insert(tag);
+				if(!($3->continue_list.empty()))
+				{
+					yyerror("unpatched continue statement left in the function\nAborting");
+					exit(1);
+				}
+				//code.patch_tag_no_put(tag,$3->break_list,code.get_index()-1);
+				if(!($3->break_list.empty()))
+				{
+					yyerror("unpatched break statement left in the function\nAborting");
+					exit(1);
+				}
+				code.patch_tag_no_put(tag,$3->next,code.get_index()-1);
+				code.insert2("func","end","--","--");
+				active_function_index=0;
+			}
 			;
 
 func_header: func_type_id LB func_params RB
@@ -229,6 +287,7 @@ func_type_id: type ID
 					level =1;
 					string s = "function_"+name+":";
 					code.insert(s);
+					code.insert2("func","begin",s,"--");
 					cout<<"Function added successfully"<<endl;
 				}
 			}
@@ -324,20 +383,12 @@ if_block:	if_condition stmt ELSE n d stmt
 				{
 					yyerror("If can not be defined globally");
 				}
-				if((!$2->break_list.empty()) || (!$6->break_list.empty()))
-				{
-					yyerror("can not define break statement with in if block\nAborting");
-					exit(1);
-				}
-				if(!($2->continue_list.empty()) || !($6->continue_list.empty()) )
-				{
-					yyerror("can not define break statement with in if block\nAborting");
-					exit(1);
-				}
 				string tag = get_conditional_tag();
 				code.patch_tag(tag,$1->false_list,$5->position);
-				$$->break_list.clear();
-				$$->continue_list.clear();
+				$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$2->continue_list.begin(),$2->continue_list.end());
+				$$->break_list.insert($$->break_list.end(),$6->break_list.begin(),$6->break_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$6->continue_list.begin(),$6->continue_list.end());
 				$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
 				$$->next.insert($$->next.end(),$6->next.begin(),$6->next.end());
 				$$->next.insert($$->next.end(),$4->next.begin(),$4->next.end());
@@ -350,18 +401,8 @@ if_block:	if_condition stmt ELSE n d stmt
 				{
 					yyerror("If can not be defined globally");
 				}
-				if((!$2->break_list.empty()))
-				{
-					yyerror("can not define break statement with in if block\nAborting");
-					exit(1);
-				}
-				if(!($2->continue_list.empty()))
-				{
-					yyerror("can not define break statement with in if block\nAborting");
-					exit(1);
-				}
-				$$->break_list.clear();
-				$$->continue_list.clear();
+				$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$2->continue_list.begin(),$2->continue_list.end());
 				$$->next.insert($$->next.end(),$1->false_list.begin(),$1->false_list.end());
 				$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
 			}
@@ -372,7 +413,7 @@ if_condition: IF LB assignment RB
 			  		if($3->type!=ERROR)
 			  		{
 			  			$$ = new ifexp_(code.get_index());
-			  			code.insert2("!=",$3->temp_name,"0","--");
+			  			code.insert2("==",$3->temp_name,"0","--");
 			  		}
 			  		else
 			  		{
@@ -396,6 +437,11 @@ loop_block:	while_condition stmt
 			}
 			| forexp d assignment d d RB stmt
 			{
+				if($3->type == ERROR)
+				{
+					yyerror("Invalid expression in while");
+					exit(1);
+				}
 				$$ = new stmt_(1);
 				string tag = get_loop_tag();
 				code.patch_tag(tag,$7->next,$2->position);
@@ -428,7 +474,7 @@ while_condition: WHILE d LB assignment RB
 					if($4->type!=ERROR)
 					{
 						$$ = new loop_(code.get_index(),$2->position);
-						code.insert2("!=",$4->temp_name,"0","--");
+						code.insert2("==",$4->temp_name,"0","--");
 					}
 					else
 					{
@@ -473,7 +519,7 @@ switch_case_statement: SWITCH LB operation RB LCURLY case_statement_block RCURLY
 						$$->next.insert($$->next.end(),$6->break_list.begin(),$6->break_list.end());
 						$$->next.insert($$->next.end(),$6->next.begin(),$6->next.end());
 						$$->break_list.clear();
-						$$->continue_list.clear();
+						$$->continue_list.insert($$->continue_list.end(),$6->continue_list.begin(),$6->continue_list.end());
 						if(active_function_index <= 0)
 						{
 								yyerror("Switches can not be global");
@@ -485,8 +531,7 @@ switch_case_statement: SWITCH LB operation RB LCURLY case_statement_block RCURLY
 case_statement_block: case_list default_statemnt
 				{
 					string tag1 = get_conditional_tag();
-					string tag2 = get_conditional_tag();
-					code.patch_tag(tag2,$1->next,$2->second_address);
+					code.patch_tag(tag1,$1->next,$2->second_address);
 					vector<int> temp_index;
 					if(!($1->false_list.empty())) temp_index.push_back($1->false_list.back());
 					code.patch_tag(tag1,temp_index,$2->first_address);
@@ -496,11 +541,14 @@ case_statement_block: case_list default_statemnt
 					$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
 					$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
 					$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
+					$$->continue_list.insert($$->continue_list.end(),$1->continue_list.begin(),$1->continue_list.end());
+					$$->continue_list.insert($$->continue_list.end(),$2->continue_list.begin(),$2->continue_list.end());
 				}
 				| case_list
 				{
 					$$ = new case_list_($1->first_address,$1->second_address);
 					$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
+					$$->continue_list.insert($$->continue_list.end(),$1->continue_list.begin(),$1->continue_list.end());
 					$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
 					$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
 					if(!($$->false_list.empty()))
@@ -524,6 +572,8 @@ case_list: case_list case_statement
 				$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
 				$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
 				$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$1->continue_list.begin(),$1->continue_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$2->continue_list.begin(),$2->continue_list.end());
 			}
 			| case_statement
 			{
@@ -531,6 +581,8 @@ case_list: case_list case_statement
 				$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
 				$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
 				$$->break_list.insert($$->break_list.end(),$1->break_list.begin(),$1->break_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$1->continue_list.begin(),$1->continue_list.end());
+
 			}
 			;
 
@@ -539,12 +591,12 @@ case_statement: CASE c operation COLON  d d stmt
 					$$ = new case_list_($2->first_address,$6->position);
 					$$->false_list.push_back($5->position);
 					code.back_patch_special("!=",$3->temp_name,"--","--",$5->position);
-					//continue check
 					int jump = code.get_index();
 					code.insert2("goto"," "," "," ");
 					$$->next.insert($$->next.end(),$7->next.begin(),$7->next.end());
 					$$->next.push_back(jump);
 					$$->break_list.insert($$->break_list.end(),$7->break_list.begin(),$7->break_list.end());
+					$$->continue_list.insert($$->continue_list.end(),$7->continue_list.begin(),$7->continue_list.end());
 				}
 				;
 
@@ -570,13 +622,14 @@ default_statemnt: DEFAULT COLON c stmt
 					{
 						$$ = new case_list_($3->first_address,$3->first_address);
 						$$->false_list.clear();
-						//check continue
 						int jump = code.get_index();
 						code.insert2("goto"," "," "," ");
 						$$->next.insert($$->next.end(),$4->next.begin(),$4->next.end());
 						$$->next.push_back(jump);
 						$$->break_list.insert($$->break_list.end(),$4->break_list.begin(),$4->break_list.end());
 						$$->false_list.clear();
+						$$->continue_list.insert($$->continue_list.end(),$4->continue_list.begin(),$4->continue_list.end());
+
 					}
 					;
 
@@ -584,6 +637,11 @@ assignment:	id_array ASSIGN bool_conditions
 			{
 				if($1->var!=NULL)
 				{
+					if($1->var->num_type == VOID_TYPE)
+					{
+						yyerror("trying to assign a void data type");
+						$1->var->num_type = ERROR;
+					}
 					int type = get_compatible_type_term($1->var->num_type,$3->type);
 					if(type!=ERROR)
 					{
@@ -602,7 +660,7 @@ assignment:	id_array ASSIGN bool_conditions
 					}
 					else
 					{
-						$$ = new assignment_(ERROR,"ERROR");
+						$$ = new assignment_(VOID_TYPE,"ERROR");
 						yyerror("Incompatible data tyoes for assignment");
 					}
 				}
@@ -615,6 +673,16 @@ assignment:	id_array ASSIGN bool_conditions
 
 bool_conditions:	bool_conditions AND condition
 					{
+						if($1->type == VOID_TYPE)
+						{
+							yyerror("Boolean operation on void data type");
+							$1->type = ERROR;
+						}
+						if($3->type == VOID_TYPE)
+						{
+							yyerror("Boolean operation on void data type");
+							$3->type = ERROR;
+						}
 						int type = get_compatible_type_comparison($1->type,$3->type);
 						$$ = new expression_(type);
 						if(type!=ERROR)
@@ -624,6 +692,16 @@ bool_conditions:	bool_conditions AND condition
 					}
 					| bool_conditions OR condition
 					{
+						if($1->type == VOID_TYPE)
+						{
+							yyerror("Boolean operation on void data type");
+							$1->type = ERROR;
+						}
+						if($3->type == VOID_TYPE)
+						{
+							yyerror("Boolean operation on void data type");
+							$3->type = ERROR;
+						}
 						int type = get_compatible_type_comparison($1->type,$3->type);
 						$$ = new expression_(type);
 						if(type!=ERROR)
@@ -661,11 +739,21 @@ condition: comparison
 
 comparison: operation GT operation
 			{
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
 				{
-					code.insert2(">",$1->temp_name," ",$3->temp_name);
+					code.gen_relational_op(">",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -674,11 +762,31 @@ comparison: operation GT operation
 			}
 			| operation GTE operation
 			{
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
 				{
-					code.insert2(">=",$1->temp_name," ",$3->temp_name);
+					code.gen_relational_op(">=",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -687,11 +795,31 @@ comparison: operation GT operation
 			}
 			| operation LT operation
 			{
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("<",$1->temp_name," ",$3->temp_name);
+					code.gen_relational_op("<",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -700,11 +828,31 @@ comparison: operation GT operation
 			}
 			| operation LTE operation
 			{
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("<=",$1->temp_name," ",$3->temp_name);
+					code.gen_relational_op("<=",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -713,11 +861,21 @@ comparison: operation GT operation
 			}
 			| operation EQ operation
 			{
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("==",$1->temp_name," ",$3->temp_name);
+					code.gen_relational_op("==",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -726,11 +884,21 @@ comparison: operation GT operation
 			}
 			| operation NEQ operation
 			{
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("comparison operation on void data type");
+					$3->type = ERROR;
+				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("!=",$1->temp_name," ",$3->temp_name);
+					code.gen_relational_op("!=",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -741,6 +909,16 @@ comparison: operation GT operation
 
 operation: operation PLUS term
 			{
+				if($1->type == VOID_TYPE)
+				{
+					yyerror("Addition operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("Addition operation on void data type");
+					$3->type = ERROR;
+				}
 				int type = get_compatible_type_term($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
@@ -754,6 +932,16 @@ operation: operation PLUS term
 			}
 		   | operation MINUS term
 		   {
+		   		if($1->type == VOID_TYPE)
+				{
+					yyerror("Subtraction operation on void data type");
+					$1->type = ERROR;
+				}
+				if($3->type == VOID_TYPE)
+				{
+					yyerror("Subtraction operation on void data type");
+					$3->type = ERROR;
+				}
 		   		int type = get_compatible_type_term($1->type,$3->type);
 				$$ = new expression_(type);
 				if(type!=ERROR)
@@ -777,6 +965,16 @@ operation: operation PLUS term
 
 term: term MULTIPLY factor
 	  {
+	  	if($1->type == VOID_TYPE)
+		{
+			yyerror("Multiplication operation on void data type");
+			$1->type = ERROR;
+		}
+		if($3->type == VOID_TYPE)
+		{
+			yyerror("Multiplication operation on void data type");
+			$3->type = ERROR;
+		}
 	  	int type = get_compatible_type_term($1->type,$3->type);
 	  	$$ = new expression_(type);
 	  	if(type!=ERROR)
@@ -790,6 +988,16 @@ term: term MULTIPLY factor
 	  }
 	  | term DIVIDE factor
 	  {
+	  	if($1->type == VOID_TYPE)
+		{
+			yyerror("Multiplication operation on void data type");
+			$1->type = ERROR;
+		}
+		if($3->type == VOID_TYPE)
+		{
+			yyerror("Multiplication operation on void data type");
+			$3->type = ERROR;
+		}
 	  	int type = get_compatible_type_term($1->type,$3->type);
 	  	$$ = new expression_(type);
 	  	if(type!=ERROR)
@@ -824,6 +1032,7 @@ factor: unary_expression
 unary_expression: expression
 				{
 					$$ = new expression_($1->type,$1->temp_name);
+					$$->var = $1->var;
 					// if($1->type != ERROR)
 					// {
 					// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
@@ -831,7 +1040,12 @@ unary_expression: expression
 				}
 				| NOT unary_expression
 				{
-					if($2->type==FLOAT_TYPE)
+					if($2->type==VOID_TYPE)
+					{
+						yyerror("Negation of void data type is invalid.");
+						$2->type = ERROR;
+					}
+					if($2->type==FLOAT_TYPE || $2->type == INT_TYPE)
 					{
 						$$ = new expression_(ERROR);
 						yyerror("Invalid opaeration.");
@@ -847,6 +1061,11 @@ unary_expression: expression
 				}
 				| MINUS unary_expression
 				{
+					if($2->type==VOID_TYPE)
+					{
+						yyerror("Negation of void data type is invalid.");
+						$2->type = ERROR;
+					}
 					if($2->type!=BOOL_TYPE)
 					{
 						$$ = new expression_($2->type);
@@ -863,12 +1082,19 @@ unary_expression: expression
 				}
 				| DECREMENT unary_expression
 				{
+					if($2->type==VOID_TYPE)
+					{
+						yyerror("Decrementing void data type is invalid.");
+						$2->type = ERROR;
+					}
 					if($2->type!=BOOL_TYPE && $2->type!=FLOAT_TYPE)
 					{
 						$$ = new expression_($2->type);
 						if($2->type!=ERROR)
 						{
 							code.insert2("-",$2->temp_name," 1 ",$$->temp_name);
+							code.insert2("=",$$->temp_name,"---",$2->temp_name);
+							$$->temp_name = $2->temp_name;
 						}
 					}
 					else
@@ -879,12 +1105,19 @@ unary_expression: expression
 				}
 				| INCREMENT unary_expression
 				{
+					if($2->type==VOID_TYPE)
+					{
+						yyerror("Incrementing void data type is invalid.");
+						$2->type = ERROR;
+					}
 					if($2->type!=BOOL_TYPE && $2->type!=FLOAT_TYPE)
 					{
 						$$ = new expression_($2->type);
 						if($2->type!=ERROR)
 						{
 							code.insert2("+",$2->temp_name," 1 ",$$->temp_name);
+							code.insert2("=",$$->temp_name,"---",$2->temp_name);
+							$$->temp_name = $2->temp_name;
 						}
 					}
 					else
@@ -1143,7 +1376,10 @@ left_curly : LCURLY
 			;
 
 right_curly: RCURLY
-			{ level--; }
+			{
+				ST.clear_var_list(active_function_index,level); 
+				level--; 
+			}
 			;
 %%
 

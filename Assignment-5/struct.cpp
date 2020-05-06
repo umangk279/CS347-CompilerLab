@@ -44,6 +44,14 @@ string get_loop_tag()
 	return t;
 }
 
+string get_rel_tag()
+{
+	string t = "REL";
+	t = t + to_string(rel_tag);
+	rel_tag++;
+	return t;
+}
+
 int symbol_table::search_function(string name)
 {
 	int size = this->global_symbol_table.size();
@@ -103,7 +111,7 @@ int symbol_table::add_variable(int active_function_index, string name, int level
 }
 
 
-int symbol_table::search_parameter(string name, int active_function_index)
+int symbol_table::search_parameter_index(string name, int active_function_index)
 {
 	//cout<<"Searching parameter for active_function_index: "<<active_function_index<<endl;
 	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
@@ -116,6 +124,21 @@ int symbol_table::search_parameter(string name, int active_function_index)
 			return i;
 	}
 	return -1;
+}
+
+bool symbol_table::search_parameter(string name, int active_function_index)
+{
+	//cout<<"Searching parameter for active_function_index: "<<active_function_index<<endl;
+	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
+		return false;
+	//cout<<"Begin"<<endl;
+	int size = this->global_symbol_table[active_function_index]->param_list.size();
+	for(int i=0; i<size; i++)
+	{
+		if(global_symbol_table[active_function_index]->param_list[i]->name == name)
+			return true;
+	}
+	return false;
 }
 
 void symbol_table::display_symbol_table()
@@ -195,7 +218,7 @@ variable* symbol_table::search_global_var(int active_function_index, int decl_le
 
 	else
 	{
-		int parameter = search_parameter(name,active_function_index);
+		int parameter = search_parameter_index(name,active_function_index);
 		if(parameter == -1)
 		{
 			return this->search_cur_var(0,decl_level,name);
@@ -419,4 +442,32 @@ void intermediate_code::print()
 		//cout<<this->output[i]<<endl;
 		cout<<(i+1)<<" "<<this->output[i]<<endl;
 	}
+}
+
+bool symbol_table::clear_var_list(int active_function_index,int level)
+{
+	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
+		return false;
+
+	vector<int> indices_to_delete;
+	int i=0;
+	while(i<global_symbol_table[active_function_index]->var_list.size())
+	{
+		if(global_symbol_table[active_function_index]->var_list[i]->decl_level==level)
+		{
+			global_symbol_table[active_function_index]->var_list.erase(global_symbol_table[active_function_index]->var_list.begin()+i);
+			continue;
+		}
+		i++;
+	}
+	return true;
+}
+
+void intermediate_code::gen_relational_op(string op,string operand1,string operand2,string result)
+{
+	this->insert2("=","1","---",result);
+	string s2 = get_rel_tag();
+	this->insert2(op,operand1,operand2,s2);
+	this->insert2("=","0","---",result);
+	this->insert(s2);
 }

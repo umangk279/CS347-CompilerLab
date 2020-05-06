@@ -8,8 +8,8 @@ void dummy(int p, int q)
 int main(){
 	int e;
 	e=6;
-	for(e=1;e<3;)
+	for(e=1;e<3;++e)
 	{
-
+		break;
 	}
 }
