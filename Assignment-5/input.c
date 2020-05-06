@@ -1,15 +1,19 @@
-int a,b,ca[5];
-void dummy(int p, int q)
-{
-	float g,a,o,w;
-	float f;
-	int j;
+int factorial(int n){
+  if(n == 1 || n == 0){
+    return 1;
+  }
+    int t;
+    t = factorial(n-1)*n;
+    print(t);
+  return t;
+
+
 }
+
+
 int main(){
-	int e;
-	e=6;
-	for(e=1;e<3;++e)
-	{
-		break;
-	}
+  int r;
+  r = factorial(5);
+
+
 }
