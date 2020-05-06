@@ -36,6 +36,14 @@ string get_conditional_tag()
 	return t;
 }
 
+string get_loop_tag()
+{
+	string t = "LOOP";
+	t = t+to_string(loop_tag)+":";
+	loop_tag++;
+	return t;
+}
+
 int symbol_table::search_function(string name)
 {
 	int size = this->global_symbol_table.size();
@@ -383,5 +391,32 @@ string symbol_table::generate_function_call(int call_function_index, plist_list_
 		if(max_param < temp->type_list.size())
 			max_param = temp->type_list.size();
 		return "ERROR";
+	}
+}
+
+void intermediate_code::patch_tag_no_put(string tag,vector<int> indices,int index)
+{
+	for(int i=0;i<indices.size();i++)
+	{
+		if(indices[i]<0 || indices[i] >= this->output.size()) continue;
+		this->back_patch_special("_prev","_prev","_prev",tag,indices[i]);
+	}
+}
+
+void intermediate_code::gen_at_pos(string tag,int index)
+{
+	if(index < 0 || index >= this->output.size() ) 
+	{
+		return;
+	}
+	this->output[index] = tag;
+}
+
+void intermediate_code::print()
+{
+	for(int i=0;i<this->output.size();i++)
+	{
+		//cout<<this->output[i]<<endl;
+		cout<<(i+1)<<" "<<this->output[i]<<endl;
 	}
 }

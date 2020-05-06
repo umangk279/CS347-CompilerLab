@@ -7,7 +7,9 @@ void dummy(int p, int q)
 }
 int main(){
 	int e;
-	e = 5;
-	if(e>0)
-	{}
+	e=6;
+	for(e=1;e<3;)
+	{
+
+	}
 }

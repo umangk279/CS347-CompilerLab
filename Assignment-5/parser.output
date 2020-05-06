@@ -53,17 +53,17 @@ Grammar
    29     | FLOAT
    30     | VOID
 
-   31 if_block: if_condition stmt ELSE stmt
+   31 if_block: if_condition stmt ELSE n d stmt
    32         | if_condition stmt
 
    33 if_condition: IF LB assignment RB
 
    34 loop_block: while_condition stmt
-   35           | for_condition stmt
+   35           | forexp d assignment d d RB stmt
 
-   36 while_condition: WHILE LB assignment RB
+   36 while_condition: WHILE d LB assignment RB
 
-   37 for_condition: FOR LB assignment SEMI assignment SEMI assignment RB
+   37 forexp: FOR LB assignment SEMI d assignment SEMI
 
    38 stmt_block: left_curly stmt_list right_curly
 
@@ -81,64 +81,66 @@ Grammar
 
    46 d: %empty
 
-   47 default_statemnt: DEFAULT COLON c stmt
+   47 n: %empty
 
-   48 assignment: id_array ASSIGN bool_conditions
-   49           | bool_conditions
+   48 default_statemnt: DEFAULT COLON c stmt
 
-   50 bool_conditions: bool_conditions AND condition
-   51                | bool_conditions OR condition
-   52                | condition
+   49 assignment: id_array ASSIGN bool_conditions
+   50           | bool_conditions
 
-   53 condition: comparison
-   54          | operation
+   51 bool_conditions: bool_conditions AND condition
+   52                | bool_conditions OR condition
+   53                | condition
 
-   55 comparison: operation GT operation
-   56           | operation GTE operation
-   57           | operation LT operation
-   58           | operation LTE operation
-   59           | operation EQ operation
-   60           | operation NEQ operation
+   54 condition: comparison
+   55          | operation
 
-   61 operation: operation PLUS term
-   62          | operation MINUS term
-   63          | term
+   56 comparison: operation GT operation
+   57           | operation GTE operation
+   58           | operation LT operation
+   59           | operation LTE operation
+   60           | operation EQ operation
+   61           | operation NEQ operation
 
-   64 term: term MULTIPLY factor
-   65     | term DIVIDE factor
-   66     | factor
+   62 operation: operation PLUS term
+   63          | operation MINUS term
+   64          | term
 
-   67 factor: unary_expression
+   65 term: term MULTIPLY factor
+   66     | term DIVIDE factor
+   67     | factor
 
-   68 unary_expression: expression
-   69                 | NOT unary_expression
-   70                 | MINUS unary_expression
-   71                 | DECREMENT unary_expression
-   72                 | INCREMENT unary_expression
+   68 factor: unary_expression
 
-   73 expression: NUM_FLOAT
-   74           | NUM_INT
-   75           | id_array
-   76           | LB bool_conditions RB
-   77           | function_call
+   69 unary_expression: expression
+   70                 | NOT unary_expression
+   71                 | MINUS unary_expression
+   72                 | DECREMENT unary_expression
+   73                 | INCREMENT unary_expression
 
-   78 function_call: ID LB plist RB
+   74 expression: NUM_FLOAT
+   75           | NUM_INT
+   76           | id_array
+   77           | LB bool_conditions RB
+   78           | function_call
 
-   79 plist: plist_list
-   80      | %empty
+   79 function_call: ID LB plist RB
 
-   81 plist_list: plist_list COMMA condition
-   82           | condition
+   80 plist: plist_list
+   81      | %empty
 
-   83 decl_id_array: ID
-   84              | ID LSQ NUM_INT RSQ
+   82 plist_list: plist_list COMMA condition
+   83           | condition
 
-   85 id_array: ID
-   86         | ID LSQ NUM_INT RSQ
+   84 decl_id_array: ID
+   85              | ID LSQ NUM_INT RSQ
 
-   87 left_curly: LCURLY
+   86 id_array: ID
+   87         | ID LSQ NUM_INT RSQ
 
-   88 right_curly: RCURLY
+   88 left_curly: LCURLY
+
+   89 right_curly: RCURLY
 
 
 Terminals, with rules where they appear
@@ -156,38 +158,38 @@ BREAK (265) 6
 CONTINUE (266) 7
 SWITCH (267) 39
 CASE (268) 44
-DEFAULT (269) 47
+DEFAULT (269) 48
 RETURN (270) 4 5
 PRINT (271)
-PLUS (272) 61
-MINUS (273) 62 70
-MULTIPLY (274) 64
-DIVIDE (275) 65
+PLUS (272) 62
+MINUS (273) 63 71
+MULTIPLY (274) 65
+DIVIDE (275) 66
 MOD (276)
-ASSIGN (277) 48
-OR (278) 51
-AND (279) 50
-NOT (280) 69
+ASSIGN (277) 49
+OR (278) 52
+AND (279) 51
+NOT (280) 70
 SEMI (281) 4 5 6 7 8 14 15 37
-COMMA (282) 17 24 81
-COLON (283) 44 47
-LT (284) 57
-GT (285) 55
-LTE (286) 58
-GTE (287) 56
-EQ (288) 59
-NEQ (289) 60
-LB (290) 20 33 36 37 39 76 78
-RB (291) 20 33 36 37 39 76 78
-LSQ (292) 27 84 86
-RSQ (293) 27 84 86
-LCURLY (294) 39 87
-RCURLY (295) 39 88
-INCREMENT (296) 72
-DECREMENT (297) 71
-ID (298) 21 26 27 78 83 84 85 86
-NUM_INT (299) 74 84 86
-NUM_FLOAT (300) 73
+COMMA (282) 17 24 82
+COLON (283) 44 48
+LT (284) 58
+GT (285) 56
+LTE (286) 59
+GTE (287) 57
+EQ (288) 60
+NEQ (289) 61
+LB (290) 20 33 36 37 39 77 79
+RB (291) 20 33 35 36 39 77 79
+LSQ (292) 27 85 87
+RSQ (293) 27 85 87
+LCURLY (294) 39 88
+RCURLY (295) 39 89
+INCREMENT (296) 73
+DECREMENT (297) 72
+ID (298) 21 26 27 79 84 85 86 87
+NUM_INT (299) 75 85 87
+NUM_FLOAT (300) 74
 
 
 Nonterminals, with rules where they appear
@@ -200,7 +202,7 @@ stmt_list (48)
     on left: 2 3, on right: 1 2 19 38
 stmt (49)
     on left: 4 5 6 7 8 9 10 11 12 13 14 15, on right: 2 31 32 34 35
-    44 47
+    44 48
 var_dec (50)
     on left: 16, on right: 8
 var_list (51)
@@ -227,7 +229,7 @@ loop_block (61)
     on left: 34 35, on right: 11
 while_condition (62)
     on left: 36, on right: 34
-for_condition (63)
+forexp (63)
     on left: 37, on right: 35
 stmt_block (64)
     on left: 38, on right: 12
@@ -240,43 +242,45 @@ case_list (67)
 case_statement (68)
     on left: 44, on right: 42 43
 c (69)
-    on left: 45, on right: 44 47
+    on left: 45, on right: 44 48
 d (70)
-    on left: 46, on right: 44
-default_statemnt (71)
-    on left: 47, on right: 40
-assignment (72)
-    on left: 48 49, on right: 14 33 36 37
-bool_conditions (73)
-    on left: 50 51 52, on right: 5 48 49 50 51 76
-condition (74)
-    on left: 53 54, on right: 50 51 52 81 82
-comparison (75)
-    on left: 55 56 57 58 59 60, on right: 53
-operation (76)
-    on left: 61 62 63, on right: 39 44 54 55 56 57 58 59 60 61 62
-term (77)
-    on left: 64 65 66, on right: 61 62 63 64 65
-factor (78)
-    on left: 67, on right: 64 65 66
-unary_expression (79)
-    on left: 68 69 70 71 72, on right: 67 69 70 71 72
-expression (80)
-    on left: 73 74 75 76 77, on right: 68
-function_call (81)
-    on left: 78, on right: 77
-plist (82)
-    on left: 79 80, on right: 78
-plist_list (83)
-    on left: 81 82, on right: 79 81
-decl_id_array (84)
-    on left: 83 84, on right: 17 18
-id_array (85)
-    on left: 85 86, on right: 48 75
-left_curly (86)
-    on left: 87, on right: 19 38
-right_curly (87)
+    on left: 46, on right: 31 35 36 37 44
+n (71)
+    on left: 47, on right: 31
+default_statemnt (72)
+    on left: 48, on right: 40
+assignment (73)
+    on left: 49 50, on right: 14 33 35 36 37
+bool_conditions (74)
+    on left: 51 52 53, on right: 5 49 50 51 52 77
+condition (75)
+    on left: 54 55, on right: 51 52 53 82 83
+comparison (76)
+    on left: 56 57 58 59 60 61, on right: 54
+operation (77)
+    on left: 62 63 64, on right: 39 44 55 56 57 58 59 60 61 62 63
+term (78)
+    on left: 65 66 67, on right: 62 63 64 65 66
+factor (79)
+    on left: 68, on right: 65 66 67
+unary_expression (80)
+    on left: 69 70 71 72 73, on right: 68 70 71 72 73
+expression (81)
+    on left: 74 75 76 77 78, on right: 69
+function_call (82)
+    on left: 79, on right: 78
+plist (83)
+    on left: 80 81, on right: 79
+plist_list (84)
+    on left: 82 83, on right: 80 82
+decl_id_array (85)
+    on left: 84 85, on right: 17 18
+id_array (86)
+    on left: 86 87, on right: 49 76
+left_curly (87)
     on left: 88, on right: 19 38
+right_curly (88)
+    on left: 89, on right: 19 38
 
 
 State 0
@@ -334,7 +338,7 @@ State 2
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -388,16 +392,18 @@ State 7
 
 State 8
 
-   37 for_condition: FOR . LB assignment SEMI assignment SEMI assignment RB
+   37 forexp: FOR . LB assignment SEMI d assignment SEMI
 
     LB  shift, and go to state 50
 
 
 State 9
 
-   36 while_condition: WHILE . LB assignment RB
+   36 while_condition: WHILE . d LB assignment RB
 
-    LB  shift, and go to state 51
+    $default  reduce using rule 46 (d)
+
+    d  go to state 51
 
 
 State 10
@@ -450,7 +456,7 @@ State 13
 
 State 14
 
-   70 unary_expression: MINUS . unary_expression
+   71 unary_expression: MINUS . unary_expression
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -469,7 +475,7 @@ State 14
 
 State 15
 
-   69 unary_expression: NOT . unary_expression
+   70 unary_expression: NOT . unary_expression
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -495,7 +501,7 @@ State 16
 
 State 17
 
-   76 expression: LB . bool_conditions RB
+   77 expression: LB . bool_conditions RB
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -520,14 +526,14 @@ State 17
 
 State 18
 
-   87 left_curly: LCURLY .
+   88 left_curly: LCURLY .
 
-    $default  reduce using rule 87 (left_curly)
+    $default  reduce using rule 88 (left_curly)
 
 
 State 19
 
-   72 unary_expression: INCREMENT . unary_expression
+   73 unary_expression: INCREMENT . unary_expression
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -546,7 +552,7 @@ State 19
 
 State 20
 
-   71 unary_expression: DECREMENT . unary_expression
+   72 unary_expression: DECREMENT . unary_expression
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -565,28 +571,28 @@ State 20
 
 State 21
 
-   78 function_call: ID . LB plist RB
-   85 id_array: ID .
-   86         | ID . LSQ NUM_INT RSQ
+   79 function_call: ID . LB plist RB
+   86 id_array: ID .
+   87         | ID . LSQ NUM_INT RSQ
 
     LB   shift, and go to state 63
     LSQ  shift, and go to state 64
 
-    $default  reduce using rule 85 (id_array)
+    $default  reduce using rule 86 (id_array)
 
 
 State 22
 
-   74 expression: NUM_INT .
+   75 expression: NUM_INT .
 
-    $default  reduce using rule 74 (expression)
+    $default  reduce using rule 75 (expression)
 
 
 State 23
 
-   73 expression: NUM_FLOAT .
+   74 expression: NUM_FLOAT .
 
-    $default  reduce using rule 73 (expression)
+    $default  reduce using rule 74 (expression)
 
 
 State 24
@@ -646,7 +652,7 @@ State 30
 
 State 31
 
-   31 if_block: if_condition . stmt ELSE stmt
+   31 if_block: if_condition . stmt ELSE n d stmt
    32         | if_condition . stmt
 
     INT        shift, and go to state 4
@@ -680,7 +686,7 @@ State 31
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -739,7 +745,7 @@ State 33
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -758,54 +764,11 @@ State 33
 
 State 34
 
-   35 loop_block: for_condition . stmt
+   35 loop_block: forexp . d assignment d d RB stmt
 
-    INT        shift, and go to state 4
-    FLOAT      shift, and go to state 5
-    VOID       shift, and go to state 6
-    IF         shift, and go to state 7
-    FOR        shift, and go to state 8
-    WHILE      shift, and go to state 9
-    BREAK      shift, and go to state 10
-    CONTINUE   shift, and go to state 11
-    SWITCH     shift, and go to state 12
-    RETURN     shift, and go to state 13
-    MINUS      shift, and go to state 14
-    NOT        shift, and go to state 15
-    SEMI       shift, and go to state 16
-    LB         shift, and go to state 17
-    LCURLY     shift, and go to state 18
-    INCREMENT  shift, and go to state 19
-    DECREMENT  shift, and go to state 20
-    ID         shift, and go to state 21
-    NUM_INT    shift, and go to state 22
-    NUM_FLOAT  shift, and go to state 23
+    $default  reduce using rule 46 (d)
 
-    stmt                   go to state 73
-    var_dec                go to state 25
-    func_dec               go to state 26
-    func_header            go to state 27
-    func_type_id           go to state 28
-    type                   go to state 29
-    if_block               go to state 30
-    if_condition           go to state 31
-    loop_block             go to state 32
-    while_condition        go to state 33
-    for_condition          go to state 34
-    stmt_block             go to state 35
-    switch_case_statement  go to state 36
-    assignment             go to state 37
-    bool_conditions        go to state 38
-    condition              go to state 39
-    comparison             go to state 40
-    operation              go to state 41
-    term                   go to state 42
-    factor                 go to state 43
-    unary_expression       go to state 44
-    expression             go to state 45
-    function_call          go to state 46
-    id_array               go to state 47
-    left_curly             go to state 48
+    d  go to state 73
 
 
 State 35
@@ -831,41 +794,41 @@ State 37
 
 State 38
 
-   49 assignment: bool_conditions .
-   50 bool_conditions: bool_conditions . AND condition
-   51                | bool_conditions . OR condition
+   50 assignment: bool_conditions .
+   51 bool_conditions: bool_conditions . AND condition
+   52                | bool_conditions . OR condition
 
     OR   shift, and go to state 75
     AND  shift, and go to state 76
 
-    $default  reduce using rule 49 (assignment)
+    $default  reduce using rule 50 (assignment)
 
 
 State 39
 
-   52 bool_conditions: condition .
+   53 bool_conditions: condition .
 
-    $default  reduce using rule 52 (bool_conditions)
+    $default  reduce using rule 53 (bool_conditions)
 
 
 State 40
 
-   53 condition: comparison .
+   54 condition: comparison .
 
-    $default  reduce using rule 53 (condition)
+    $default  reduce using rule 54 (condition)
 
 
 State 41
 
-   54 condition: operation .
-   55 comparison: operation . GT operation
-   56           | operation . GTE operation
-   57           | operation . LT operation
-   58           | operation . LTE operation
-   59           | operation . EQ operation
-   60           | operation . NEQ operation
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
+   55 condition: operation .
+   56 comparison: operation . GT operation
+   57           | operation . GTE operation
+   58           | operation . LT operation
+   59           | operation . LTE operation
+   60           | operation . EQ operation
+   61           | operation . NEQ operation
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
 
     PLUS   shift, and go to state 77
     MINUS  shift, and go to state 78
@@ -876,57 +839,57 @@ State 41
     EQ     shift, and go to state 83
     NEQ    shift, and go to state 84
 
-    $default  reduce using rule 54 (condition)
+    $default  reduce using rule 55 (condition)
 
 
 State 42
 
-   63 operation: term .
-   64 term: term . MULTIPLY factor
-   65     | term . DIVIDE factor
+   64 operation: term .
+   65 term: term . MULTIPLY factor
+   66     | term . DIVIDE factor
 
     MULTIPLY  shift, and go to state 85
     DIVIDE    shift, and go to state 86
 
-    $default  reduce using rule 63 (operation)
+    $default  reduce using rule 64 (operation)
 
 
 State 43
 
-   66 term: factor .
+   67 term: factor .
 
-    $default  reduce using rule 66 (term)
+    $default  reduce using rule 67 (term)
 
 
 State 44
 
-   67 factor: unary_expression .
+   68 factor: unary_expression .
 
-    $default  reduce using rule 67 (factor)
+    $default  reduce using rule 68 (factor)
 
 
 State 45
 
-   68 unary_expression: expression .
+   69 unary_expression: expression .
 
-    $default  reduce using rule 68 (unary_expression)
+    $default  reduce using rule 69 (unary_expression)
 
 
 State 46
 
-   77 expression: function_call .
+   78 expression: function_call .
 
-    $default  reduce using rule 77 (expression)
+    $default  reduce using rule 78 (expression)
 
 
 State 47
 
-   48 assignment: id_array . ASSIGN bool_conditions
-   75 expression: id_array .
+   49 assignment: id_array . ASSIGN bool_conditions
+   76 expression: id_array .
 
     ASSIGN  shift, and go to state 87
 
-    $default  reduce using rule 75 (expression)
+    $default  reduce using rule 76 (expression)
 
 
 State 48
@@ -966,7 +929,7 @@ State 49
 
 State 50
 
-   37 for_condition: FOR LB . assignment SEMI assignment SEMI assignment RB
+   37 forexp: FOR LB . assignment SEMI d assignment SEMI
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -992,28 +955,9 @@ State 50
 
 State 51
 
-   36 while_condition: WHILE LB . assignment RB
+   36 while_condition: WHILE d . LB assignment RB
 
-    MINUS      shift, and go to state 14
-    NOT        shift, and go to state 15
-    LB         shift, and go to state 17
-    INCREMENT  shift, and go to state 19
-    DECREMENT  shift, and go to state 20
-    ID         shift, and go to state 21
-    NUM_INT    shift, and go to state 22
-    NUM_FLOAT  shift, and go to state 23
-
-    assignment        go to state 91
-    bool_conditions   go to state 38
-    condition         go to state 39
-    comparison        go to state 40
-    operation         go to state 41
-    term              go to state 42
-    factor            go to state 43
-    unary_expression  go to state 44
-    expression        go to state 45
-    function_call     go to state 46
-    id_array          go to state 47
+    LB  shift, and go to state 91
 
 
 State 52
@@ -1062,8 +1006,8 @@ State 55
 State 56
 
     5 stmt: RETURN bool_conditions . SEMI
-   50 bool_conditions: bool_conditions . AND condition
-   51                | bool_conditions . OR condition
+   51 bool_conditions: bool_conditions . AND condition
+   52                | bool_conditions . OR condition
 
     OR    shift, and go to state 75
     AND   shift, and go to state 76
@@ -1072,30 +1016,30 @@ State 56
 
 State 57
 
-   75 expression: id_array .
+   76 expression: id_array .
 
-    $default  reduce using rule 75 (expression)
+    $default  reduce using rule 76 (expression)
 
 
 State 58
 
-   70 unary_expression: MINUS unary_expression .
+   71 unary_expression: MINUS unary_expression .
 
-    $default  reduce using rule 70 (unary_expression)
+    $default  reduce using rule 71 (unary_expression)
 
 
 State 59
 
-   69 unary_expression: NOT unary_expression .
+   70 unary_expression: NOT unary_expression .
 
-    $default  reduce using rule 69 (unary_expression)
+    $default  reduce using rule 70 (unary_expression)
 
 
 State 60
 
-   50 bool_conditions: bool_conditions . AND condition
-   51                | bool_conditions . OR condition
-   76 expression: LB bool_conditions . RB
+   51 bool_conditions: bool_conditions . AND condition
+   52                | bool_conditions . OR condition
+   77 expression: LB bool_conditions . RB
 
     OR   shift, and go to state 75
     AND  shift, and go to state 76
@@ -1104,21 +1048,21 @@ State 60
 
 State 61
 
-   72 unary_expression: INCREMENT unary_expression .
+   73 unary_expression: INCREMENT unary_expression .
 
-    $default  reduce using rule 72 (unary_expression)
+    $default  reduce using rule 73 (unary_expression)
 
 
 State 62
 
-   71 unary_expression: DECREMENT unary_expression .
+   72 unary_expression: DECREMENT unary_expression .
 
-    $default  reduce using rule 71 (unary_expression)
+    $default  reduce using rule 72 (unary_expression)
 
 
 State 63
 
-   78 function_call: ID LB . plist RB
+   79 function_call: ID LB . plist RB
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1129,7 +1073,7 @@ State 63
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    $default  reduce using rule 80 (plist)
+    $default  reduce using rule 81 (plist)
 
     condition         go to state 95
     comparison        go to state 40
@@ -1146,7 +1090,7 @@ State 63
 
 State 64
 
-   86 id_array: ID LSQ . NUM_INT RSQ
+   87 id_array: ID LSQ . NUM_INT RSQ
 
     NUM_INT  shift, and go to state 98
 
@@ -1186,13 +1130,13 @@ State 67
 State 68
 
    21 func_type_id: type ID .
-   83 decl_id_array: ID .
-   84              | ID . LSQ NUM_INT RSQ
+   84 decl_id_array: ID .
+   85              | ID . LSQ NUM_INT RSQ
 
     LSQ  shift, and go to state 104
 
     LB        reduce using rule 21 (func_type_id)
-    $default  reduce using rule 83 (decl_id_array)
+    $default  reduce using rule 84 (decl_id_array)
 
 
 State 69
@@ -1214,7 +1158,7 @@ State 70
 
 State 71
 
-   31 if_block: if_condition stmt . ELSE stmt
+   31 if_block: if_condition stmt . ELSE n d stmt
    32         | if_condition stmt .
 
     ELSE  shift, and go to state 106
@@ -1232,9 +1176,28 @@ State 72
 
 State 73
 
-   35 loop_block: for_condition stmt .
+   35 loop_block: forexp d . assignment d d RB stmt
 
-    $default  reduce using rule 35 (loop_block)
+    MINUS      shift, and go to state 14
+    NOT        shift, and go to state 15
+    LB         shift, and go to state 17
+    INCREMENT  shift, and go to state 19
+    DECREMENT  shift, and go to state 20
+    ID         shift, and go to state 21
+    NUM_INT    shift, and go to state 22
+    NUM_FLOAT  shift, and go to state 23
+
+    assignment        go to state 107
+    bool_conditions   go to state 38
+    condition         go to state 39
+    comparison        go to state 40
+    operation         go to state 41
+    term              go to state 42
+    factor            go to state 43
+    unary_expression  go to state 44
+    expression        go to state 45
+    function_call     go to state 46
+    id_array          go to state 47
 
 
 State 74
@@ -1246,31 +1209,7 @@ State 74
 
 State 75
 
-   51 bool_conditions: bool_conditions OR . condition
-
-    MINUS      shift, and go to state 14
-    NOT        shift, and go to state 15
-    LB         shift, and go to state 17
-    INCREMENT  shift, and go to state 19
-    DECREMENT  shift, and go to state 20
-    ID         shift, and go to state 21
-    NUM_INT    shift, and go to state 22
-    NUM_FLOAT  shift, and go to state 23
-
-    condition         go to state 107
-    comparison        go to state 40
-    operation         go to state 41
-    term              go to state 42
-    factor            go to state 43
-    unary_expression  go to state 44
-    expression        go to state 45
-    function_call     go to state 46
-    id_array          go to state 57
-
-
-State 76
-
-   50 bool_conditions: bool_conditions AND . condition
+   52 bool_conditions: bool_conditions OR . condition
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1292,9 +1231,9 @@ State 76
     id_array          go to state 57
 
 
-State 77
+State 76
 
-   61 operation: operation PLUS . term
+   51 bool_conditions: bool_conditions AND . condition
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1305,7 +1244,10 @@ State 77
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    term              go to state 109
+    condition         go to state 109
+    comparison        go to state 40
+    operation         go to state 41
+    term              go to state 42
     factor            go to state 43
     unary_expression  go to state 44
     expression        go to state 45
@@ -1313,9 +1255,9 @@ State 77
     id_array          go to state 57
 
 
-State 78
+State 77
 
-   62 operation: operation MINUS . term
+   62 operation: operation PLUS . term
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1334,9 +1276,9 @@ State 78
     id_array          go to state 57
 
 
-State 79
+State 78
 
-   57 comparison: operation LT . operation
+   63 operation: operation MINUS . term
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1347,8 +1289,7 @@ State 79
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    operation         go to state 111
-    term              go to state 42
+    term              go to state 111
     factor            go to state 43
     unary_expression  go to state 44
     expression        go to state 45
@@ -1356,9 +1297,9 @@ State 79
     id_array          go to state 57
 
 
-State 80
+State 79
 
-   55 comparison: operation GT . operation
+   58 comparison: operation LT . operation
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1378,9 +1319,9 @@ State 80
     id_array          go to state 57
 
 
-State 81
+State 80
 
-   58 comparison: operation LTE . operation
+   56 comparison: operation GT . operation
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1400,9 +1341,9 @@ State 81
     id_array          go to state 57
 
 
-State 82
+State 81
 
-   56 comparison: operation GTE . operation
+   59 comparison: operation LTE . operation
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1422,9 +1363,9 @@ State 82
     id_array          go to state 57
 
 
-State 83
+State 82
 
-   59 comparison: operation EQ . operation
+   57 comparison: operation GTE . operation
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1444,9 +1385,9 @@ State 83
     id_array          go to state 57
 
 
-State 84
+State 83
 
-   60 comparison: operation NEQ . operation
+   60 comparison: operation EQ . operation
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1466,9 +1407,9 @@ State 84
     id_array          go to state 57
 
 
-State 85
+State 84
 
-   64 term: term MULTIPLY . factor
+   61 comparison: operation NEQ . operation
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1479,16 +1420,18 @@ State 85
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    factor            go to state 117
+    operation         go to state 117
+    term              go to state 42
+    factor            go to state 43
     unary_expression  go to state 44
     expression        go to state 45
     function_call     go to state 46
     id_array          go to state 57
 
 
-State 86
+State 85
 
-   65 term: term DIVIDE . factor
+   65 term: term MULTIPLY . factor
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1506,9 +1449,9 @@ State 86
     id_array          go to state 57
 
 
-State 87
+State 86
 
-   48 assignment: id_array ASSIGN . bool_conditions
+   66 term: term DIVIDE . factor
 
     MINUS      shift, and go to state 14
     NOT        shift, and go to state 15
@@ -1519,7 +1462,27 @@ State 87
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    bool_conditions   go to state 119
+    factor            go to state 119
+    unary_expression  go to state 44
+    expression        go to state 45
+    function_call     go to state 46
+    id_array          go to state 57
+
+
+State 87
+
+   49 assignment: id_array ASSIGN . bool_conditions
+
+    MINUS      shift, and go to state 14
+    NOT        shift, and go to state 15
+    LB         shift, and go to state 17
+    INCREMENT  shift, and go to state 19
+    DECREMENT  shift, and go to state 20
+    ID         shift, and go to state 21
+    NUM_INT    shift, and go to state 22
+    NUM_FLOAT  shift, and go to state 23
+
+    bool_conditions   go to state 120
     condition         go to state 39
     comparison        go to state 40
     operation         go to state 41
@@ -1551,7 +1514,7 @@ State 88
     SEMI       shift, and go to state 16
     LB         shift, and go to state 17
     LCURLY     shift, and go to state 18
-    RCURLY     shift, and go to state 120
+    RCURLY     shift, and go to state 121
     INCREMENT  shift, and go to state 19
     DECREMENT  shift, and go to state 20
     ID         shift, and go to state 21
@@ -1568,7 +1531,7 @@ State 88
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -1583,39 +1546,58 @@ State 88
     function_call          go to state 46
     id_array               go to state 47
     left_curly             go to state 48
-    right_curly            go to state 121
+    right_curly            go to state 122
 
 
 State 89
 
    33 if_condition: IF LB assignment . RB
 
-    RB  shift, and go to state 122
+    RB  shift, and go to state 123
 
 
 State 90
 
-   37 for_condition: FOR LB assignment . SEMI assignment SEMI assignment RB
+   37 forexp: FOR LB assignment . SEMI d assignment SEMI
 
-    SEMI  shift, and go to state 123
+    SEMI  shift, and go to state 124
 
 
 State 91
 
-   36 while_condition: WHILE LB assignment . RB
+   36 while_condition: WHILE d LB . assignment RB
 
-    RB  shift, and go to state 124
+    MINUS      shift, and go to state 14
+    NOT        shift, and go to state 15
+    LB         shift, and go to state 17
+    INCREMENT  shift, and go to state 19
+    DECREMENT  shift, and go to state 20
+    ID         shift, and go to state 21
+    NUM_INT    shift, and go to state 22
+    NUM_FLOAT  shift, and go to state 23
+
+    assignment        go to state 125
+    bool_conditions   go to state 38
+    condition         go to state 39
+    comparison        go to state 40
+    operation         go to state 41
+    term              go to state 42
+    factor            go to state 43
+    unary_expression  go to state 44
+    expression        go to state 45
+    function_call     go to state 46
+    id_array          go to state 47
 
 
 State 92
 
    39 switch_case_statement: SWITCH LB operation . RB LCURLY case_statement_block RCURLY
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
 
     PLUS   shift, and go to state 77
     MINUS  shift, and go to state 78
-    RB     shift, and go to state 125
+    RB     shift, and go to state 126
 
 
 State 93
@@ -1627,40 +1609,40 @@ State 93
 
 State 94
 
-   76 expression: LB bool_conditions RB .
+   77 expression: LB bool_conditions RB .
 
-    $default  reduce using rule 76 (expression)
+    $default  reduce using rule 77 (expression)
 
 
 State 95
 
-   82 plist_list: condition .
+   83 plist_list: condition .
 
-    $default  reduce using rule 82 (plist_list)
+    $default  reduce using rule 83 (plist_list)
 
 
 State 96
 
-   78 function_call: ID LB plist . RB
+   79 function_call: ID LB plist . RB
 
-    RB  shift, and go to state 126
+    RB  shift, and go to state 127
 
 
 State 97
 
-   79 plist: plist_list .
-   81 plist_list: plist_list . COMMA condition
+   80 plist: plist_list .
+   82 plist_list: plist_list . COMMA condition
 
-    COMMA  shift, and go to state 127
+    COMMA  shift, and go to state 128
 
-    $default  reduce using rule 79 (plist)
+    $default  reduce using rule 80 (plist)
 
 
 State 98
 
-   86 id_array: ID LSQ NUM_INT . RSQ
+   87 id_array: ID LSQ NUM_INT . RSQ
 
-    RSQ  shift, and go to state 128
+    RSQ  shift, and go to state 129
 
 
 State 99
@@ -1683,7 +1665,7 @@ State 99
     SEMI       shift, and go to state 16
     LB         shift, and go to state 17
     LCURLY     shift, and go to state 18
-    RCURLY     shift, and go to state 120
+    RCURLY     shift, and go to state 121
     INCREMENT  shift, and go to state 19
     DECREMENT  shift, and go to state 20
     ID         shift, and go to state 21
@@ -1700,7 +1682,7 @@ State 99
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -1715,14 +1697,14 @@ State 99
     function_call          go to state 46
     id_array               go to state 47
     left_curly             go to state 48
-    right_curly            go to state 129
+    right_curly            go to state 130
 
 
 State 100
 
    20 func_header: func_type_id LB func_params . RB
 
-    RB  shift, and go to state 130
+    RB  shift, and go to state 131
 
 
 State 101
@@ -1730,7 +1712,7 @@ State 101
    22 func_params: param_decl .
    24 param_decl: param_decl . COMMA decl
 
-    COMMA  shift, and go to state 131
+    COMMA  shift, and go to state 132
 
     $default  reduce using rule 22 (func_params)
 
@@ -1747,28 +1729,414 @@ State 103
    26 decl: type . ID
    27     | type . ID LSQ RSQ
 
-    ID  shift, and go to state 132
+    ID  shift, and go to state 133
 
 
 State 104
 
-   84 decl_id_array: ID LSQ . NUM_INT RSQ
+   85 decl_id_array: ID LSQ . NUM_INT RSQ
 
-    NUM_INT  shift, and go to state 133
+    NUM_INT  shift, and go to state 134
 
 
 State 105
 
    17 var_list: var_list COMMA . decl_id_array
 
-    ID  shift, and go to state 134
+    ID  shift, and go to state 135
 
-    decl_id_array  go to state 135
+    decl_id_array  go to state 136
 
 
 State 106
 
-   31 if_block: if_condition stmt ELSE . stmt
+   31 if_block: if_condition stmt ELSE . n d stmt
+
+    $default  reduce using rule 47 (n)
+
+    n  go to state 137
+
+
+State 107
+
+   35 loop_block: forexp d assignment . d d RB stmt
+
+    $default  reduce using rule 46 (d)
+
+    d  go to state 138
+
+
+State 108
+
+   52 bool_conditions: bool_conditions OR condition .
+
+    $default  reduce using rule 52 (bool_conditions)
+
+
+State 109
+
+   51 bool_conditions: bool_conditions AND condition .
+
+    $default  reduce using rule 51 (bool_conditions)
+
+
+State 110
+
+   62 operation: operation PLUS term .
+   65 term: term . MULTIPLY factor
+   66     | term . DIVIDE factor
+
+    MULTIPLY  shift, and go to state 85
+    DIVIDE    shift, and go to state 86
+
+    $default  reduce using rule 62 (operation)
+
+
+State 111
+
+   63 operation: operation MINUS term .
+   65 term: term . MULTIPLY factor
+   66     | term . DIVIDE factor
+
+    MULTIPLY  shift, and go to state 85
+    DIVIDE    shift, and go to state 86
+
+    $default  reduce using rule 63 (operation)
+
+
+State 112
+
+   58 comparison: operation LT operation .
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
+
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
+
+    $default  reduce using rule 58 (comparison)
+
+
+State 113
+
+   56 comparison: operation GT operation .
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
+
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
+
+    $default  reduce using rule 56 (comparison)
+
+
+State 114
+
+   59 comparison: operation LTE operation .
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
+
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
+
+    $default  reduce using rule 59 (comparison)
+
+
+State 115
+
+   57 comparison: operation GTE operation .
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
+
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
+
+    $default  reduce using rule 57 (comparison)
+
+
+State 116
+
+   60 comparison: operation EQ operation .
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
+
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
+
+    $default  reduce using rule 60 (comparison)
+
+
+State 117
+
+   61 comparison: operation NEQ operation .
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
+
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
+
+    $default  reduce using rule 61 (comparison)
+
+
+State 118
+
+   65 term: term MULTIPLY factor .
+
+    $default  reduce using rule 65 (term)
+
+
+State 119
+
+   66 term: term DIVIDE factor .
+
+    $default  reduce using rule 66 (term)
+
+
+State 120
+
+   49 assignment: id_array ASSIGN bool_conditions .
+   51 bool_conditions: bool_conditions . AND condition
+   52                | bool_conditions . OR condition
+
+    OR   shift, and go to state 75
+    AND  shift, and go to state 76
+
+    $default  reduce using rule 49 (assignment)
+
+
+State 121
+
+   89 right_curly: RCURLY .
+
+    $default  reduce using rule 89 (right_curly)
+
+
+State 122
+
+   38 stmt_block: left_curly stmt_list right_curly .
+
+    $default  reduce using rule 38 (stmt_block)
+
+
+State 123
+
+   33 if_condition: IF LB assignment RB .
+
+    $default  reduce using rule 33 (if_condition)
+
+
+State 124
+
+   37 forexp: FOR LB assignment SEMI . d assignment SEMI
+
+    $default  reduce using rule 46 (d)
+
+    d  go to state 139
+
+
+State 125
+
+   36 while_condition: WHILE d LB assignment . RB
+
+    RB  shift, and go to state 140
+
+
+State 126
+
+   39 switch_case_statement: SWITCH LB operation RB . LCURLY case_statement_block RCURLY
+
+    LCURLY  shift, and go to state 141
+
+
+State 127
+
+   79 function_call: ID LB plist RB .
+
+    $default  reduce using rule 79 (function_call)
+
+
+State 128
+
+   82 plist_list: plist_list COMMA . condition
+
+    MINUS      shift, and go to state 14
+    NOT        shift, and go to state 15
+    LB         shift, and go to state 17
+    INCREMENT  shift, and go to state 19
+    DECREMENT  shift, and go to state 20
+    ID         shift, and go to state 21
+    NUM_INT    shift, and go to state 22
+    NUM_FLOAT  shift, and go to state 23
+
+    condition         go to state 142
+    comparison        go to state 40
+    operation         go to state 41
+    term              go to state 42
+    factor            go to state 43
+    unary_expression  go to state 44
+    expression        go to state 45
+    function_call     go to state 46
+    id_array          go to state 57
+
+
+State 129
+
+   87 id_array: ID LSQ NUM_INT RSQ .
+
+    $default  reduce using rule 87 (id_array)
+
+
+State 130
+
+   19 func_dec: func_header left_curly stmt_list right_curly .
+
+    $default  reduce using rule 19 (func_dec)
+
+
+State 131
+
+   20 func_header: func_type_id LB func_params RB .
+
+    $default  reduce using rule 20 (func_header)
+
+
+State 132
+
+   24 param_decl: param_decl COMMA . decl
+
+    INT    shift, and go to state 4
+    FLOAT  shift, and go to state 5
+    VOID   shift, and go to state 6
+
+    decl  go to state 143
+    type  go to state 103
+
+
+State 133
+
+   26 decl: type ID .
+   27     | type ID . LSQ RSQ
+
+    LSQ  shift, and go to state 144
+
+    $default  reduce using rule 26 (decl)
+
+
+State 134
+
+   85 decl_id_array: ID LSQ NUM_INT . RSQ
+
+    RSQ  shift, and go to state 145
+
+
+State 135
+
+   84 decl_id_array: ID .
+   85              | ID . LSQ NUM_INT RSQ
+
+    LSQ  shift, and go to state 104
+
+    $default  reduce using rule 84 (decl_id_array)
+
+
+State 136
+
+   17 var_list: var_list COMMA decl_id_array .
+
+    $default  reduce using rule 17 (var_list)
+
+
+State 137
+
+   31 if_block: if_condition stmt ELSE n . d stmt
+
+    $default  reduce using rule 46 (d)
+
+    d  go to state 146
+
+
+State 138
+
+   35 loop_block: forexp d assignment d . d RB stmt
+
+    $default  reduce using rule 46 (d)
+
+    d  go to state 147
+
+
+State 139
+
+   37 forexp: FOR LB assignment SEMI d . assignment SEMI
+
+    MINUS      shift, and go to state 14
+    NOT        shift, and go to state 15
+    LB         shift, and go to state 17
+    INCREMENT  shift, and go to state 19
+    DECREMENT  shift, and go to state 20
+    ID         shift, and go to state 21
+    NUM_INT    shift, and go to state 22
+    NUM_FLOAT  shift, and go to state 23
+
+    assignment        go to state 148
+    bool_conditions   go to state 38
+    condition         go to state 39
+    comparison        go to state 40
+    operation         go to state 41
+    term              go to state 42
+    factor            go to state 43
+    unary_expression  go to state 44
+    expression        go to state 45
+    function_call     go to state 46
+    id_array          go to state 47
+
+
+State 140
+
+   36 while_condition: WHILE d LB assignment RB .
+
+    $default  reduce using rule 36 (while_condition)
+
+
+State 141
+
+   39 switch_case_statement: SWITCH LB operation RB LCURLY . case_statement_block RCURLY
+
+    CASE  shift, and go to state 149
+
+    case_statement_block  go to state 150
+    case_list             go to state 151
+    case_statement        go to state 152
+
+
+State 142
+
+   82 plist_list: plist_list COMMA condition .
+
+    $default  reduce using rule 82 (plist_list)
+
+
+State 143
+
+   24 param_decl: param_decl COMMA decl .
+
+    $default  reduce using rule 24 (param_decl)
+
+
+State 144
+
+   27 decl: type ID LSQ . RSQ
+
+    RSQ  shift, and go to state 153
+
+
+State 145
+
+   85 decl_id_array: ID LSQ NUM_INT RSQ .
+
+    $default  reduce using rule 85 (decl_id_array)
+
+
+State 146
+
+   31 if_block: if_condition stmt ELSE n d . stmt
 
     INT        shift, and go to state 4
     FLOAT      shift, and go to state 5
@@ -1791,7 +2159,7 @@ State 106
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    stmt                   go to state 136
+    stmt                   go to state 154
     var_dec                go to state 25
     func_dec               go to state 26
     func_header            go to state 27
@@ -1801,7 +2169,7 @@ State 106
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -1818,433 +2186,132 @@ State 106
     left_curly             go to state 48
 
 
-State 107
+State 147
 
-   51 bool_conditions: bool_conditions OR condition .
+   35 loop_block: forexp d assignment d d . RB stmt
 
-    $default  reduce using rule 51 (bool_conditions)
+    RB  shift, and go to state 155
 
 
-State 108
+State 148
 
-   50 bool_conditions: bool_conditions AND condition .
+   37 forexp: FOR LB assignment SEMI d assignment . SEMI
 
-    $default  reduce using rule 50 (bool_conditions)
+    SEMI  shift, and go to state 156
 
 
-State 109
-
-   61 operation: operation PLUS term .
-   64 term: term . MULTIPLY factor
-   65     | term . DIVIDE factor
-
-    MULTIPLY  shift, and go to state 85
-    DIVIDE    shift, and go to state 86
-
-    $default  reduce using rule 61 (operation)
-
-
-State 110
-
-   62 operation: operation MINUS term .
-   64 term: term . MULTIPLY factor
-   65     | term . DIVIDE factor
-
-    MULTIPLY  shift, and go to state 85
-    DIVIDE    shift, and go to state 86
-
-    $default  reduce using rule 62 (operation)
-
-
-State 111
-
-   57 comparison: operation LT operation .
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
-
-    PLUS   shift, and go to state 77
-    MINUS  shift, and go to state 78
-
-    $default  reduce using rule 57 (comparison)
-
-
-State 112
-
-   55 comparison: operation GT operation .
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
-
-    PLUS   shift, and go to state 77
-    MINUS  shift, and go to state 78
-
-    $default  reduce using rule 55 (comparison)
-
-
-State 113
-
-   58 comparison: operation LTE operation .
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
-
-    PLUS   shift, and go to state 77
-    MINUS  shift, and go to state 78
-
-    $default  reduce using rule 58 (comparison)
-
-
-State 114
-
-   56 comparison: operation GTE operation .
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
-
-    PLUS   shift, and go to state 77
-    MINUS  shift, and go to state 78
-
-    $default  reduce using rule 56 (comparison)
-
-
-State 115
-
-   59 comparison: operation EQ operation .
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
-
-    PLUS   shift, and go to state 77
-    MINUS  shift, and go to state 78
-
-    $default  reduce using rule 59 (comparison)
-
-
-State 116
-
-   60 comparison: operation NEQ operation .
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
-
-    PLUS   shift, and go to state 77
-    MINUS  shift, and go to state 78
-
-    $default  reduce using rule 60 (comparison)
-
-
-State 117
-
-   64 term: term MULTIPLY factor .
-
-    $default  reduce using rule 64 (term)
-
-
-State 118
-
-   65 term: term DIVIDE factor .
-
-    $default  reduce using rule 65 (term)
-
-
-State 119
-
-   48 assignment: id_array ASSIGN bool_conditions .
-   50 bool_conditions: bool_conditions . AND condition
-   51                | bool_conditions . OR condition
-
-    OR   shift, and go to state 75
-    AND  shift, and go to state 76
-
-    $default  reduce using rule 48 (assignment)
-
-
-State 120
-
-   88 right_curly: RCURLY .
-
-    $default  reduce using rule 88 (right_curly)
-
-
-State 121
-
-   38 stmt_block: left_curly stmt_list right_curly .
-
-    $default  reduce using rule 38 (stmt_block)
-
-
-State 122
-
-   33 if_condition: IF LB assignment RB .
-
-    $default  reduce using rule 33 (if_condition)
-
-
-State 123
-
-   37 for_condition: FOR LB assignment SEMI . assignment SEMI assignment RB
-
-    MINUS      shift, and go to state 14
-    NOT        shift, and go to state 15
-    LB         shift, and go to state 17
-    INCREMENT  shift, and go to state 19
-    DECREMENT  shift, and go to state 20
-    ID         shift, and go to state 21
-    NUM_INT    shift, and go to state 22
-    NUM_FLOAT  shift, and go to state 23
-
-    assignment        go to state 137
-    bool_conditions   go to state 38
-    condition         go to state 39
-    comparison        go to state 40
-    operation         go to state 41
-    term              go to state 42
-    factor            go to state 43
-    unary_expression  go to state 44
-    expression        go to state 45
-    function_call     go to state 46
-    id_array          go to state 47
-
-
-State 124
-
-   36 while_condition: WHILE LB assignment RB .
-
-    $default  reduce using rule 36 (while_condition)
-
-
-State 125
-
-   39 switch_case_statement: SWITCH LB operation RB . LCURLY case_statement_block RCURLY
-
-    LCURLY  shift, and go to state 138
-
-
-State 126
-
-   78 function_call: ID LB plist RB .
-
-    $default  reduce using rule 78 (function_call)
-
-
-State 127
-
-   81 plist_list: plist_list COMMA . condition
-
-    MINUS      shift, and go to state 14
-    NOT        shift, and go to state 15
-    LB         shift, and go to state 17
-    INCREMENT  shift, and go to state 19
-    DECREMENT  shift, and go to state 20
-    ID         shift, and go to state 21
-    NUM_INT    shift, and go to state 22
-    NUM_FLOAT  shift, and go to state 23
-
-    condition         go to state 139
-    comparison        go to state 40
-    operation         go to state 41
-    term              go to state 42
-    factor            go to state 43
-    unary_expression  go to state 44
-    expression        go to state 45
-    function_call     go to state 46
-    id_array          go to state 57
-
-
-State 128
-
-   86 id_array: ID LSQ NUM_INT RSQ .
-
-    $default  reduce using rule 86 (id_array)
-
-
-State 129
-
-   19 func_dec: func_header left_curly stmt_list right_curly .
-
-    $default  reduce using rule 19 (func_dec)
-
-
-State 130
-
-   20 func_header: func_type_id LB func_params RB .
-
-    $default  reduce using rule 20 (func_header)
-
-
-State 131
-
-   24 param_decl: param_decl COMMA . decl
-
-    INT    shift, and go to state 4
-    FLOAT  shift, and go to state 5
-    VOID   shift, and go to state 6
-
-    decl  go to state 140
-    type  go to state 103
-
-
-State 132
-
-   26 decl: type ID .
-   27     | type ID . LSQ RSQ
-
-    LSQ  shift, and go to state 141
-
-    $default  reduce using rule 26 (decl)
-
-
-State 133
-
-   84 decl_id_array: ID LSQ NUM_INT . RSQ
-
-    RSQ  shift, and go to state 142
-
-
-State 134
-
-   83 decl_id_array: ID .
-   84              | ID . LSQ NUM_INT RSQ
-
-    LSQ  shift, and go to state 104
-
-    $default  reduce using rule 83 (decl_id_array)
-
-
-State 135
-
-   17 var_list: var_list COMMA decl_id_array .
-
-    $default  reduce using rule 17 (var_list)
-
-
-State 136
-
-   31 if_block: if_condition stmt ELSE stmt .
-
-    $default  reduce using rule 31 (if_block)
-
-
-State 137
-
-   37 for_condition: FOR LB assignment SEMI assignment . SEMI assignment RB
-
-    SEMI  shift, and go to state 143
-
-
-State 138
-
-   39 switch_case_statement: SWITCH LB operation RB LCURLY . case_statement_block RCURLY
-
-    CASE  shift, and go to state 144
-
-    case_statement_block  go to state 145
-    case_list             go to state 146
-    case_statement        go to state 147
-
-
-State 139
-
-   81 plist_list: plist_list COMMA condition .
-
-    $default  reduce using rule 81 (plist_list)
-
-
-State 140
-
-   24 param_decl: param_decl COMMA decl .
-
-    $default  reduce using rule 24 (param_decl)
-
-
-State 141
-
-   27 decl: type ID LSQ . RSQ
-
-    RSQ  shift, and go to state 148
-
-
-State 142
-
-   84 decl_id_array: ID LSQ NUM_INT RSQ .
-
-    $default  reduce using rule 84 (decl_id_array)
-
-
-State 143
-
-   37 for_condition: FOR LB assignment SEMI assignment SEMI . assignment RB
-
-    MINUS      shift, and go to state 14
-    NOT        shift, and go to state 15
-    LB         shift, and go to state 17
-    INCREMENT  shift, and go to state 19
-    DECREMENT  shift, and go to state 20
-    ID         shift, and go to state 21
-    NUM_INT    shift, and go to state 22
-    NUM_FLOAT  shift, and go to state 23
-
-    assignment        go to state 149
-    bool_conditions   go to state 38
-    condition         go to state 39
-    comparison        go to state 40
-    operation         go to state 41
-    term              go to state 42
-    factor            go to state 43
-    unary_expression  go to state 44
-    expression        go to state 45
-    function_call     go to state 46
-    id_array          go to state 47
-
-
-State 144
+State 149
 
    44 case_statement: CASE . c operation COLON d d stmt
 
     $default  reduce using rule 45 (c)
 
-    c  go to state 150
+    c  go to state 157
 
 
-State 145
+State 150
 
    39 switch_case_statement: SWITCH LB operation RB LCURLY case_statement_block . RCURLY
 
-    RCURLY  shift, and go to state 151
+    RCURLY  shift, and go to state 158
 
 
-State 146
+State 151
 
    40 case_statement_block: case_list . default_statemnt
    41                     | case_list .
    42 case_list: case_list . case_statement
 
-    CASE     shift, and go to state 144
-    DEFAULT  shift, and go to state 152
+    CASE     shift, and go to state 149
+    DEFAULT  shift, and go to state 159
 
     $default  reduce using rule 41 (case_statement_block)
 
-    case_statement    go to state 153
-    default_statemnt  go to state 154
+    case_statement    go to state 160
+    default_statemnt  go to state 161
 
 
-State 147
+State 152
 
    43 case_list: case_statement .
 
     $default  reduce using rule 43 (case_list)
 
 
-State 148
+State 153
 
    27 decl: type ID LSQ RSQ .
 
     $default  reduce using rule 27 (decl)
 
 
-State 149
+State 154
 
-   37 for_condition: FOR LB assignment SEMI assignment SEMI assignment . RB
+   31 if_block: if_condition stmt ELSE n d stmt .
 
-    RB  shift, and go to state 155
+    $default  reduce using rule 31 (if_block)
 
 
-State 150
+State 155
+
+   35 loop_block: forexp d assignment d d RB . stmt
+
+    INT        shift, and go to state 4
+    FLOAT      shift, and go to state 5
+    VOID       shift, and go to state 6
+    IF         shift, and go to state 7
+    FOR        shift, and go to state 8
+    WHILE      shift, and go to state 9
+    BREAK      shift, and go to state 10
+    CONTINUE   shift, and go to state 11
+    SWITCH     shift, and go to state 12
+    RETURN     shift, and go to state 13
+    MINUS      shift, and go to state 14
+    NOT        shift, and go to state 15
+    SEMI       shift, and go to state 16
+    LB         shift, and go to state 17
+    LCURLY     shift, and go to state 18
+    INCREMENT  shift, and go to state 19
+    DECREMENT  shift, and go to state 20
+    ID         shift, and go to state 21
+    NUM_INT    shift, and go to state 22
+    NUM_FLOAT  shift, and go to state 23
+
+    stmt                   go to state 162
+    var_dec                go to state 25
+    func_dec               go to state 26
+    func_header            go to state 27
+    func_type_id           go to state 28
+    type                   go to state 29
+    if_block               go to state 30
+    if_condition           go to state 31
+    loop_block             go to state 32
+    while_condition        go to state 33
+    forexp                 go to state 34
+    stmt_block             go to state 35
+    switch_case_statement  go to state 36
+    assignment             go to state 37
+    bool_conditions        go to state 38
+    condition              go to state 39
+    comparison             go to state 40
+    operation              go to state 41
+    term                   go to state 42
+    factor                 go to state 43
+    unary_expression       go to state 44
+    expression             go to state 45
+    function_call          go to state 46
+    id_array               go to state 47
+    left_curly             go to state 48
+
+
+State 156
+
+   37 forexp: FOR LB assignment SEMI d assignment SEMI .
+
+    $default  reduce using rule 37 (forexp)
+
+
+State 157
 
    44 case_statement: CASE c . operation COLON d d stmt
 
@@ -2257,7 +2324,7 @@ State 150
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    operation         go to state 156
+    operation         go to state 163
     term              go to state 42
     factor            go to state 43
     unary_expression  go to state 44
@@ -2266,73 +2333,73 @@ State 150
     id_array          go to state 57
 
 
-State 151
+State 158
 
    39 switch_case_statement: SWITCH LB operation RB LCURLY case_statement_block RCURLY .
 
     $default  reduce using rule 39 (switch_case_statement)
 
 
-State 152
+State 159
 
-   47 default_statemnt: DEFAULT . COLON c stmt
+   48 default_statemnt: DEFAULT . COLON c stmt
 
-    COLON  shift, and go to state 157
+    COLON  shift, and go to state 164
 
 
-State 153
+State 160
 
    42 case_list: case_list case_statement .
 
     $default  reduce using rule 42 (case_list)
 
 
-State 154
+State 161
 
    40 case_statement_block: case_list default_statemnt .
 
     $default  reduce using rule 40 (case_statement_block)
 
 
-State 155
+State 162
 
-   37 for_condition: FOR LB assignment SEMI assignment SEMI assignment RB .
+   35 loop_block: forexp d assignment d d RB stmt .
 
-    $default  reduce using rule 37 (for_condition)
+    $default  reduce using rule 35 (loop_block)
 
 
-State 156
+State 163
 
    44 case_statement: CASE c operation . COLON d d stmt
-   61 operation: operation . PLUS term
-   62          | operation . MINUS term
+   62 operation: operation . PLUS term
+   63          | operation . MINUS term
 
     PLUS   shift, and go to state 77
     MINUS  shift, and go to state 78
-    COLON  shift, and go to state 158
+    COLON  shift, and go to state 165
 
 
-State 157
+State 164
 
-   47 default_statemnt: DEFAULT COLON . c stmt
+   48 default_statemnt: DEFAULT COLON . c stmt
 
     $default  reduce using rule 45 (c)
 
-    c  go to state 159
+    c  go to state 166
 
 
-State 158
+State 165
 
    44 case_statement: CASE c operation COLON . d d stmt
 
     $default  reduce using rule 46 (d)
 
-    d  go to state 160
+    d  go to state 167
 
 
-State 159
+State 166
 
-   47 default_statemnt: DEFAULT COLON c . stmt
+   48 default_statemnt: DEFAULT COLON c . stmt
 
     INT        shift, and go to state 4
     FLOAT      shift, and go to state 5
@@ -2355,7 +2422,7 @@ State 159
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    stmt                   go to state 161
+    stmt                   go to state 168
     var_dec                go to state 25
     func_dec               go to state 26
     func_header            go to state 27
@@ -2365,7 +2432,7 @@ State 159
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -2382,23 +2449,23 @@ State 159
     left_curly             go to state 48
 
 
-State 160
+State 167
 
    44 case_statement: CASE c operation COLON d . d stmt
 
     $default  reduce using rule 46 (d)
 
-    d  go to state 162
+    d  go to state 169
 
 
-State 161
+State 168
 
-   47 default_statemnt: DEFAULT COLON c stmt .
+   48 default_statemnt: DEFAULT COLON c stmt .
 
-    $default  reduce using rule 47 (default_statemnt)
+    $default  reduce using rule 48 (default_statemnt)
 
 
-State 162
+State 169
 
    44 case_statement: CASE c operation COLON d d . stmt
 
@@ -2423,7 +2490,7 @@ State 162
     NUM_INT    shift, and go to state 22
     NUM_FLOAT  shift, and go to state 23
 
-    stmt                   go to state 163
+    stmt                   go to state 170
     var_dec                go to state 25
     func_dec               go to state 26
     func_header            go to state 27
@@ -2433,7 +2500,7 @@ State 162
     if_condition           go to state 31
     loop_block             go to state 32
     while_condition        go to state 33
-    for_condition          go to state 34
+    forexp                 go to state 34
     stmt_block             go to state 35
     switch_case_statement  go to state 36
     assignment             go to state 37
@@ -2450,7 +2517,7 @@ State 162
     left_curly             go to state 48
 
 
-State 163
+State 170
 
    44 case_statement: CASE c operation COLON d d stmt .
 

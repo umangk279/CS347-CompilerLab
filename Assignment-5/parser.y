@@ -21,6 +21,7 @@
 	intermediate_code code;
 	int gtemp = 0;
 	int cond_tag = 0;
+	int loop_tag = 0;
 	temp_data all_temp_var;
 	int function_call_index = -1;
 	int max_param = 0;
@@ -48,6 +49,9 @@
 	d_* dc;
 	stmt_* statement;
 	plist_list_* pll;
+	ifexp_* ie;
+	n_* nnnn;
+	loop_* loop;
 }
 
 %token<type> INT FLOAT VOID
@@ -88,11 +92,18 @@
 %type<cl> case_statement_block
 %type<statement> switch_case_statement
 %type<statement> stmt 
+%type<statement> stmt_block
 %type<statement> stmt_list
 %type<cl> default_statemnt
 %type<pll> plist_list
 %type<pll> plist
 %type<exp> function_call
+%type<ie> if_condition
+%type<statement> if_block
+%type<statement> loop_block
+%type<nnnn> n
+%type<loop> while_condition
+%type<loop> forexp
 
 %%
 
@@ -104,16 +115,73 @@ stmt_list: stmt_list stmt
 		   ;
 
 stmt: RETURN SEMI
+	  {
+	  		$$ = new stmt_(1);
+	  		$$->next.clear();
+			$$->break_list.clear();
+			$$->continue_list.clear();
+			code.insert2("return","--","--","--");
+	  }
 	  | RETURN bool_conditions SEMI
+	  {
+	  		$$ = new stmt_(1);
+	  		$$->next.clear();
+			$$->break_list.clear();
+			$$->continue_list.clear();
+			code.insert2("return",$2->temp_name,"--","--");
+	  }
 	  | BREAK SEMI
+	  {
+	  		$$ = new stmt_(1);
+	  		$$->next.clear();
+			$$->break_list.push_back(code.get_index());
+			code.insert2("goto","---","---","---");
+			$$->continue_list.clear();
+	  }
 	  | CONTINUE SEMI
+	  {
+	  		$$ = new stmt_(1);
+	  		$$->next.clear();
+			$$->continue_list.push_back(code.get_index());
+			code.insert2("goto","---","---","---");
+			$$->break_list.clear();
+	  }
 	  | var_dec SEMI
 	  | func_dec
+	  {
+	  		$$ = new stmt_(2);
+	  		$$->next.clear();
+			$$->break_list.clear();
+			$$->continue_list.clear();
+	  }
 	  | if_block
+	  {
+	  		$$ = new stmt_(1);
+	  		$$->error = false;
+			$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
+			$$->break_list.clear();
+			$$->continue_list.clear();
+	  }
 	  | loop_block
 	  | stmt_block
+	  {
+	  	$$ = $1;
+	  }
 	  | switch_case_statement
+	  {
+	  		$$ = new stmt_(1);
+	  		$$->error = false;
+			$$->next.insert($$->next.end(),$1->next.begin(),$1->next.end());
+			$$->break_list.clear();
+			$$->continue_list.clear();
+	  }
 	  | assignment SEMI
+	  {
+	  		$$ = new stmt_(0);
+	  		$$->next.clear();
+			$$->break_list.clear();
+			$$->continue_list.clear();
+	  }
 	  | SEMI
 	  ;
 
@@ -248,22 +316,154 @@ type: INT { $$ = INT_TYPE; }
 	  | VOID { $$ = VOID_TYPE; }
 	  ;
 
-if_block:	if_condition stmt ELSE stmt
-			| if_condition stmt;
+if_block:	if_condition stmt ELSE n d stmt
+			{
+				cout<<"In if block"<<endl;
+				$$ = new stmt_(1);
+				if(active_function_index<=0)
+				{
+					yyerror("If can not be defined globally");
+				}
+				if((!$2->break_list.empty()) || (!$6->break_list.empty()))
+				{
+					yyerror("can not define break statement with in if block\nAborting");
+					exit(1);
+				}
+				if(!($2->continue_list.empty()) || !($6->continue_list.empty()) )
+				{
+					yyerror("can not define break statement with in if block\nAborting");
+					exit(1);
+				}
+				string tag = get_conditional_tag();
+				code.patch_tag(tag,$1->false_list,$5->position);
+				$$->break_list.clear();
+				$$->continue_list.clear();
+				$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
+				$$->next.insert($$->next.end(),$6->next.begin(),$6->next.end());
+				$$->next.insert($$->next.end(),$4->next.begin(),$4->next.end());
+			}
+			| if_condition stmt
+			{
+				cout<<"In if block"<<endl;
+				$$ = new stmt_(1);
+				if(active_function_index<=0)
+				{
+					yyerror("If can not be defined globally");
+				}
+				if((!$2->break_list.empty()))
+				{
+					yyerror("can not define break statement with in if block\nAborting");
+					exit(1);
+				}
+				if(!($2->continue_list.empty()))
+				{
+					yyerror("can not define break statement with in if block\nAborting");
+					exit(1);
+				}
+				$$->break_list.clear();
+				$$->continue_list.clear();
+				$$->next.insert($$->next.end(),$1->false_list.begin(),$1->false_list.end());
+				$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
+			}
+			;
 
 if_condition: IF LB assignment RB
+			  {
+			  		if($3->type!=ERROR)
+			  		{
+			  			$$ = new ifexp_(code.get_index());
+			  			code.insert2("!=",$3->temp_name,"0","--");
+			  		}
+			  		else
+			  		{
+			  			$$ = new ifexp_(-1);
+			  			yyerror("If condition invalid");
+			  		}
+			  }
 			  ;
 
 loop_block:	while_condition stmt
-			| for_condition stmt
+			{
+				$$ = new stmt_(1);
+				string tag = get_loop_tag();
+				code.patch_tag(tag,$2->next,$1->jump_back_address);
+				code.patch_tag_no_put(tag,$2->continue_list,$1->jump_back_address);
+				code.insert2("goto","--","--",tag);
+				$$->break_list.clear();
+				$$->continue_list.clear();
+				$$->next.insert($$->next.end(),$1->false_list.begin(),$1->false_list.end());
+				$$->next.insert($$->next.end(),$2->break_list.begin(),$2->break_list.end());
+			}
+			| forexp d assignment d d RB stmt
+			{
+				$$ = new stmt_(1);
+				string tag = get_loop_tag();
+				code.patch_tag(tag,$7->next,$2->position);
+				code.patch_tag_no_put(tag,$7->continue_list,$2->position);
+				code.insert2("goto","--","--",tag);
+				$$->break_list.clear();
+				$$->continue_list.clear();
+				string tag1 = get_loop_tag();
+				code.put_tag($1->jump_back_address,tag1);
+				code.gen_at_pos("goto -- --- "+tag1,$4->position);
+				vector<int> temp;
+				string tag2 = get_loop_tag();
+				if(!($1->false_list.empty()))
+				{
+					
+					temp.push_back(*($1->false_list.begin()) + 1);
+					code.patch_tag(tag2,temp,$5->position);
+				}
+				$$->next.insert($$->next.end(),$1->false_list.begin(),$1->false_list.end());
+				$$->next.insert($$->next.end(),$7->break_list.begin(),$7->break_list.end());
+			}
 			;
 
-while_condition: WHILE LB assignment RB
+while_condition: WHILE d LB assignment RB
+				{
+					if(active_function_index<=0)
+					{
+					yyerror("Loops can not be global");
+					}
+					if($4->type!=ERROR)
+					{
+						$$ = new loop_(code.get_index(),$2->position);
+						code.insert2("!=",$4->temp_name,"0","--");
+					}
+					else
+					{
+						yyerror("Invalid condition in while");
+					}
+				}
 				;
 
-for_condition: FOR LB assignment SEMI assignment SEMI assignment RB
+
+forexp: FOR LB assignment SEMI d assignment SEMI
+		{
+			if(active_function_index<=0)
+			{
+				yyerror("Loops can not be global");
+			}
+			if($3->type != ERROR && $6->type != ERROR)
+			{
+				$$ = new loop_(code.get_index(), $5->position);
+				code.insert2("!=",$6->temp_name,"0","--");
+				code.insert2("goto","--","--","--");
+			}
+			else
+			{
+				yyerror("Invalid condition used in for");
+			}
+		}
 
 stmt_block: left_curly stmt_list right_curly
+			{
+				$$ = new stmt_(0);
+				$$->error = false;
+				$$->next.insert($$->next.end(),$2->next.begin(),$2->next.end());
+				$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
+				$$->continue_list.insert($$->continue_list.end(),$2->continue_list.begin(),$2->continue_list.end());
+			}
 			;
 
 switch_case_statement: SWITCH LB operation RB LCURLY case_statement_block RCURLY
@@ -287,7 +487,9 @@ case_statement_block: case_list default_statemnt
 					string tag1 = get_conditional_tag();
 					string tag2 = get_conditional_tag();
 					code.patch_tag(tag2,$1->next,$2->second_address);
-					code.patch_tag(tag1,$1->false_list,$2->first_address);
+					vector<int> temp_index;
+					if(!($1->false_list.empty())) temp_index.push_back($1->false_list.back());
+					code.patch_tag(tag1,temp_index,$2->first_address);
 					$$ = new case_list_($2->first_address,$2->second_address);
 					$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
 					$$->false_list.insert($$->false_list.end(),$2->false_list.begin(),$2->false_list.end());
@@ -313,7 +515,9 @@ case_list: case_list case_statement
 				string tag1 = get_conditional_tag();
 				string tag2 = get_conditional_tag();
 				code.patch_tag(tag2,$1->next,$2->second_address);
-				code.patch_tag(tag1,$1->false_list,$2->first_address);
+				vector<int> temp_index;
+				if(!($1->false_list.empty())) temp_index.push_back($1->false_list.back());	
+				code.patch_tag(tag1,temp_index,$2->first_address);
 				$$ = new case_list_($2->first_address,$2->second_address);
 				$$->false_list.insert($$->false_list.end(),$1->false_list.begin(),$1->false_list.end());
 				$$->false_list.insert($$->false_list.end(),$2->false_list.begin(),$2->false_list.end());
@@ -354,6 +558,12 @@ d:
 	{
 		$$ = new d_(code.get_index());
 		code.insert("");
+	}
+
+n:
+	{
+		$$ = new n_(code.get_index());
+		code.insert2("goto","--","--","--");
 	}
 
 default_statemnt: DEFAULT COLON c stmt
@@ -941,4 +1151,7 @@ int main()
 {
 	yyparse();
 	ST.display_symbol_table();
+	cout<<"--------------------"<<endl;
+	code.print();
+	cout<<"--------------------"<<endl;
 }

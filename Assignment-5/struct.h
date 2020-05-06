@@ -7,6 +7,7 @@ using namespace std;
 extern void yyerror(string s);
 extern int gtemp;
 extern int cond_tag;
+extern int loop_tag;
 extern int max_param;
 
 #define INT_TYPE 1
@@ -21,6 +22,7 @@ int get_compatible_type_term(int type1, int type2);
 int get_compatible_type_comparison(int type1, int type2);
 
 string get_conditional_tag();
+string get_loop_tag();
 
 class temp_data
 {
@@ -121,6 +123,9 @@ public:
 	void put_tag(int index, string tag);
 	void patch_tag(string tag, vector<int>indices, int index);
 	void patch_switch(string tag, vector<int> indices);
+	void patch_tag_no_put(string tag,vector<int> indices,int index);
+	void gen_at_pos(string tag,int index);
+	void print();
 };
 
 class varList
@@ -290,5 +295,35 @@ public:
 		this->loop = false;
 	}
 };
+
+class n_{
+public:
+	vector<int> next;
+	n_(int index){
+		this->next.push_back(index);
+	}
+};
+
+class ifexp_
+{
+public:
+	vector<int> false_list;
+	ifexp_(int index)
+	{
+		this->false_list.push_back(index);
+	}
+};
+
+class loop_
+{
+public:
+	vector<int> false_list;
+	int jump_back_address;
+	loop_(int index,int jump_back_address){
+		this->false_list.push_back(index);
+		this->jump_back_address = jump_back_address;
+	}
+};
+
 
 #endif
