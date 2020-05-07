@@ -1,0 +1,484 @@
+.data
+a_0: .space 4
+b_4: .space 4
+r_8: .space 4
+s_12: .space 4
+_T0: .space 4
+_F1: .space 4
+_T2: .space 4
+_T3: .space 4
+_T4: .space 4
+_T5: .space 4
+_T6: .space 4
+_T7: .space 4
+_T8: .space 4
+_T9: .space 4
+_T10: .space 4
+_Tparam_0: .space 4
+_Tparam_1: .space 4
+_Fparam_0: .space 4
+_Fparam_1: .space 4
+newline: .asciiz "\n"
+float_const0: .float 1.200000
+.text
+j main
+1
+la $t0, _T0
+li $t1, 2
+sw $t1, 0($t0)
+
+2
+la $t0, _T0
+la $t1, a_0
+lw $t2, 0($t0)
+sw $t2, 0($t1)
+
+3
+la $t0, _F1
+l.s $f0, float_const0
+s.s $f0, 0($t0)
+
+4
+la $t0, _F1
+la $t1, b_4
+l.s $f0, 0($t0)
+s.s $f0, 0($t1)
+
+5
+difference:
+
+6
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+
+7
+la $t0, _Tparam_0
+la $t1, _T2
+lw $t2, 0($t0)
+sw $t2, 0($t1)
+
+8
+la $t0, _Tparam_1
+la $t1, _T3
+lw $t2, 0($t0)
+sw $t2, 0($t1)
+
+9
+la $t0, _T2
+la $t1, _T3
+la $t2, _T4
+lw $t3, 0($t0)
+lw $t4, 0($t1)
+sub $t5, $t3, $t4
+sw $t5, 0($t2)
+
+10
+la $t0, _T4
+l.s $f11, 0($t0)
+lw $ra, 0($fp)
+addiu $sp, $sp, 4
+la $t0, _Fparam_1
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _Fparam_0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _Tparam_1
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _Tparam_0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T10
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T9
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T8
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T7
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T6
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T5
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T4
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T3
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T2
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _F1
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, s_12
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, r_8
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, b_4
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, a_0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+addiu $fp, $sp, 4
+jr $ra
+
+11
+func_end0:
+
+12
+lw $ra, 0($fp)
+addiu $sp, $sp, 4
+la $t0, _Fparam_1
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _Fparam_0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _Tparam_1
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _Tparam_0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T10
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T9
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T8
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T7
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T6
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T5
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T4
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T3
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T2
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _F1
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, _T0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, s_12
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, r_8
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, b_4
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+la $t0, a_0
+addiu $sp, $sp, 4
+l.s $f0, 0($sp)
+s.s $f0, 0($t0)
+addiu $fp, $sp, 4
+jr $ra
+
+13
+.globl main
+main:
+
+14
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+
+15
+la $t0, _T5
+li $t1, 5
+sw $t1, 0($t0)
+
+16
+la $t0, _T6
+li $t1, 3
+sw $t1, 0($t0)
+
+17
+
+18
+
+19
+
+20
+la $t0, a_0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, b_4
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, r_8
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, s_12
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _F1
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T2
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T3
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T4
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T5
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T6
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T7
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T8
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T9
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T10
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Tparam_0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Tparam_1
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Fparam_0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Fparam_1
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T5
+lw $t1, 0($t0)
+la $t2, _Tparam_0
+sw $t1, 0($t2)
+la $t0, _T6
+lw $t1, 0($t0)
+la $t2, _Tparam_1
+sw $t1, 0($t2)
+jal difference
+la $t0, _T7
+s.s $f11, 0($t0)
+lw $ra, 4($sp)
+
+21
+la $t0, _T7
+la $t1, r_8
+lw $t2, 0($t0)
+sw $t2, 0($t1)
+
+22
+la $t0, _T8
+li $t1, 3
+sw $t1, 0($t0)
+
+23
+la $t0, _T9
+li $t1, 5
+sw $t1, 0($t0)
+
+24
+
+25
+
+26
+
+27
+la $t0, a_0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, b_4
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, r_8
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, s_12
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _F1
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T2
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T3
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T4
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T5
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T6
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T7
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T8
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T9
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T10
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Tparam_0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Tparam_1
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Fparam_0
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _Fparam_1
+l.s $f0, 0($t0)
+s.s $f0, 0($sp)
+addiu $sp, $sp, -4
+la $t0, _T8
+lw $t1, 0($t0)
+la $t2, _Tparam_0
+sw $t1, 0($t2)
+la $t0, _T9
+lw $t1, 0($t0)
+la $t2, _Tparam_1
+sw $t1, 0($t2)
+jal difference
+la $t0, _T10
+s.s $f11, 0($t0)
+lw $ra, 4($sp)
+
+28
+la $t0, _T10
+la $t1, s_12
+lw $t2, 0($t0)
+sw $t2, 0($t1)
+
+29
+func_end1:
+
+30
+
+-----------------end------------------
+

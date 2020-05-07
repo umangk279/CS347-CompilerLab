@@ -1,0 +1,22 @@
+.data
+a_0 : .space 4
+b_4 : .space 4
+r_8 : .space 4
+s_12 : .space 4
+_T0 : .space 4
+_F1 : .space 4
+_T2 : .space 4
+_T3 : .space 4
+_T4 : .space 4
+_T5 : .space 4
+_T6 : .space 4
+_T7 : .space 4
+_T8 : .space 4
+_T9 : .space 4
+_T10 : .space 4
+_Tparam_0 : .space 4
+_Tparam_1 : .space 4
+_Fparam_0 : .space 4
+_Fparam_1 : .space 4
+newline: .asciiz "\n"
+float_const0: .float 1.200000

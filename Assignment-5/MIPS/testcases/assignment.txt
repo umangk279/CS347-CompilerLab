@@ -1,0 +1,31 @@
+
+
+## user defined variable
+# b_0 4
+# c_4 4
+# d_8 4
+
+
+## temp defined variable
+# _F0 4
+# _T1 4
+# _T2 4
+# _F3 4
+
+## all parameter list
+
+
+
+1 main:
+2 func begin main ---
+3 = 9.000000 --- _F0
+4 = _F0 --- b_0
+5 = 5 --- _T1
+6 = _T1 --- c_4
+7 = 5 --- _T2
+8 = _T2 --- _F3
+9 = _F3 --- d_8
+10 func_end0:
+11 func end main ---
+
+-----------------end------------------
