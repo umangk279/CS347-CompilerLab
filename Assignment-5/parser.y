@@ -9,9 +9,11 @@
 	extern int yylex();
 
 	int lineno = 0;
+	bool error_occured = false;
 	void yyerror(string s)
 	{
 		//fprintf(stderr,"Error at line %d\n%s", lineno,s);
+		error_occured = true;
 		cerr<<"Error at line "<<lineno<<endl<<s<<endl;
 	}
 
@@ -304,7 +306,6 @@ func_type_id: type ID
 					code.insert(s);
 					code.insert2("func","begin",s,"---");
 					cur_func_name=s;
-					cout<<"Function added successfully"<<endl;
 				}
 			}
 			;
@@ -393,7 +394,7 @@ type: INT { $$ = INT_TYPE; }
 
 if_block:	if_condition stmt ELSE n d stmt
 			{
-				cout<<"In if block"<<endl;
+				//cout<<"In if block"<<endl;
 				$$ = new stmt_(1);
 				if(active_function_index<=0)
 				{
@@ -412,7 +413,7 @@ if_block:	if_condition stmt ELSE n d stmt
 			}
 			| if_condition stmt
 			{
-				cout<<"In if block"<<endl;
+				//cout<<"In if block"<<endl;
 				$$ = new stmt_(1);
 				if(active_function_index<=0)
 				{
@@ -1282,7 +1283,7 @@ function_call: ID LB plist RB
 			{
 				string name($1);
 				function_call_index = ST.search_function(name);
-				cout<<"Found function at index: "<<function_call_index<<endl;
+				//cout<<"Found function at index: "<<function_call_index<<endl;
 				if(function_call_index != -1)
 				{
 					int compatiblity = ST.check_parameter_compatibility(function_call_index,$3->type_list);
@@ -1345,7 +1346,7 @@ decl_id_array: ID
 					if(v==NULL)
 					{
 						int index = ST.add_variable(active_function_index,s,level,SIMPLE,INT_TYPE,0);
-						cout<<"Variable "<<s<<" added at level "<<level<<endl;
+						//cout<<"Variable "<<s<<" added at level "<<level<<endl;
 						$$ = index;
 					}
 					else
@@ -1426,14 +1427,14 @@ decl_id_array: ID
 						}
 
 					}
-					cout<<"variable "<<$1<<" added successfully"<<endl;
+					//cout<<"variable "<<$1<<" added successfully"<<endl;
 		  		}
 		  }
 		  ;
 
 id_array: ID
 		  {
-		  		cout<<"Finding variable: "<<$1<<" at level: "<<level<<endl;
+		  		//cout<<"Finding variable: "<<$1<<" at level: "<<level<<endl;
 		  		if(active_function_index!=-1)
 		  		{
 		  			string s = $1;
@@ -1441,7 +1442,7 @@ id_array: ID
 		  			if(v==NULL)
 		  			{
 		  				string err = "Variable "+s+" not declared.";
-		  				cout<<"Hereeeeeeeee"<<endl;
+		  				//cout<<"Hereeeeeeeee"<<endl;
 		  				yyerror(err);
 		  			}
 		  			else
@@ -1450,6 +1451,7 @@ id_array: ID
 		  				{
 		  					v=NULL;
 		  					yyerror("Variable "+s+" declared as array");
+		  					exit(1);
 		  				}
 		  				if(v->name=="_Tparam" || v->name=="_Fparam")
 		  				v->name = v->name + to_string(v->offset);
@@ -1522,48 +1524,51 @@ int main()
 		exit(1);
 	}
 
-	fstream fout;
-	fout.open("IntermediateCode.txt",ios::out);
-
-	fout<<"## user variable"<<endl;
-	for(int i=0; i<total_user_variable.user_variable.size();i++)
+	if(error_occured==false)
 	{
-		fout<<"# "<<total_user_variable.user_variable[i]<<endl;
-	}
-	fout<<endl<<endl;
-
-	fout<<"## temporary variables"<<endl;
-	for(int i=0; i<all_temp_var.temp_var_name.size(); i++)
-	{
-		fout<<"# "<<all_temp_var.temp_var_name[i]<<endl;
-	}
-	fout<<endl<<endl;
-
-	fout<<"## parameter list"<<endl;
-	for(int i=0; i<max_param; i++)
-	{
-		fout<<"# _Tparam"<<i<<endl;
-	}
-	for(int i=0; i<max_param; i++)
-	{
-		fout<<"# _Fparam"<<i<<endl;
-	}
-
-	fout<<endl<<endl;
-	int count=0;
-	for(int i=0;i<code.output.size();i++)
-	{
-		if(code.output[i]!="")
+		fstream fout;
+		fout.open("IntermediateCode.txt",ios::out);
+	
+		fout<<"## user variable"<<endl;
+		for(int i=0; i<total_user_variable.user_variable.size();i++)
 		{
-			fout<<(count+1)<<" "<<code.output[i]<<endl;
-			count++;
+			fout<<"# "<<total_user_variable.user_variable[i]<<endl;
 		}
+		fout<<endl<<endl;
+	
+		fout<<"## temporary variables"<<endl;
+		for(int i=0; i<all_temp_var.temp_var_name.size(); i++)
+		{
+			fout<<"# "<<all_temp_var.temp_var_name[i]<<endl;
+		}
+		fout<<endl<<endl;
+	
+		fout<<"## parameter list"<<endl;
+		for(int i=0; i<max_param; i++)
+		{
+			fout<<"# _Tparam"<<i<<endl;
+		}
+		for(int i=0; i<max_param; i++)
+		{
+			fout<<"# _Fparam"<<i<<endl;
+		}
+	
+		fout<<endl<<endl;
+		int count=0;
+		for(int i=0;i<code.output.size();i++)
+		{
+			if(code.output[i]!="")
+			{
+				fout<<(count+1)<<" "<<code.output[i]<<endl;
+				count++;
+			}
+		}
+	
+		cout<<"--------------------"<<endl;
+		code.print();
+		cout<<"--------------------"<<endl;
+	
+		fout.close();
 	}
-
-	cout<<"--------------------"<<endl;
-	code.print();
-	cout<<"--------------------"<<endl;
-
-	fout.close();
 
 }

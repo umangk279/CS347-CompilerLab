@@ -38,6 +38,7 @@ void restore_system_stack()
       stringstream temp(data_size[i]);
       int size = 0;
       temp >> size;
+      
       for (int j = size - 4; j >= 0; j = j - 4)
       {
         mipsfile<<"addiu $sp, $sp, 4"<<endl;
@@ -90,6 +91,7 @@ void store_stack ()
 	    stringstream temp(data_size[i]);
 	    int size = 0;
 	    temp >> size;
+
 	    for(int j = 0; j < size; j = j+4)
 	    {
 	      mipsfile<<"l.s $f0, "<<to_string(j)<<"($t0)"<<endl;
@@ -752,8 +754,9 @@ void generate_instruction (vector<string> v)
 		    return;
   		}
 
-  		if(v[2][1]!= 'T' or v[3][1]!= 'T' or v[4][1]!= 'T')
+  		if(v[2][1]!= 'T' or v[3][1]!= 'T')
 	    {
+	      //cout << "ff" << endl;
 	      cout << "Problem in Intermediate Code : " << v[0] << endl;
 		  exit(1);
 	    }
@@ -913,11 +916,11 @@ int tokenize_intermediate ()
 		if (tokens.empty()) continue;
 		if(tokens[0] != "#" and tokens[0] != "##" ) return i;
     	if(tokens[0] == "##" ) continue;
-    	if(tokens.size() < 3) continue;
+    	if(tokens.size() < 2) continue;
     	else
     	{
 	      data_name.push_back(tokens[1]);
-	      data_size.push_back(tokens[2]);
+	      data_size.push_back("4");
 	    }
 	}
 	// vector<string> temp = split_tokens(content[0]);
@@ -938,9 +941,9 @@ void generate_mips ()
   	for(int l = index; l < content.size(); l++)
   	{
   		vector<string> v = split_tokens(content[l]);
-  		mipsfile << v[0] << endl;
+  		//mipsfile << v[0] << endl;
   		generate_instruction(v);
-  		mipsfile << endl;
+  		//mipsfile << endl;
   	}
 
 	return;
@@ -977,7 +980,7 @@ int main (int argc, char **argv)
 	datafile.close();
 
 	ifstream ifile("output.mips");
-	ofstream ofile("data.mips");
+	ofstream ofile("data.mips", ios::app);
 
 	if (!ifile.is_open()) 
 	{
