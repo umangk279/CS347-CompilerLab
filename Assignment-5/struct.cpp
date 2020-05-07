@@ -446,10 +446,14 @@ void intermediate_code::gen_at_pos(string tag,int index)
 
 void intermediate_code::print()
 {
+	int count=0;
 	for(int i=0;i<this->output.size();i++)
 	{
-		//cout<<this->output[i]<<endl;
-		cout<<(i+1)<<" "<<this->output[i]<<endl;
+		if(this->output[i]!="")
+		{
+			cout<<(count+1)<<" "<<this->output[i]<<endl;
+			count++;
+		}
 	}
 }
 

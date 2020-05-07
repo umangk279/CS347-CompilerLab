@@ -1,19 +1,12 @@
-int factorial(int n){
-  if(n == 1 || n == 0){
-    return 1;
-  }
-    int t;
-    t = factorial(n-1)*n;
-    print(t);
-  return t;
-
-
+int f(int d[]){
+	d[4] = d[4] * 6;
+	return d[4];
 }
 
 
 int main(){
-  int r;
-  r = factorial(5);
-
-
+	int a[7];
+  int b;
+	 a[4] = 11;
+	 return 0;
 }

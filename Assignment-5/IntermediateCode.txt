@@ -1,0 +1,26 @@
+1 f:
+2 func begin f: ---
+3 = 4 --- _T0
+4 = 4 --- _T1
+5 addr _Tparam0 --- _T3
+6 = _T3[_T1] _T2
+7 = 6 --- _T4
+8 * _T2 _T4 _T5
+9 addr _Tparam0 --- _T6
+10 = _T5 _T6[_T0] 
+11 = 4 --- _T7
+12 addr _Tparam0 --- _T9
+13 = _T9[_T7] _T8
+14 return _T8 --- ---
+15 func_end0:
+16 func end f: ---
+17 main:
+18 func begin main: ---
+19 = 4 --- _T10
+20 = 11 --- _T11
+21 addr a --- _T12
+22 = _T11 _T12[_T10] 
+23 = 0 --- _T13
+24 return _T13 --- ---
+25 func_end1:
+26 func end main: ---

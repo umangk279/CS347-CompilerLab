@@ -1506,7 +1506,25 @@ int main()
 {
 	yyparse();
 	ST.display_symbol_table();
+	if(is_main==false)
+	{
+		cout<<"No main function found. Aborting."<<endl;
+		exit(1);
+	}
 	cout<<"--------------------"<<endl;
 	code.print();
 	cout<<"--------------------"<<endl;
+	fstream fout;
+	fout.open("IntermediateCode.txt",ios::out);
+	int count=0;
+	for(int i=0;i<code.output.size();i++)
+	{
+		if(code.output[i]!="")
+		{
+			fout<<(count+1)<<" "<<code.output[i]<<endl;
+			count++;
+		}
+	}
+	fout.close();
+
 }
