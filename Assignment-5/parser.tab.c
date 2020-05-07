@@ -2322,7 +2322,7 @@ yyreduce:
 					(yyvsp[0].bc)->type = ERROR;
 				}
 				int type = get_compatible_type_comparison((yyvsp[-2].bc)->type,(yyvsp[0].bc)->type);
-				(yyval.bc) = new bool_conditions_(type);
+				(yyval.bc) = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op(">",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
@@ -2350,7 +2350,7 @@ yyreduce:
 				}
 				
 				int type = get_compatible_type_comparison((yyvsp[-2].bc)->type,(yyvsp[0].bc)->type);
-				(yyval.bc) = new bool_conditions_(type);
+				(yyval.bc) = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op(">=",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
@@ -2406,7 +2406,7 @@ yyreduce:
 				}
 				
 				int type = get_compatible_type_comparison((yyvsp[-2].bc)->type,(yyvsp[0].bc)->type);
-				(yyval.bc) = new bool_conditions_(type);
+				(yyval.bc) = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op("<=",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
@@ -2433,7 +2433,7 @@ yyreduce:
 					(yyvsp[0].bc)->type = ERROR;
 				}
 				int type = get_compatible_type_comparison((yyvsp[-2].bc)->type,(yyvsp[0].bc)->type);
-				(yyval.bc) = new bool_conditions_(type);
+				(yyval.bc) = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op("==",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
@@ -2460,7 +2460,7 @@ yyreduce:
 					(yyvsp[0].bc)->type = ERROR;
 				}
 				int type = get_compatible_type_comparison((yyvsp[-2].bc)->type,(yyvsp[0].bc)->type);
-				(yyval.bc) = new bool_conditions_(type);
+				(yyval.bc) = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op("!=",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
@@ -2490,7 +2490,7 @@ yyreduce:
 				(yyval.bc) = new bool_conditions_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("+",(yyvsp[-2].bc)->temp_name,"---",(yyvsp[0].bc)->temp_name);
+					code.insert2("+",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
 				}
 				else
 				{
@@ -2517,7 +2517,7 @@ yyreduce:
 				(yyval.bc) = new bool_conditions_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("-",(yyvsp[-2].bc)->temp_name,"---",(yyvsp[0].bc)->temp_name);
+					code.insert2("-",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
 				}
 				else
 				{
@@ -2556,7 +2556,7 @@ yyreduce:
 	  	(yyval.bc) = new bool_conditions_(type);
 	  	if(type!=ERROR)
 	  	{
-	  		code.insert2("*",(yyvsp[-2].bc)->temp_name,"---",(yyval.bc)->temp_name);
+	  		code.insert2("*",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
 	  	}
 	  	else
 	  	{
@@ -2583,7 +2583,7 @@ yyreduce:
 	  	(yyval.bc) = new bool_conditions_(type);
 	  	if(type!=ERROR)
 	  	{
-	  		code.insert2("/",(yyvsp[-2].bc)->temp_name,"---",(yyval.bc)->temp_name);
+	  		code.insert2("/",(yyvsp[-2].bc)->temp_name,(yyvsp[0].bc)->temp_name,(yyval.bc)->temp_name);
 	  	}
 	  	else
 	  	{

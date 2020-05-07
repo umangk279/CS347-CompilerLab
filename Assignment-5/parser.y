@@ -982,7 +982,7 @@ operation: operation PLUS term
 				$$ = new bool_conditions_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("+",$1->temp_name,"---",$3->temp_name);
+					code.insert2("+",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -1005,7 +1005,7 @@ operation: operation PLUS term
 				$$ = new bool_conditions_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("-",$1->temp_name,"---",$3->temp_name);
+					code.insert2("-",$1->temp_name,$3->temp_name,$$->temp_name);
 				}
 				else
 				{
@@ -1038,7 +1038,7 @@ term: term MULTIPLY factor
 	  	$$ = new bool_conditions_(type);
 	  	if(type!=ERROR)
 	  	{
-	  		code.insert2("*",$1->temp_name,"---",$$->temp_name);
+	  		code.insert2("*",$1->temp_name,$3->temp_name,$$->temp_name);
 	  	}
 	  	else
 	  	{
@@ -1061,7 +1061,7 @@ term: term MULTIPLY factor
 	  	$$ = new bool_conditions_(type);
 	  	if(type!=ERROR)
 	  	{
-	  		code.insert2("/",$1->temp_name,"---",$$->temp_name);
+	  		code.insert2("/",$1->temp_name,$3->temp_name,$$->temp_name);
 	  	}
 	  	else
 	  	{

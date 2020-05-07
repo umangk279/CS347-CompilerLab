@@ -48,7 +48,7 @@ string get_loop_tag()
 string get_rel_tag()
 {
 	string t = "REL";
-	t = t + to_string(rel_tag);
+	t = t + to_string(rel_tag)+":";
 	rel_tag++;
 	return t;
 }
@@ -81,6 +81,8 @@ void intermediate_code::insert(string s)
 
 variable* symbol_table::search_cur_var(int active_function_index, int decl_level, string name)
 {
+
+	cout<<"LOLOLOLOLOL"<<active_function_index<<endl;
 	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
 		return NULL;
 	variable* ret = NULL;
@@ -98,13 +100,13 @@ variable* symbol_table::search_cur_var(int active_function_index, int decl_level
 			}
 		}
 	}
-
+	cout<<"In search cur var variable found";
 	return ret;
 }
 
 int symbol_table::add_variable(int active_function_index, string name, int level, int type, int num_type, int dimension)
 {
-	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
+	if(active_function_index<0 || (active_function_index>=global_symbol_table.size()))
 		return -1;
 	variable* v = new variable(name,type,level,num_type, dimension);
 	global_symbol_table[active_function_index]->var_list.push_back(v);
@@ -215,9 +217,12 @@ variable* symbol_table::search_global_var(int active_function_index, int decl_le
 		return NULL;
 
 	variable* index = this->search_cur_var(active_function_index,decl_level,name);
+	cout<<"Fuccckkkkkkkkk2"<<endl;
 	if(index!=NULL)
+	{
+		cout<<"Fuccckkkkkkkkk3"<<endl;
 		return index;
-
+	}
 	else
 	{
 		cout<<"Fuccckkkkkkkkk"<<endl;

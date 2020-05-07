@@ -96,7 +96,10 @@ class symbol_table
 public:
 	vector<func* > global_symbol_table;
 	symbol_table()
-	{}
+	{
+		func* global = new func("GLOBAL",INT_TYPE);
+		global_symbol_table.push_back(global);
+	}
 	void display_symbol_table();
 	int search_function(string name);
 	int add_function(string name, int return_type);
