@@ -144,7 +144,7 @@ stmt: RETURN SEMI
 	  		$$->next.clear();
 			$$->break_list.clear();
 			$$->continue_list.clear();
-			code.insert2("return","--","--","--");
+			code.insert2("return","---","---","---");
 	  }
 	  | RETURN bool_conditions SEMI
 	  {
@@ -152,7 +152,7 @@ stmt: RETURN SEMI
 	  		$$->next.clear();
 			$$->break_list.clear();
 			$$->continue_list.clear();
-			code.insert2("return",$2->temp_name,"--","--");
+			code.insert2("return",$2->temp_name,"---","---");
 	  }
 	  | BREAK SEMI
 	  {
@@ -266,12 +266,12 @@ func_dec:	func_header left_curly stmt_list right_curly
 					exit(1);
 				}
 				code.patch_tag_no_put(tag,$3->next,code.get_index()-1);
-				//code.insert2("func","end","--","--");
+				//code.insert2("func","end","---","---");
 				if(cur_func_name=="")
-					code.insert2("func","end","--","--");
+					code.insert2("func","end","---","---");
 				else
 				{
-					code.insert2("func","end",cur_func_name,"--");
+					code.insert2("func","end",cur_func_name,"---");
 					cur_func_name="";
 				}
 				active_function_index=0;
@@ -299,7 +299,7 @@ func_type_id: type ID
 					level =1;
 					string s = name+":";
 					code.insert(s);
-					code.insert2("func","begin",s,"--");
+					code.insert2("func","begin",s,"---");
 					cur_func_name=s;
 					cout<<"Function added successfully"<<endl;
 				}
@@ -430,7 +430,7 @@ if_condition: IF LB assignment RB
 			  			all_temp_var.temp_var_name.push_back(temp);
 			  			code.insert2("=","0","---",temp);
 			  			$$ = new ifexp_(code.get_index());
-			  			code.insert2("==",$3->temp_name,temp,"--");
+			  			code.insert2("==",$3->temp_name,temp,"---");
 			  		}
 			  		else
 			  		{
@@ -446,7 +446,7 @@ loop_block:	while_condition stmt
 				string tag = get_loop_tag();
 				code.patch_tag(tag,$2->next,$1->jump_back_address);
 				code.patch_tag_no_put(tag,$2->continue_list,$1->jump_back_address);
-				code.insert2("goto","--","--",tag);
+				code.insert2("goto","---","---",tag);
 				$$->break_list.clear();
 				$$->continue_list.clear();
 				$$->next.insert($$->next.end(),$1->false_list.begin(),$1->false_list.end());
@@ -463,12 +463,12 @@ loop_block:	while_condition stmt
 				string tag = get_loop_tag();
 				code.patch_tag(tag,$7->next,$2->position);
 				code.patch_tag_no_put(tag,$7->continue_list,$2->position);
-				code.insert2("goto","--","--",tag);
+				code.insert2("goto","---","---",tag);
 				$$->break_list.clear();
 				$$->continue_list.clear();
 				string tag1 = get_loop_tag();
 				code.put_tag($1->jump_back_address,tag1);
-				code.gen_at_pos("goto -- --- "+tag1,$4->position);
+				code.gen_at_pos("goto --- --- "+tag1,$4->position);
 				vector<int> temp;
 				string tag2 = get_loop_tag();
 				if(!($1->false_list.empty()))
@@ -495,7 +495,7 @@ while_condition: WHILE d LB assignment RB
 			  			all_temp_var.temp_var_name.push_back(temp);
 			  			code.insert2("=","0","---",temp);
 			  			$$ = new loop_(code.get_index(),$2->position);
-						code.insert2("==",$4->temp_name,temp,"--");
+						code.insert2("==",$4->temp_name,temp,"---");
 					}
 					else
 					{
@@ -518,8 +518,8 @@ forexp: FOR LB assignment SEMI d assignment SEMI
 			  	all_temp_var.temp_var_name.push_back(temp);
 			  	code.insert2("=","0","---",temp);
 			  	$$ = new loop_(code.get_index(), $5->position);
-				code.insert2("==",$6->temp_name,temp,"--");
-				code.insert2("goto","--","--","--");
+				code.insert2("==",$6->temp_name,temp,"---");
+				code.insert2("goto","---","---","---");
 			}
 			else
 			{
@@ -617,7 +617,7 @@ case_statement: CASE c operation COLON  d d stmt
 					$$->false_list.push_back($5->position);
 					code.back_patch_special("!=",$3->temp_name,"--","--",$5->position);
 					int jump = code.get_index();
-					code.insert2("goto"," "," "," ");
+					code.insert2("goto","---","---","---");
 					$$->next.insert($$->next.end(),$7->next.begin(),$7->next.end());
 					$$->next.push_back(jump);
 					$$->break_list.insert($$->break_list.end(),$7->break_list.begin(),$7->break_list.end());
@@ -640,7 +640,7 @@ d:
 n:
 	{
 		$$ = new n_(code.get_index());
-		code.insert2("goto","--","--","--");
+		code.insert2("goto","---","---","---");
 	}
 
 default_statemnt: DEFAULT COLON c stmt
@@ -648,7 +648,7 @@ default_statemnt: DEFAULT COLON c stmt
 						$$ = new case_list_($3->first_address,$3->first_address);
 						$$->false_list.clear();
 						int jump = code.get_index();
-						code.insert2("goto"," "," "," ");
+						code.insert2("goto","---","---","---");
 						$$->next.insert($$->next.end(),$4->next.begin(),$4->next.end());
 						$$->next.push_back(jump);
 						$$->break_list.insert($$->break_list.end(),$4->break_list.begin(),$4->break_list.end());
@@ -668,25 +668,85 @@ assignment:	id_array ASSIGN bool_conditions
 						$1->var->num_type = ERROR;
 					}
 					int type = get_compatible_type_term($1->var->num_type,$3->type);
+					if($1->var->num_type == INT_TYPE && $3->type == BOOL_TYPE)
+					{
+						type = INT_TYPE;
+					}
 					if(type!=ERROR)
 					{
 						if($1->var->type==SIMPLE)
 						{
-							code.insert2("=",$3->temp_name," ",$1->var->name);
+							// code.insert2("=",$3->temp_name,"---",$1->var->name);
+							if($1->var->num_type == $3->type)
+							{
+								code.insert2("=",$3->temp_name,"---",$1->var->name);
+							}
+							else
+							{
+								string temp;
+								if($1->var->num_type == FLOAT_TYPE && $3->type==INT_TYPE)
+								{
+									temp = "_F"+to_string(gtemp);
+									gtemp++;
+									all_temp_var.temp_var_name.push_back(temp);
+								}
+								if($1->var->num_type == INT_TYPE && $3->type==FLOAT_TYPE)
+								{
+									temp = "_T"+to_string(gtemp);
+									gtemp++;
+									all_temp_var.temp_var_name.push_back(temp);
+								}
+								if($1->var->num_type==INT_TYPE && $3->type==BOOL_TYPE)
+								{
+									code.insert2("=",$3->temp_name,"---",$1->var->name);
+								}
+								else
+								{
+									code.insert2("=",$3->temp_name,"---",temp);
+									code.insert2("=",temp,"---",$1->var->name);
+								}
+							}
 						}
 						else
 						{
-							string t = "_T"+to_string(gtemp);
+							string temp = "_T"+to_string(gtemp);
 							gtemp++;
-							code.insert2("addr",$1->var->name," ",t);
-							code.insert2("=", $3->temp_name," ",t);
+							all_temp_var.temp_var_name.push_back(temp);
+							if($1->var->num_type == $3->type)
+							{
+								code.insert2("addr",$1->var->name,"---",temp);
+								string s = "= "+$3->temp_name+" "+temp+"["+$1->index+"] ";
+								code.insert(s);
+							}
+							else
+							{
+								string temp2;
+								if($1->var->num_type == FLOAT_TYPE && $3->type==INT_TYPE)
+								{
+									temp2 = "_F"+to_string(gtemp);
+									gtemp++;
+									all_temp_var.temp_var_name.push_back(temp2);
+								}
+								if($1->var->num_type == INT_TYPE && $3->type==FLOAT_TYPE)
+								{
+									temp2 = "_T"+to_string(gtemp);
+									gtemp++;
+									all_temp_var.temp_var_name.push_back(temp2);
+								}
+								code.insert2("=",$3->temp_name,"---",temp2);
+								code.insert2("addr",$1->var->name,"---",temp);
+								string s = "= "+temp2+" "+temp+"["+$1->index+"]";
+								code.insert(s);
+							}
+							// code.insert2("addr",$1->var->name,"---",t);
+							// code.insert2("=", $3->temp_name,"---",t);
 						}
 						$$ = new assignment_(type,"ERROR");
 					}
 					else
 					{
 						$$ = new assignment_(ERROR,"ERROR");
-						yyerror("Incompatible data tyoes for assignment");
+						yyerror("Incompatible data types for assignment");
 					}
 				}
 			}
@@ -739,7 +799,7 @@ bool_conditions:	bool_conditions AND condition
 						$$ = new bool_conditions_($1->type,$1->temp_name);
 						// if($1->type!=ERROR)
 						// {
-						// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+						// 	code.insert2("=",$1->temp_name,"---",$$->temp_name);
 						// }
 					}
 					;
@@ -749,7 +809,7 @@ condition: comparison
 		  		$$ = new bool_conditions_($1->type,$1->temp_name);
 		  		// if($1->type!=ERROR)
 		  		// {
-		  		// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+		  		// 	code.insert2("=",$1->temp_name,"---",$$->temp_name);
 		  		// }
 		  }
 		  | operation
@@ -757,7 +817,7 @@ condition: comparison
 		  		$$ = new bool_conditions_($1->type,$1->temp_name);
 		  		// if($1->type!=ERROR)
 		  		// {
-		  		// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+		  		// 	code.insert2("=",$1->temp_name,"---",$$->temp_name);
 		  		// }
 		  }
 		  ;
@@ -948,7 +1008,7 @@ operation: operation PLUS term
 				$$ = new bool_conditions_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("+",$1->temp_name," ",$3->temp_name);
+					code.insert2("+",$1->temp_name,"---",$3->temp_name);
 				}
 				else
 				{
@@ -971,7 +1031,7 @@ operation: operation PLUS term
 				$$ = new bool_conditions_(type);
 				if(type!=ERROR)
 				{
-					code.insert2("-",$1->temp_name," ",$3->temp_name);
+					code.insert2("-",$1->temp_name,"---",$3->temp_name);
 				}
 				else
 				{
@@ -983,7 +1043,7 @@ operation: operation PLUS term
 		   		$$ = new bool_conditions_($1->type,$1->temp_name);
 		   		// if($1->type!=ERROR)
 		   		// {
-		   		// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+		   		// 	code.insert2("=",$1->temp_name,"---",$$->temp_name);
 		   		// }
 		   }
 		   ;
@@ -1004,7 +1064,7 @@ term: term MULTIPLY factor
 	  	$$ = new bool_conditions_(type);
 	  	if(type!=ERROR)
 	  	{
-	  		code.insert2("*",$1->temp_name," ",$$->temp_name);
+	  		code.insert2("*",$1->temp_name,"---",$$->temp_name);
 	  	}
 	  	else
 	  	{
@@ -1027,7 +1087,7 @@ term: term MULTIPLY factor
 	  	$$ = new bool_conditions_(type);
 	  	if(type!=ERROR)
 	  	{
-	  		code.insert2("/",$1->temp_name," ",$$->temp_name);
+	  		code.insert2("/",$1->temp_name,"---",$$->temp_name);
 	  	}
 	  	else
 	  	{
@@ -1039,7 +1099,7 @@ term: term MULTIPLY factor
 	  	$$ = new bool_conditions_($1->type,$1->temp_name);
 	  	// if($1->type!=ERROR)
 	  	// {
-	  	// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+	  	// 	code.insert2("=",$1->temp_name,"---",$$->temp_name);
 	  	// }
 	  }
 	  ;
@@ -1049,7 +1109,7 @@ factor: unary_expression
 			$$ = new bool_conditions_($1->type,$1->temp_name);
 			// if($1->type!=ERROR)
 			// {
-			// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+			// 	code.insert2("=",$1->temp_name,"---",$$->temp_name);
 			// }
 		}
 		;
@@ -1060,7 +1120,7 @@ unary_expression: expression
 					$$->var = $1->var;
 					// if($1->type != ERROR)
 					// {
-					// 	code.insert2("=",$1->temp_name," ",$$->temp_name);
+					// 	code.insert2("=",$1->temp_name,"---",$$->temp_name);
 					// }
 				}
 				| NOT unary_expression
@@ -1082,7 +1142,7 @@ unary_expression: expression
 						$$->var = $2->var;
 						if($2->type!=ERROR)
 						{
-							code.insert2("NOT",$2->temp_name," ",$$->temp_name);
+							code.insert2("NOT",$2->temp_name,"---",$$->temp_name);
 						}
 					}
 				}
@@ -1099,7 +1159,7 @@ unary_expression: expression
 						$$->var = $2->var;
 						if($2->type != ERROR)
 						{
-							code.insert2("MINUS",$2->temp_name," ",$$->temp_name);
+							code.insert2("MINUS",$2->temp_name,"---",$$->temp_name);
 						}
 					}
 					else
@@ -1132,7 +1192,7 @@ unary_expression: expression
 							$$->temp_name = $2->temp_name;
 							if($2->var!=NULL)
 							{
-								code.insert2("=",$2->temp_name,"--",$2->var->name);
+								code.insert2("=",$2->temp_name,"---",$2->var->name);
 							}
 						}
 					}
@@ -1166,7 +1226,7 @@ unary_expression: expression
 							$$->temp_name = $2->temp_name;
 							if($2->var !=NULL)
 							{
-								code.insert2("=",$2->temp_name,"--",$2->var->name);
+								code.insert2("=",$2->temp_name,"---",$2->var->name);
 							}
 						}
 					}
@@ -1183,13 +1243,13 @@ expression: NUM_FLOAT
 			{
 				$$ = new expression_(FLOAT_TYPE);
 				$$->var = NULL;
-				code.insert2("=",to_string($1)," ",$$->temp_name);
+				code.insert2("=",to_string($1),"---",$$->temp_name);
 			}
 			| NUM_INT
 			{
 				$$ = new expression_(INT_TYPE);
 				$$->var = NULL;
-				code.insert2("=",to_string($1)," ",$$->temp_name);
+				code.insert2("=",to_string($1),"---",$$->temp_name);
 			}
 			| id_array
 			{
@@ -1202,8 +1262,22 @@ expression: NUM_FLOAT
 				else 
 				{
 					$$ = new expression_($1->var->num_type);
-					code.insert2("=", $1->var->name," ",$$->temp_name);
-					$$->var = $1->var;
+					string s = "";
+					if($1->var->type == SIMPLE)
+					{
+						s = "= "+$1->var->name+" --- "+$$->temp_name;
+						$$->var = $1->var;
+					}
+					else
+					{
+						string temp = "_T"+to_string(gtemp);
+						gtemp++;
+						all_temp_var.temp_var_name.push_back(temp);
+						code.insert2("addr",$1->var->name,"---",temp);
+						s = "= "+temp+"["+$1->index+"] "+$$->temp_name;
+						$$->var = $1->var;
+					}
+					code.insert(s);
 				}
 				
 			}
@@ -1224,6 +1298,7 @@ function_call: ID LB plist RB
 			{
 				string name($1);
 				function_call_index = ST.search_function(name);
+				cout<<"Found function at index: "<<function_call_index<<endl;
 				if(function_call_index != -1)
 				{
 					int compatiblity = ST.check_parameter_compatibility(function_call_index,$3->type_list);
@@ -1414,16 +1489,17 @@ id_array: ID
 		  					yyerror(err);
 		  				}
 		  			}
-
+		  			string temp;
 		  			if(v!=NULL)
 		  			{
-		  				string temp = "_T"+to_string(gtemp);
+		  				temp = "_T"+to_string(gtemp);
 		  				gtemp++;
-		  				code.insert2("=",to_string($3)," ",temp);
+		  				code.insert2("=",to_string($3),"---",temp);
 		  				all_temp_var.temp_var_name.push_back(temp);
 		  			}
 
 		  		$$ = new id_array_(v);
+		  		$$->index = temp;
 		  		}
 		  }
 		  ;

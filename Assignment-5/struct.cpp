@@ -58,9 +58,9 @@ int symbol_table::search_function(string name)
 	for(int i=0; i<size; i++)
 	{
 		if(this->global_symbol_table[i]->name == name)
-			return 1;
+			return i;
 	}	
-	return 0;
+	return -1;
 }
 
 int symbol_table::add_function(string name, int return_type)

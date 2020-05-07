@@ -189,9 +189,11 @@ class id_array_
 {
 public:
 	variable* var;
+	string index;
 	id_array_(variable* v1)
 	{
 		this->var = v1;
+		this->index = "";
 	}
 };
 
