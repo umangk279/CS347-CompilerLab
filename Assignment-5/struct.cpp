@@ -5,6 +5,9 @@ using namespace std;
 
 extern intermediate_code code;
 extern int param_no;
+extern int level;
+extern user_data total_user_variable;
+
 
 int get_compatible_type_term(int type1, int type2)
 {
@@ -81,8 +84,6 @@ void intermediate_code::insert(string s)
 
 variable* symbol_table::search_cur_var(int active_function_index, int decl_level, string name)
 {
-
-	cout<<"LOLOLOLOLOL"<<active_function_index<<endl;
 	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
 		return NULL;
 	variable* ret = NULL;
@@ -176,10 +177,11 @@ void symbol_table::change_type(int active_function_index, vector<int>& indices,i
 	int size = indices.size();
 	for(int i=0; i<size; i++)
 	{
-		cout<<indices[i]<<" ";
 		if(indices[i]<0 || indices[i]>=global_symbol_table[active_function_index]->var_list.size())
 			continue;
 		global_symbol_table[active_function_index]->var_list[indices[i]]->num_type = type;
+		variable * temp = global_symbol_table[active_function_index]->var_list[indices[i]];
+		total_user_variable.user_variable.push_back(temp->name+"_"+to_string(level));
 	}
 }
 
@@ -217,15 +219,12 @@ variable* symbol_table::search_global_var(int active_function_index, int decl_le
 		return NULL;
 
 	variable* index = this->search_cur_var(active_function_index,decl_level,name);
-	cout<<"Fuccckkkkkkkkk2"<<endl;
 	if(index!=NULL)
 	{
-		cout<<"Fuccckkkkkkkkk3"<<endl;
 		return index;
 	}
 	else
 	{
-		cout<<"Fuccckkkkkkkkk"<<endl;
 		int parameter = search_parameter_index(name,active_function_index);
 		if(parameter == -1)
 		{

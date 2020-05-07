@@ -24,6 +24,7 @@
 	int loop_tag = 0;
 	int rel_tag = 0;
 	temp_data all_temp_var;
+	user_data total_user_variable;
 	int function_call_index = -1;
 	int max_param = 0;
 	func_end_tag_genarator func_end_tag;
@@ -291,6 +292,7 @@ func_type_id: type ID
 				{
 					$$ = ERROR;
 					yyerror("Function already declared");
+					exit(1);
 					active_function_index = -1;
 				}
 				else
@@ -396,6 +398,7 @@ if_block:	if_condition stmt ELSE n d stmt
 				if(active_function_index<=0)
 				{
 					yyerror("If can not be defined globally");
+					exit(1);
 				}
 				string tag = get_conditional_tag();
 				code.patch_tag(tag,$1->false_list,$5->position);
@@ -414,6 +417,7 @@ if_block:	if_condition stmt ELSE n d stmt
 				if(active_function_index<=0)
 				{
 					yyerror("If can not be defined globally");
+					exit(1);
 				}
 				$$->break_list.insert($$->break_list.end(),$2->break_list.begin(),$2->break_list.end());
 				$$->continue_list.insert($$->continue_list.end(),$2->continue_list.begin(),$2->continue_list.end());
@@ -437,6 +441,7 @@ if_condition: IF LB assignment RB
 			  		{
 			  			$$ = new ifexp_(-1);
 			  			yyerror("If condition invalid");
+			  			exit(1);
 			  		}
 			  }
 			  ;
@@ -487,7 +492,8 @@ while_condition: WHILE d LB assignment RB
 				{
 					if(active_function_index<=0)
 					{
-					yyerror("Loops can not be global");
+						yyerror("Loops can not be global");
+						exit(1);
 					}
 					if($4->type!=ERROR)
 					{
@@ -501,6 +507,7 @@ while_condition: WHILE d LB assignment RB
 					else
 					{
 						yyerror("Invalid condition in while");
+						exit(1);
 					}
 				}
 				;
@@ -511,6 +518,7 @@ forexp: FOR LB assignment SEMI d assignment SEMI
 			if(active_function_index<=0)
 			{
 				yyerror("Loops can not be global");
+				exit(1);
 			}
 			if($3->type != ERROR && $6->type != ERROR)
 			{
@@ -525,6 +533,7 @@ forexp: FOR LB assignment SEMI d assignment SEMI
 			else
 			{
 				yyerror("Invalid condition used in for");
+				exit(1);
 			}
 		}
 
@@ -549,6 +558,7 @@ switch_case_statement: SWITCH LB operation RB LCURLY case_statement_block RCURLY
 						if(active_function_index <= 0)
 						{
 								yyerror("Switches can not be global");
+								exit(1);
 						}
 						code.patch_switch($3->temp_name,$6->false_list);
 					}
@@ -680,7 +690,7 @@ assignment:	id_array ASSIGN bool_conditions
 							// code.insert2("=",$3->temp_name,"---",$1->var->name);
 							if($1->var->num_type == $3->type)
 							{
-								code.insert2("=",$3->temp_name,"---",$1->var->name);
+								code.insert2("=",$3->temp_name,"---",$1->var->name+"_"+to_string(level));
 							}
 							else
 							{
@@ -699,12 +709,12 @@ assignment:	id_array ASSIGN bool_conditions
 								}
 								if($1->var->num_type==INT_TYPE && $3->type==BOOL_TYPE)
 								{
-									code.insert2("=",$3->temp_name,"---",$1->var->name);
+									code.insert2("=",$3->temp_name,"---",$1->var->name+"_"+to_string(level));
 								}
 								else
 								{
 									code.insert2("=",$3->temp_name,"---",temp);
-									code.insert2("=",temp,"---",$1->var->name);
+									code.insert2("=",temp,"---",$1->var->name+"_"+to_string(level));
 								}
 							}
 						}
@@ -715,7 +725,7 @@ assignment:	id_array ASSIGN bool_conditions
 							all_temp_var.temp_var_name.push_back(temp);
 							if($1->var->num_type == $3->type)
 							{
-								code.insert2("addr",$1->var->name,"---",temp);
+								code.insert2("addr",$1->var->name+"_"+to_string(level),"---",temp);
 								string s = "= "+$3->temp_name+" "+temp+"["+$1->index+"] ";
 								code.insert(s);
 							}
@@ -735,7 +745,7 @@ assignment:	id_array ASSIGN bool_conditions
 									all_temp_var.temp_var_name.push_back(temp2);
 								}
 								code.insert2("=",$3->temp_name,"---",temp2);
-								code.insert2("addr",$1->var->name,"---",temp);
+								code.insert2("addr",$1->var->name+"_"+to_string(level),"---",temp);
 								string s = "= "+temp2+" "+temp+"["+$1->index+"]";
 								code.insert(s);
 							}
@@ -773,7 +783,7 @@ bool_conditions:	bool_conditions AND condition
 						$$ = new bool_conditions_(type);
 						if(type!=ERROR)
 						{
-							code.insert2("&&",$1->temp_name,$3->temp_name,$$->temp_name);
+							code.insert2("AND",$1->temp_name,$3->temp_name,$$->temp_name);
 						}
 					}
 					| bool_conditions OR condition
@@ -792,7 +802,7 @@ bool_conditions:	bool_conditions AND condition
 						$$ = new bool_conditions_(type);
 						if(type!=ERROR)
 						{
-							code.insert2("||",$1->temp_name,$3->temp_name,$$->temp_name);
+							code.insert2("OR",$1->temp_name,$3->temp_name,$$->temp_name);
 						}
 					}
 					| condition
@@ -1166,7 +1176,7 @@ unary_expression: expression
 							$$->temp_name = $2->temp_name;
 							if($2->var!=NULL)
 							{
-								code.insert2("=",$2->temp_name,"---",$2->var->name);
+								code.insert2("=",$2->temp_name,"---",$2->var->name+"_"+to_string(level));
 							}
 						}
 					}
@@ -1200,7 +1210,7 @@ unary_expression: expression
 							$$->temp_name = $2->temp_name;
 							if($2->var !=NULL)
 							{
-								code.insert2("=",$2->temp_name,"---",$2->var->name);
+								code.insert2("=",$2->temp_name,"---",$2->var->name+"_"+to_string(level));
 							}
 						}
 					}
@@ -1239,7 +1249,7 @@ expression: NUM_FLOAT
 					string s = "";
 					if($1->var->type == SIMPLE)
 					{
-						s = "= "+$1->var->name+" --- "+$$->temp_name;
+						s = "= "+$1->var->name+"_"+to_string(level)+" --- "+$$->temp_name;
 						$$->var = $1->var;
 					}
 					else
@@ -1247,7 +1257,7 @@ expression: NUM_FLOAT
 						string temp = "_T"+to_string(gtemp);
 						gtemp++;
 						all_temp_var.temp_var_name.push_back(temp);
-						code.insert2("addr",$1->var->name,"---",temp);
+						code.insert2("addr",$1->var->name+"_"+to_string(level),"---",temp);
 						s = "= "+temp+"["+$1->index+"] "+$$->temp_name;
 						$$->var = $1->var;
 					}
@@ -1511,11 +1521,35 @@ int main()
 		cout<<"No main function found. Aborting."<<endl;
 		exit(1);
 	}
-	cout<<"--------------------"<<endl;
-	code.print();
-	cout<<"--------------------"<<endl;
+
 	fstream fout;
 	fout.open("IntermediateCode.txt",ios::out);
+
+	fout<<"## user variable"<<endl;
+	for(int i=0; i<total_user_variable.user_variable.size();i++)
+	{
+		fout<<"# "<<total_user_variable.user_variable[i]<<endl;
+	}
+	fout<<endl<<endl;
+
+	fout<<"## temporary variables"<<endl;
+	for(int i=0; i<all_temp_var.temp_var_name.size(); i++)
+	{
+		fout<<"# "<<all_temp_var.temp_var_name[i]<<endl;
+	}
+	fout<<endl<<endl;
+
+	fout<<"## parameter list"<<endl;
+	for(int i=0; i<max_param; i++)
+	{
+		fout<<"# _Tparam"<<i<<endl;
+	}
+	for(int i=0; i<max_param; i++)
+	{
+		fout<<"# _Fparam"<<i<<endl;
+	}
+
+	fout<<endl<<endl;
 	int count=0;
 	for(int i=0;i<code.output.size();i++)
 	{
@@ -1525,6 +1559,11 @@ int main()
 			count++;
 		}
 	}
+
+	cout<<"--------------------"<<endl;
+	code.print();
+	cout<<"--------------------"<<endl;
+
 	fout.close();
 
 }

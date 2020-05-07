@@ -32,6 +32,12 @@ public:
 	vector<string> temp_var_name; 
 };
 
+class user_data
+{
+public:
+	vector<string> user_variable;
+};
+
 extern temp_data all_temp_var;
 
 class parameter

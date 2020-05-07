@@ -1,18 +1,13 @@
-int factorial(int n){
-  if(n == 1 || n == 0){
-    return 1;
-  }
-    int t;
-    t = factorial(n-1)*n;
-  return t;
-
-
+int f(int y){
+	if(y == 0 || y== 1){
+		return y;
+	}
+	return f(y-1)+ f(y-2);
 }
-
-
 int main(){
-  int r;
-  r = factorial(5);
-
-
+	int c,i;
+	for(i=0;i<6;++i){
+		c= c+ 2;
+		if(c > 9 ) break;
+	}
 }
