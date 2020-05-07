@@ -1,0 +1,61 @@
+
+## user defined variable
+# a_0 4
+# b_4 4
+# r_8 4
+# s_12 4
+
+
+## temp defined variable
+# _T0 4
+# _F1 4
+# _T2 4
+# _T3 4
+# _T4 4
+# _T5 4
+# _T6 4
+# _T7 4
+# _T8 4
+# _T9 4
+# _T10 4
+
+## all parameter list
+
+# _Tparam_0 4
+# _Tparam_1 4
+# _Fparam_0 4
+# _Fparam_1 4
+
+
+1 = 2 --- _T0
+2 = _T0 --- a_0
+3 = 1.200000 --- _F1
+4 = _F1 --- b_4
+5 difference:
+6 func begin difference ---
+7 = _Tparam_0 --- _T2
+8 = _Tparam_1 --- _T3
+9 - _T2 _T3 _T4
+10 return _T4 --- ---
+11 func_end0:
+12 func end difference ---
+13 main:
+14 func begin main ---
+15 = 5 --- _T5
+16 = 3 --- _T6
+17 param _T5 --- ---
+18 param _T6 --- ---
+19 refparam _T7 --- ---
+20 call difference 2 ---
+21 = _T7 --- r_8
+22 = 3 --- _T8
+23 = 5 --- _T9
+24 param _T8 --- ---
+25 param _T9 --- ---
+26 refparam _T10 --- ---
+27 call difference 2 ---
+28 = _T10 --- s_12
+29 func_end1:
+30 func end main ---
+
+-----------------end------------------
