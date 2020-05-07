@@ -10,12 +10,19 @@
 
 %}
 
+%s START
+%x COMMENT
+
 ws	[ \t]*
 id 	[a-zA-Z_][a-zA-Z0-9_]*
 float	[0-9]+"."[0-9]+ 
 int		[0-9]+
 
 %%
+
+"/*"			{ BEGIN(COMMENT); }
+<COMMENT>"*/"	{ BEGIN(START); }
+<COMMENT>.		{		}
 "//"[^\n]*			{	/* do nothing for comment */}
 
 "int"			{ yylval.type = INT;

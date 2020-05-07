@@ -1,9 +1,14 @@
-int main()
-{
-	if((0<1.36) && (1>=1) )
-		return 0;
-	else
-	{
-		return 1;
-	}
+// comment1
+int main(){
+  int a,c;
+  int b;
+  b=4;
+  int i;
+  for(i = 0;i<5;i=i+1){
+    b = b+5;
+  }
+  /* comment2
+    comment3
+    */
+  return 0;
 }
