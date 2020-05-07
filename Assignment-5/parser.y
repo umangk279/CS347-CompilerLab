@@ -29,6 +29,7 @@
 	func_end_tag_genarator func_end_tag;
 	bool is_main = false;
 	string cur_func_name = "";
+	int param_no=0;
 %}
 
 %code requires{
@@ -278,7 +279,7 @@ func_dec:	func_header left_curly stmt_list right_curly
 			}
 			;
 
-func_header: func_type_id LB func_params RB
+func_header: func_type_id { param_no = 0; } LB func_params RB
 			;
 
 func_type_id: type ID
@@ -350,7 +351,7 @@ decl: type ID
 		  	{
 		  		string name($2);
 		  		//cout<<"decl: active_function_index: "<<active_function_index<<endl;
-		  		if(ST.search_parameter(name,active_function_index) == -1)
+		  		if(ST.search_parameter_index(name,active_function_index) == -1)
 		  		{
 		  			int index = ST.add_parameter(active_function_index, name, SIMPLE, $1);
 		  			//cout<< "Parameter "<<name <<"added at index "<<index<<"for active_function_index: "<<active_function_index<<endl;
@@ -369,7 +370,7 @@ decl: type ID
 		  	if(active_function_index!=-1)
 		  	{
 		  		string name = $2;
-		  		if(ST.search_parameter(name,active_function_index) == -1)
+		  		if(ST.search_parameter_index(name,active_function_index) == -1)
 		  		{
 		  			int index = ST.add_parameter(active_function_index, name, ARRAY, $1);
 		  			$$ = $1;
@@ -835,7 +836,7 @@ comparison: operation GT operation
 					$3->type = ERROR;
 				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
-				$$ = new bool_conditions_(type);
+				$$ = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op(">",$1->temp_name,$3->temp_name,$$->temp_name);
@@ -857,18 +858,9 @@ comparison: operation GT operation
 					yyerror("comparison operation on void data type");
 					$3->type = ERROR;
 				}
-				if($1->type == VOID_TYPE)
-				{
-					yyerror("comparison operation on void data type");
-					$1->type = ERROR;
-				}
-				if($3->type == VOID_TYPE)
-				{
-					yyerror("comparison operation on void data type");
-					$3->type = ERROR;
-				}
+				
 				int type = get_compatible_type_comparison($1->type,$3->type);
-				$$ = new bool_conditions_(type);
+				$$ = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op(">=",$1->temp_name,$3->temp_name,$$->temp_name);
@@ -890,18 +882,9 @@ comparison: operation GT operation
 					yyerror("comparison operation on void data type");
 					$3->type = ERROR;
 				}
-				if($1->type == VOID_TYPE)
-				{
-					yyerror("comparison operation on void data type");
-					$1->type = ERROR;
-				}
-				if($3->type == VOID_TYPE)
-				{
-					yyerror("comparison operation on void data type");
-					$3->type = ERROR;
-				}
+				
 				int type = get_compatible_type_comparison($1->type,$3->type);
-				$$ = new bool_conditions_(type);
+				$$ = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op("<",$1->temp_name,$3->temp_name,$$->temp_name);
@@ -923,18 +906,9 @@ comparison: operation GT operation
 					yyerror("comparison operation on void data type");
 					$3->type = ERROR;
 				}
-				if($1->type == VOID_TYPE)
-				{
-					yyerror("comparison operation on void data type");
-					$1->type = ERROR;
-				}
-				if($3->type == VOID_TYPE)
-				{
-					yyerror("comparison operation on void data type");
-					$3->type = ERROR;
-				}
+				
 				int type = get_compatible_type_comparison($1->type,$3->type);
-				$$ = new bool_conditions_(type);
+				$$ = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op("<=",$1->temp_name,$3->temp_name,$$->temp_name);
@@ -957,7 +931,7 @@ comparison: operation GT operation
 					$3->type = ERROR;
 				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
-				$$ = new bool_conditions_(type);
+				$$ = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op("==",$1->temp_name,$3->temp_name,$$->temp_name);
@@ -980,7 +954,7 @@ comparison: operation GT operation
 					$3->type = ERROR;
 				}
 				int type = get_compatible_type_comparison($1->type,$3->type);
-				$$ = new bool_conditions_(type);
+				$$ = new bool_conditions_(INT_TYPE);
 				if(type!=ERROR)
 				{
 					code.gen_relational_op("!=",$1->temp_name,$3->temp_name,$$->temp_name);
@@ -1221,7 +1195,7 @@ unary_expression: expression
 				  			gtemp++;
 				  			all_temp_var.temp_var_name.push_back(temp);
 				  			code.insert2("=","1","---",temp);
-				  			code.insert2("-",$2->temp_name,temp,$$->temp_name);
+				  			code.insert2("+",$2->temp_name,temp,$$->temp_name);
 							code.insert2("=",$$->temp_name,"---",$2->temp_name);
 							$$->temp_name = $2->temp_name;
 							if($2->var !=NULL)
@@ -1361,6 +1335,7 @@ decl_id_array: ID
 					if(v==NULL)
 					{
 						int index = ST.add_variable(active_function_index,s,level,SIMPLE,INT_TYPE,0);
+						cout<<"Variable "<<s<<" added at level "<<level<<endl;
 						$$ = index;
 					}
 					else
@@ -1448,6 +1423,7 @@ decl_id_array: ID
 
 id_array: ID
 		  {
+		  		cout<<"Finding variable: "<<$1<<" at level: "<<level<<endl;
 		  		if(active_function_index!=-1)
 		  		{
 		  			string s = $1;
@@ -1455,6 +1431,7 @@ id_array: ID
 		  			if(v==NULL)
 		  			{
 		  				string err = "Variable "+s+" not declared.";
+		  				cout<<"Hereeeeeeeee"<<endl;
 		  				yyerror(err);
 		  			}
 		  			else
@@ -1464,7 +1441,10 @@ id_array: ID
 		  					v=NULL;
 		  					yyerror("Variable "+s+" declared as array");
 		  				}
+		  				if(v->name=="_Tparam" || v->name=="_Fparam")
+		  				v->name = v->name + to_string(v->offset);
 		  			}
+		  			
 		  			$$ = new id_array_(v);
 		  		}
 		  }
@@ -1497,7 +1477,13 @@ id_array: ID
 		  				code.insert2("=",to_string($3),"---",temp);
 		  				all_temp_var.temp_var_name.push_back(temp);
 		  			}
-
+		  			if(v!=NULL)
+		  			{
+		  				if(v->name=="_Tparam" || v->name=="_Fparam")
+				  		{
+				  				v->name = v->name + to_string(v->offset);
+				  		}
+		  			}
 		  		$$ = new id_array_(v);
 		  		$$->index = temp;
 		  		}

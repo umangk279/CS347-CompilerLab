@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 34 "parser.y" /* yacc.c:1909  */
+#line 35 "parser.y" /* yacc.c:1909  */
 
 	#ifndef _STRUCT_H_INCLUDED_
 	#define _STRUCT_H_INCLUDED_
@@ -105,7 +105,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 41 "parser.y" /* yacc.c:1909  */
+#line 42 "parser.y" /* yacc.c:1909  */
  
 	char* Char;
 	int int_val;

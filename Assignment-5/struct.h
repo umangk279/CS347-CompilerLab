@@ -56,6 +56,7 @@ public:
 	int num_type;
 	int dimension;
 	int decl_level;
+	int offset;
 	variable(string name, int type, int decl_level,int num_type, int dimension)
 	{
 		this->name = name;
@@ -63,6 +64,7 @@ public:
 		this->decl_level = decl_level;
 		this->num_type = num_type;
 		this->dimension = dimension;
+		offset=-1;
 	}
 };
 

@@ -4,6 +4,7 @@
 using namespace std;
 
 extern intermediate_code code;
+extern int param_no;
 
 int get_compatible_type_term(int type1, int type2)
 {
@@ -88,7 +89,7 @@ variable* symbol_table::search_cur_var(int active_function_index, int decl_level
 	for(int i=0; i<size; i++)
 	{
 		if(global_symbol_table[active_function_index]->var_list[i]->name == name
-			&& global_symbol_table[active_function_index]->var_list[i]->decl_level == decl_level)
+			&& global_symbol_table[active_function_index]->var_list[i]->decl_level <= decl_level)
 		{
 			if(global_symbol_table[active_function_index]->var_list[i]->decl_level >= level)
 			{
@@ -209,6 +210,7 @@ void intermediate_code::insert2(string s, string op, string op2, string result)
 
 variable* symbol_table::search_global_var(int active_function_index, int decl_level, string name)
 {
+	cout<<"active_function_index: "<<active_function_index<<endl;
 	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
 		return NULL;
 
@@ -218,6 +220,7 @@ variable* symbol_table::search_global_var(int active_function_index, int decl_le
 
 	else
 	{
+		cout<<"Fuccckkkkkkkkk"<<endl;
 		int parameter = search_parameter_index(name,active_function_index);
 		if(parameter == -1)
 		{
@@ -227,8 +230,8 @@ variable* symbol_table::search_global_var(int active_function_index, int decl_le
 		{
 			if(global_symbol_table[active_function_index]->param_list[parameter]->type == 5)
 			{
-				index = new variable("_Tparam",global_symbol_table[active_function_index]->param_list[parameter]->type,1,global_symbol_table[active_function_index]->param_list[parameter]->num_type,1);
-				
+				index = new variable("_Tparam"+to_string(param_no),global_symbol_table[active_function_index]->param_list[parameter]->type,1,global_symbol_table[active_function_index]->param_list[parameter]->num_type,1);
+				index->offset=parameter;
 			}
 			else
 			{
@@ -241,6 +244,7 @@ variable* symbol_table::search_global_var(int active_function_index, int decl_le
 					index = new variable("_Fparam",global_symbol_table[active_function_index]->param_list[parameter]->type,1,global_symbol_table[active_function_index]->param_list[parameter]->num_type,1);
 				
 				}
+				index->offset=parameter;
 			}
 
 			return index;
@@ -382,10 +386,10 @@ string symbol_table::generate_function_call(int call_function_index, plist_list_
 	{
 		if(this->global_symbol_table[call_function_index]->param_list[i]->type == SIMPLE)
 		{
-			code.insert2("param",temp->name_list[i]," ", " ");
+			code.insert2("param",temp->name_list[i],"---", "---");
 		}
 		else
-			code.insert2("refparam",temp->name_list[i]," ", " ");
+			code.insert2("refparam",temp->name_list[i],"---", "---");
 	}
 
 	if(this->global_symbol_table[call_function_index]->return_type!=VOID_TYPE)
