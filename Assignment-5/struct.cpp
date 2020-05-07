@@ -101,7 +101,7 @@ variable* symbol_table::search_cur_var(int active_function_index, int decl_level
 			}
 		}
 	}
-	cout<<"In search cur var variable found";
+	//cout<<"In search cur var variable found";
 	return ret;
 }
 
@@ -214,7 +214,7 @@ void intermediate_code::insert2(string s, string op, string op2, string result)
 
 variable* symbol_table::search_global_var(int active_function_index, int decl_level, string name)
 {
-	cout<<"active_function_index: "<<active_function_index<<endl;
+	//cout<<"active_function_index: "<<active_function_index<<endl;
 	if(active_function_index<0 || active_function_index>=global_symbol_table.size())
 		return NULL;
 
