@@ -1,7 +1,6 @@
-Implement the various phases of a Compiler, for a subset of the C language consisting of the following operations:
+Implemented the various phases of a Compiler, for a subset of the C language consisting of the following operations:
 1. Variable declarations, for int and float data types.
-2. Arithmetic, logical and relational expressions (with suitable short-circuit evaluation,
-wherever applicable).
+2. Arithmetic, logical and relational expressions.
 3. Function calls and function definitions.
 4. Conditional expressions: if-else and switch-case statements.
 5. Loops: for and while.
