@@ -1,0 +1,963 @@
+Grammar
+
+    0 $accept: SMT_LIST $end
+
+    1 SMT_LIST: SMT NEW_LINE SMT_LIST
+    2         | SMT
+
+    3 $@1: %empty
+
+    4 SMT_LIST: error NEW_LINE $@1 SMT_LIST
+
+    5 SMT: QUERY
+
+    6 QUERY: SELECTION
+    7      | PROJECTION
+    8      | CART_PRODUCT
+    9      | EQ_JOIN
+   10      | %empty
+
+   11 SELECTION: SELECT LT CONDITIONS GT LB TABLE_NAME RB
+
+   12 PROJECTION: PROJECT LT ATTRIBUTE_LIST GT LB TABLE_NAME RB
+
+   13 CART_PRODUCT: LB TABLE_NAME RB CARTESIAN_PRODUCT LB TABLE_NAME RB
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS GT LB TABLE_NAME RB
+
+   15 CONDITIONS: CONDITION2 OR CONDITIONS
+   16           | CONDITION2
+
+   17 CONDITION2: CONDITION AND CONDITION2
+   18           | CONDITION
+
+   19 CONDITION: EXPRESSION OPR EXPRESSION
+   20          | LB CONDITIONS RB
+   21          | NOT LB CONDITIONS RB
+
+   22 OPR: LT
+   23    | GT
+   24    | LTE
+   25    | GTE
+   26    | NEQ
+   27    | EQ
+
+   28 EXPRESSION: ATTRIBUTE_LIST
+   29           | DATA
+
+   30 ATTRIBUTE_LIST: ATTRIBUTE
+   31               | ATTRIBUTE COMMA ATTRIBUTE_LIST
+
+   32 ATTRIBUTE: NAME
+   33          | NAME DOT NAME
+
+   34 DATA: NUM
+   35     | STR
+
+   36 TABLE_NAME: NAME
+
+   37 EQUI_CONDITIONS: EQUI_CONDITION2 OR EQUI_CONDITIONS
+   38                | EQUI_CONDITION2
+
+   39 EQUI_CONDITION2: EQUI_CONDITION AND EQUI_CONDITION2
+   40                | EQUI_CONDITION
+
+   41 EQUI_CONDITION: EXPRESSION EQ EXPRESSION
+   42               | LB EQUI_CONDITIONS RB
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 4
+NEW_LINE (258) 1 4
+SELECT (259) 11
+PROJECT (260) 12
+CARTESIAN_PRODUCT (261) 13
+EQUI_JOIN (262) 14
+STR (263) 35
+NAME (264) 32 33 36
+NUM (265) 34
+AND (266) 17 39
+OR (267) 15 37
+NOT (268) 21
+LB (269) 11 12 13 14 20 21 42
+RB (270) 11 12 13 14 20 21 42
+LT (271) 11 12 14 22
+GT (272) 11 12 14 23
+LTE (273) 24
+GTE (274) 25
+EQ (275) 27 41
+NEQ (276) 26
+COMMA (277) 31
+DOT (278) 33
+
+
+Nonterminals, with rules where they appear
+
+$accept (24)
+    on left: 0
+SMT_LIST (25)
+    on left: 1 2 4, on right: 0 1 4
+$@1 (26)
+    on left: 3, on right: 4
+SMT (27)
+    on left: 5, on right: 1 2
+QUERY (28)
+    on left: 6 7 8 9 10, on right: 5
+SELECTION (29)
+    on left: 11, on right: 6
+PROJECTION (30)
+    on left: 12, on right: 7
+CART_PRODUCT (31)
+    on left: 13, on right: 8
+EQ_JOIN (32)
+    on left: 14, on right: 9
+CONDITIONS (33)
+    on left: 15 16, on right: 11 15 20 21
+CONDITION2 (34)
+    on left: 17 18, on right: 15 16 17
+CONDITION (35)
+    on left: 19 20 21, on right: 17 18
+OPR (36)
+    on left: 22 23 24 25 26 27, on right: 19
+EXPRESSION (37)
+    on left: 28 29, on right: 19 41
+ATTRIBUTE_LIST (38)
+    on left: 30 31, on right: 12 28 31
+ATTRIBUTE (39)
+    on left: 32 33, on right: 30 31
+DATA (40)
+    on left: 34 35, on right: 29
+TABLE_NAME (41)
+    on left: 36, on right: 11 12 13 14
+EQUI_CONDITIONS (42)
+    on left: 37 38, on right: 14 37 42
+EQUI_CONDITION2 (43)
+    on left: 39 40, on right: 37 38 39
+EQUI_CONDITION (44)
+    on left: 41 42, on right: 39 40
+
+
+State 0
+
+    0 $accept: . SMT_LIST $end
+
+    error    shift, and go to state 1
+    SELECT   shift, and go to state 2
+    PROJECT  shift, and go to state 3
+    LB       shift, and go to state 4
+
+    $end      reduce using rule 10 (QUERY)
+    NEW_LINE  reduce using rule 10 (QUERY)
+
+    SMT_LIST      go to state 5
+    SMT           go to state 6
+    QUERY         go to state 7
+    SELECTION     go to state 8
+    PROJECTION    go to state 9
+    CART_PRODUCT  go to state 10
+    EQ_JOIN       go to state 11
+
+
+State 1
+
+    4 SMT_LIST: error . NEW_LINE $@1 SMT_LIST
+
+    NEW_LINE  shift, and go to state 12
+
+
+State 2
+
+   11 SELECTION: SELECT . LT CONDITIONS GT LB TABLE_NAME RB
+
+    LT  shift, and go to state 13
+
+
+State 3
+
+   12 PROJECTION: PROJECT . LT ATTRIBUTE_LIST GT LB TABLE_NAME RB
+
+    LT  shift, and go to state 14
+
+
+State 4
+
+   13 CART_PRODUCT: LB . TABLE_NAME RB CARTESIAN_PRODUCT LB TABLE_NAME RB
+   14 EQ_JOIN: LB . TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS GT LB TABLE_NAME RB
+
+    NAME  shift, and go to state 15
+
+    TABLE_NAME  go to state 16
+
+
+State 5
+
+    0 $accept: SMT_LIST . $end
+
+    $end  shift, and go to state 17
+
+
+State 6
+
+    1 SMT_LIST: SMT . NEW_LINE SMT_LIST
+    2         | SMT .
+
+    NEW_LINE  shift, and go to state 18
+
+    $default  reduce using rule 2 (SMT_LIST)
+
+
+State 7
+
+    5 SMT: QUERY .
+
+    $default  reduce using rule 5 (SMT)
+
+
+State 8
+
+    6 QUERY: SELECTION .
+
+    $default  reduce using rule 6 (QUERY)
+
+
+State 9
+
+    7 QUERY: PROJECTION .
+
+    $default  reduce using rule 7 (QUERY)
+
+
+State 10
+
+    8 QUERY: CART_PRODUCT .
+
+    $default  reduce using rule 8 (QUERY)
+
+
+State 11
+
+    9 QUERY: EQ_JOIN .
+
+    $default  reduce using rule 9 (QUERY)
+
+
+State 12
+
+    4 SMT_LIST: error NEW_LINE . $@1 SMT_LIST
+
+    $default  reduce using rule 3 ($@1)
+
+    $@1  go to state 19
+
+
+State 13
+
+   11 SELECTION: SELECT LT . CONDITIONS GT LB TABLE_NAME RB
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    NOT   shift, and go to state 23
+    LB    shift, and go to state 24
+
+    CONDITIONS      go to state 25
+    CONDITION2      go to state 26
+    CONDITION       go to state 27
+    EXPRESSION      go to state 28
+    ATTRIBUTE_LIST  go to state 29
+    ATTRIBUTE       go to state 30
+    DATA            go to state 31
+
+
+State 14
+
+   12 PROJECTION: PROJECT LT . ATTRIBUTE_LIST GT LB TABLE_NAME RB
+
+    NAME  shift, and go to state 21
+
+    ATTRIBUTE_LIST  go to state 32
+    ATTRIBUTE       go to state 30
+
+
+State 15
+
+   36 TABLE_NAME: NAME .
+
+    $default  reduce using rule 36 (TABLE_NAME)
+
+
+State 16
+
+   13 CART_PRODUCT: LB TABLE_NAME . RB CARTESIAN_PRODUCT LB TABLE_NAME RB
+   14 EQ_JOIN: LB TABLE_NAME . RB EQUI_JOIN LT EQUI_CONDITIONS GT LB TABLE_NAME RB
+
+    RB  shift, and go to state 33
+
+
+State 17
+
+    0 $accept: SMT_LIST $end .
+
+    $default  accept
+
+
+State 18
+
+    1 SMT_LIST: SMT NEW_LINE . SMT_LIST
+
+    error    shift, and go to state 1
+    SELECT   shift, and go to state 2
+    PROJECT  shift, and go to state 3
+    LB       shift, and go to state 4
+
+    $end      reduce using rule 10 (QUERY)
+    NEW_LINE  reduce using rule 10 (QUERY)
+
+    SMT_LIST      go to state 34
+    SMT           go to state 6
+    QUERY         go to state 7
+    SELECTION     go to state 8
+    PROJECTION    go to state 9
+    CART_PRODUCT  go to state 10
+    EQ_JOIN       go to state 11
+
+
+State 19
+
+    4 SMT_LIST: error NEW_LINE $@1 . SMT_LIST
+
+    error    shift, and go to state 1
+    SELECT   shift, and go to state 2
+    PROJECT  shift, and go to state 3
+    LB       shift, and go to state 4
+
+    $end      reduce using rule 10 (QUERY)
+    NEW_LINE  reduce using rule 10 (QUERY)
+
+    SMT_LIST      go to state 35
+    SMT           go to state 6
+    QUERY         go to state 7
+    SELECTION     go to state 8
+    PROJECTION    go to state 9
+    CART_PRODUCT  go to state 10
+    EQ_JOIN       go to state 11
+
+
+State 20
+
+   35 DATA: STR .
+
+    $default  reduce using rule 35 (DATA)
+
+
+State 21
+
+   32 ATTRIBUTE: NAME .
+   33          | NAME . DOT NAME
+
+    DOT  shift, and go to state 36
+
+    $default  reduce using rule 32 (ATTRIBUTE)
+
+
+State 22
+
+   34 DATA: NUM .
+
+    $default  reduce using rule 34 (DATA)
+
+
+State 23
+
+   21 CONDITION: NOT . LB CONDITIONS RB
+
+    LB  shift, and go to state 37
+
+
+State 24
+
+   20 CONDITION: LB . CONDITIONS RB
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    NOT   shift, and go to state 23
+    LB    shift, and go to state 24
+
+    CONDITIONS      go to state 38
+    CONDITION2      go to state 26
+    CONDITION       go to state 27
+    EXPRESSION      go to state 28
+    ATTRIBUTE_LIST  go to state 29
+    ATTRIBUTE       go to state 30
+    DATA            go to state 31
+
+
+State 25
+
+   11 SELECTION: SELECT LT CONDITIONS . GT LB TABLE_NAME RB
+
+    GT  shift, and go to state 39
+
+
+State 26
+
+   15 CONDITIONS: CONDITION2 . OR CONDITIONS
+   16           | CONDITION2 .
+
+    OR  shift, and go to state 40
+
+    $default  reduce using rule 16 (CONDITIONS)
+
+
+State 27
+
+   17 CONDITION2: CONDITION . AND CONDITION2
+   18           | CONDITION .
+
+    AND  shift, and go to state 41
+
+    $default  reduce using rule 18 (CONDITION2)
+
+
+State 28
+
+   19 CONDITION: EXPRESSION . OPR EXPRESSION
+
+    LT   shift, and go to state 42
+    GT   shift, and go to state 43
+    LTE  shift, and go to state 44
+    GTE  shift, and go to state 45
+    EQ   shift, and go to state 46
+    NEQ  shift, and go to state 47
+
+    OPR  go to state 48
+
+
+State 29
+
+   28 EXPRESSION: ATTRIBUTE_LIST .
+
+    $default  reduce using rule 28 (EXPRESSION)
+
+
+State 30
+
+   30 ATTRIBUTE_LIST: ATTRIBUTE .
+   31               | ATTRIBUTE . COMMA ATTRIBUTE_LIST
+
+    COMMA  shift, and go to state 49
+
+    $default  reduce using rule 30 (ATTRIBUTE_LIST)
+
+
+State 31
+
+   29 EXPRESSION: DATA .
+
+    $default  reduce using rule 29 (EXPRESSION)
+
+
+State 32
+
+   12 PROJECTION: PROJECT LT ATTRIBUTE_LIST . GT LB TABLE_NAME RB
+
+    GT  shift, and go to state 50
+
+
+State 33
+
+   13 CART_PRODUCT: LB TABLE_NAME RB . CARTESIAN_PRODUCT LB TABLE_NAME RB
+   14 EQ_JOIN: LB TABLE_NAME RB . EQUI_JOIN LT EQUI_CONDITIONS GT LB TABLE_NAME RB
+
+    CARTESIAN_PRODUCT  shift, and go to state 51
+    EQUI_JOIN          shift, and go to state 52
+
+
+State 34
+
+    1 SMT_LIST: SMT NEW_LINE SMT_LIST .
+
+    $default  reduce using rule 1 (SMT_LIST)
+
+
+State 35
+
+    4 SMT_LIST: error NEW_LINE $@1 SMT_LIST .
+
+    $default  reduce using rule 4 (SMT_LIST)
+
+
+State 36
+
+   33 ATTRIBUTE: NAME DOT . NAME
+
+    NAME  shift, and go to state 53
+
+
+State 37
+
+   21 CONDITION: NOT LB . CONDITIONS RB
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    NOT   shift, and go to state 23
+    LB    shift, and go to state 24
+
+    CONDITIONS      go to state 54
+    CONDITION2      go to state 26
+    CONDITION       go to state 27
+    EXPRESSION      go to state 28
+    ATTRIBUTE_LIST  go to state 29
+    ATTRIBUTE       go to state 30
+    DATA            go to state 31
+
+
+State 38
+
+   20 CONDITION: LB CONDITIONS . RB
+
+    RB  shift, and go to state 55
+
+
+State 39
+
+   11 SELECTION: SELECT LT CONDITIONS GT . LB TABLE_NAME RB
+
+    LB  shift, and go to state 56
+
+
+State 40
+
+   15 CONDITIONS: CONDITION2 OR . CONDITIONS
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    NOT   shift, and go to state 23
+    LB    shift, and go to state 24
+
+    CONDITIONS      go to state 57
+    CONDITION2      go to state 26
+    CONDITION       go to state 27
+    EXPRESSION      go to state 28
+    ATTRIBUTE_LIST  go to state 29
+    ATTRIBUTE       go to state 30
+    DATA            go to state 31
+
+
+State 41
+
+   17 CONDITION2: CONDITION AND . CONDITION2
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    NOT   shift, and go to state 23
+    LB    shift, and go to state 24
+
+    CONDITION2      go to state 58
+    CONDITION       go to state 27
+    EXPRESSION      go to state 28
+    ATTRIBUTE_LIST  go to state 29
+    ATTRIBUTE       go to state 30
+    DATA            go to state 31
+
+
+State 42
+
+   22 OPR: LT .
+
+    $default  reduce using rule 22 (OPR)
+
+
+State 43
+
+   23 OPR: GT .
+
+    $default  reduce using rule 23 (OPR)
+
+
+State 44
+
+   24 OPR: LTE .
+
+    $default  reduce using rule 24 (OPR)
+
+
+State 45
+
+   25 OPR: GTE .
+
+    $default  reduce using rule 25 (OPR)
+
+
+State 46
+
+   27 OPR: EQ .
+
+    $default  reduce using rule 27 (OPR)
+
+
+State 47
+
+   26 OPR: NEQ .
+
+    $default  reduce using rule 26 (OPR)
+
+
+State 48
+
+   19 CONDITION: EXPRESSION OPR . EXPRESSION
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+
+    EXPRESSION      go to state 59
+    ATTRIBUTE_LIST  go to state 29
+    ATTRIBUTE       go to state 30
+    DATA            go to state 31
+
+
+State 49
+
+   31 ATTRIBUTE_LIST: ATTRIBUTE COMMA . ATTRIBUTE_LIST
+
+    NAME  shift, and go to state 21
+
+    ATTRIBUTE_LIST  go to state 60
+    ATTRIBUTE       go to state 30
+
+
+State 50
+
+   12 PROJECTION: PROJECT LT ATTRIBUTE_LIST GT . LB TABLE_NAME RB
+
+    LB  shift, and go to state 61
+
+
+State 51
+
+   13 CART_PRODUCT: LB TABLE_NAME RB CARTESIAN_PRODUCT . LB TABLE_NAME RB
+
+    LB  shift, and go to state 62
+
+
+State 52
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN . LT EQUI_CONDITIONS GT LB TABLE_NAME RB
+
+    LT  shift, and go to state 63
+
+
+State 53
+
+   33 ATTRIBUTE: NAME DOT NAME .
+
+    $default  reduce using rule 33 (ATTRIBUTE)
+
+
+State 54
+
+   21 CONDITION: NOT LB CONDITIONS . RB
+
+    RB  shift, and go to state 64
+
+
+State 55
+
+   20 CONDITION: LB CONDITIONS RB .
+
+    $default  reduce using rule 20 (CONDITION)
+
+
+State 56
+
+   11 SELECTION: SELECT LT CONDITIONS GT LB . TABLE_NAME RB
+
+    NAME  shift, and go to state 15
+
+    TABLE_NAME  go to state 65
+
+
+State 57
+
+   15 CONDITIONS: CONDITION2 OR CONDITIONS .
+
+    $default  reduce using rule 15 (CONDITIONS)
+
+
+State 58
+
+   17 CONDITION2: CONDITION AND CONDITION2 .
+
+    $default  reduce using rule 17 (CONDITION2)
+
+
+State 59
+
+   19 CONDITION: EXPRESSION OPR EXPRESSION .
+
+    $default  reduce using rule 19 (CONDITION)
+
+
+State 60
+
+   31 ATTRIBUTE_LIST: ATTRIBUTE COMMA ATTRIBUTE_LIST .
+
+    $default  reduce using rule 31 (ATTRIBUTE_LIST)
+
+
+State 61
+
+   12 PROJECTION: PROJECT LT ATTRIBUTE_LIST GT LB . TABLE_NAME RB
+
+    NAME  shift, and go to state 15
+
+    TABLE_NAME  go to state 66
+
+
+State 62
+
+   13 CART_PRODUCT: LB TABLE_NAME RB CARTESIAN_PRODUCT LB . TABLE_NAME RB
+
+    NAME  shift, and go to state 15
+
+    TABLE_NAME  go to state 67
+
+
+State 63
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN LT . EQUI_CONDITIONS GT LB TABLE_NAME RB
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    LB    shift, and go to state 68
+
+    EXPRESSION       go to state 69
+    ATTRIBUTE_LIST   go to state 29
+    ATTRIBUTE        go to state 30
+    DATA             go to state 31
+    EQUI_CONDITIONS  go to state 70
+    EQUI_CONDITION2  go to state 71
+    EQUI_CONDITION   go to state 72
+
+
+State 64
+
+   21 CONDITION: NOT LB CONDITIONS RB .
+
+    $default  reduce using rule 21 (CONDITION)
+
+
+State 65
+
+   11 SELECTION: SELECT LT CONDITIONS GT LB TABLE_NAME . RB
+
+    RB  shift, and go to state 73
+
+
+State 66
+
+   12 PROJECTION: PROJECT LT ATTRIBUTE_LIST GT LB TABLE_NAME . RB
+
+    RB  shift, and go to state 74
+
+
+State 67
+
+   13 CART_PRODUCT: LB TABLE_NAME RB CARTESIAN_PRODUCT LB TABLE_NAME . RB
+
+    RB  shift, and go to state 75
+
+
+State 68
+
+   42 EQUI_CONDITION: LB . EQUI_CONDITIONS RB
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    LB    shift, and go to state 68
+
+    EXPRESSION       go to state 69
+    ATTRIBUTE_LIST   go to state 29
+    ATTRIBUTE        go to state 30
+    DATA             go to state 31
+    EQUI_CONDITIONS  go to state 76
+    EQUI_CONDITION2  go to state 71
+    EQUI_CONDITION   go to state 72
+
+
+State 69
+
+   41 EQUI_CONDITION: EXPRESSION . EQ EXPRESSION
+
+    EQ  shift, and go to state 77
+
+
+State 70
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS . GT LB TABLE_NAME RB
+
+    GT  shift, and go to state 78
+
+
+State 71
+
+   37 EQUI_CONDITIONS: EQUI_CONDITION2 . OR EQUI_CONDITIONS
+   38                | EQUI_CONDITION2 .
+
+    OR  shift, and go to state 79
+
+    $default  reduce using rule 38 (EQUI_CONDITIONS)
+
+
+State 72
+
+   39 EQUI_CONDITION2: EQUI_CONDITION . AND EQUI_CONDITION2
+   40                | EQUI_CONDITION .
+
+    AND  shift, and go to state 80
+
+    $default  reduce using rule 40 (EQUI_CONDITION2)
+
+
+State 73
+
+   11 SELECTION: SELECT LT CONDITIONS GT LB TABLE_NAME RB .
+
+    $default  reduce using rule 11 (SELECTION)
+
+
+State 74
+
+   12 PROJECTION: PROJECT LT ATTRIBUTE_LIST GT LB TABLE_NAME RB .
+
+    $default  reduce using rule 12 (PROJECTION)
+
+
+State 75
+
+   13 CART_PRODUCT: LB TABLE_NAME RB CARTESIAN_PRODUCT LB TABLE_NAME RB .
+
+    $default  reduce using rule 13 (CART_PRODUCT)
+
+
+State 76
+
+   42 EQUI_CONDITION: LB EQUI_CONDITIONS . RB
+
+    RB  shift, and go to state 81
+
+
+State 77
+
+   41 EQUI_CONDITION: EXPRESSION EQ . EXPRESSION
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+
+    EXPRESSION      go to state 82
+    ATTRIBUTE_LIST  go to state 29
+    ATTRIBUTE       go to state 30
+    DATA            go to state 31
+
+
+State 78
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS GT . LB TABLE_NAME RB
+
+    LB  shift, and go to state 83
+
+
+State 79
+
+   37 EQUI_CONDITIONS: EQUI_CONDITION2 OR . EQUI_CONDITIONS
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    LB    shift, and go to state 68
+
+    EXPRESSION       go to state 69
+    ATTRIBUTE_LIST   go to state 29
+    ATTRIBUTE        go to state 30
+    DATA             go to state 31
+    EQUI_CONDITIONS  go to state 84
+    EQUI_CONDITION2  go to state 71
+    EQUI_CONDITION   go to state 72
+
+
+State 80
+
+   39 EQUI_CONDITION2: EQUI_CONDITION AND . EQUI_CONDITION2
+
+    STR   shift, and go to state 20
+    NAME  shift, and go to state 21
+    NUM   shift, and go to state 22
+    LB    shift, and go to state 68
+
+    EXPRESSION       go to state 69
+    ATTRIBUTE_LIST   go to state 29
+    ATTRIBUTE        go to state 30
+    DATA             go to state 31
+    EQUI_CONDITION2  go to state 85
+    EQUI_CONDITION   go to state 72
+
+
+State 81
+
+   42 EQUI_CONDITION: LB EQUI_CONDITIONS RB .
+
+    $default  reduce using rule 42 (EQUI_CONDITION)
+
+
+State 82
+
+   41 EQUI_CONDITION: EXPRESSION EQ EXPRESSION .
+
+    $default  reduce using rule 41 (EQUI_CONDITION)
+
+
+State 83
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS GT LB . TABLE_NAME RB
+
+    NAME  shift, and go to state 15
+
+    TABLE_NAME  go to state 86
+
+
+State 84
+
+   37 EQUI_CONDITIONS: EQUI_CONDITION2 OR EQUI_CONDITIONS .
+
+    $default  reduce using rule 37 (EQUI_CONDITIONS)
+
+
+State 85
+
+   39 EQUI_CONDITION2: EQUI_CONDITION AND EQUI_CONDITION2 .
+
+    $default  reduce using rule 39 (EQUI_CONDITION2)
+
+
+State 86
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS GT LB TABLE_NAME . RB
+
+    RB  shift, and go to state 87
+
+
+State 87
+
+   14 EQ_JOIN: LB TABLE_NAME RB EQUI_JOIN LT EQUI_CONDITIONS GT LB TABLE_NAME RB .
+
+    $default  reduce using rule 14 (EQ_JOIN)

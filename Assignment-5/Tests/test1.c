@@ -1,5 +1,6 @@
 // comment1
-int main(){
+int main(int p)
+{
   int a,c;
   int b;
   b=4;

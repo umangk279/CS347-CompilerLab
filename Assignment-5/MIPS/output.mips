@@ -1,50 +1,31 @@
 .text
 j main
-1
 la $t0, _T0
 li $t1, 2
 sw $t1, 0($t0)
-
-2
 la $t0, _T0
 la $t1, a_0
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-3
 la $t0, _F1
 l.s $f0, float_const0
 s.s $f0, 0($t0)
-
-4
 la $t0, _F1
 la $t1, b_0
 l.s $f0, 0($t0)
 s.s $f0, 0($t1)
-
-5
 sum:
-
-6
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-7
 la $t0, _T2
 li $t1, 10
 sw $t1, 0($t0)
-
-8
 la $t0, _T2
 la $t1, a_2
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-9
 func_end0:
-
-10
 lw $ra, 0($fp)
 addiu $sp, $sp, 4
 la $t0, _Fparam1
@@ -164,28 +145,18 @@ la $t0, b_0
 la $t0, a_0
 addiu $fp, $sp, 4
 jr $ra
-
-11
 difference:
-
-12
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-13
 la $t0, _Tparam0_2
 la $t1, _T3
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-14
 la $t0, _Tparam1_2
 la $t1, _T4
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-15
 la $t0, _T3
 la $t1, _T4
 la $t2, _T5
@@ -193,8 +164,6 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 sub $t5, $t3, $t4
 sw $t5, 0($t2)
-
-16
 la $t0, _T5
 l.s $f11, 0($t0)
 lw $ra, 0($fp)
@@ -316,11 +285,7 @@ la $t0, b_0
 la $t0, a_0
 addiu $fp, $sp, 4
 jr $ra
-
-17
 func_end1:
-
-18
 lw $ra, 0($fp)
 addiu $sp, $sp, 4
 la $t0, _Fparam1
@@ -440,31 +405,19 @@ la $t0, b_0
 la $t0, a_0
 addiu $fp, $sp, 4
 jr $ra
-
-19
 arr2:
-
-20
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-21
 la $t0, _T6
 li $t1, 0
 sw $t1, 0($t0)
-
-22
 la $t0, _T7
 li $t1, 1
 sw $t1, 0($t0)
-
-23
 la $t0, f_2
 la $t1, _T8
 sw $t0, 0($t1)
-
-24
 la $t0, _T8
 lw $t1, 0($t0)
 la $t2, _T6
@@ -475,23 +428,15 @@ add $t4, $t1, $t3
 la $t5, _T7
 l.s $f0, 0($t5)
 s.s $f0, 0($t4)
-
-25
 la $t0, _T9
 li $t1, 1
 sw $t1, 0($t0)
-
-26
 la $t0, _T10
 li $t1, 2
 sw $t1, 0($t0)
-
-27
 la $t0, f_2
 la $t1, _T11
 sw $t0, 0($t1)
-
-28
 la $t0, _T11
 lw $t1, 0($t0)
 la $t2, _T9
@@ -502,23 +447,15 @@ add $t4, $t1, $t3
 la $t5, _T10
 l.s $f0, 0($t5)
 s.s $f0, 0($t4)
-
-29
 la $t0, _T12
 li $t1, 2
 sw $t1, 0($t0)
-
-30
 la $t0, _T13
 li $t1, 3
 sw $t1, 0($t0)
-
-31
 la $t0, f_2
 la $t1, _T14
 sw $t0, 0($t1)
-
-32
 la $t0, _T14
 lw $t1, 0($t0)
 la $t2, _T12
@@ -529,18 +466,12 @@ add $t4, $t1, $t3
 la $t5, _T13
 l.s $f0, 0($t5)
 s.s $f0, 0($t4)
-
-33
 la $t0, _T15
 li $t1, 0
 sw $t1, 0($t0)
-
-34
 la $t0, f_2
 la $t1, _T17
 sw $t0, 0($t1)
-
-35
 la $t0, _T17
 lw $t1, 0($t0)
 la $t2, _T15
@@ -551,18 +482,12 @@ add $t4, $t1, $t3
 l.s $f0, 0($t4)
 la $t5, _T16
 s.s $f0, 0($t5)
-
-36
 la $t0, _T18
 li $t1, 1
 sw $t1, 0($t0)
-
-37
 la $t0, f_2
 la $t1, _T20
 sw $t0, 0($t1)
-
-38
 la $t0, _T20
 lw $t1, 0($t0)
 la $t2, _T18
@@ -573,8 +498,6 @@ add $t4, $t1, $t3
 l.s $f0, 0($t4)
 la $t5, _T19
 s.s $f0, 0($t5)
-
-39
 la $t0, _T16
 la $t1, _T19
 la $t2, _T21
@@ -582,18 +505,12 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 mul $t5, $t3, $t4
 sw $t5, 0($t2)
-
-40
 la $t0, _T22
 li $t1, 2
 sw $t1, 0($t0)
-
-41
 la $t0, f_2
 la $t1, _T24
 sw $t0, 0($t1)
-
-42
 la $t0, _T24
 lw $t1, 0($t0)
 la $t2, _T22
@@ -604,8 +521,6 @@ add $t4, $t1, $t3
 l.s $f0, 0($t4)
 la $t5, _T23
 s.s $f0, 0($t5)
-
-43
 la $t0, _T21
 la $t1, _T23
 la $t2, _T25
@@ -613,17 +528,11 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 mul $t5, $t3, $t4
 sw $t5, 0($t2)
-
-44
 la $t0, _T25
 la $t1, r_2
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-45
 func_end2:
-
-46
 lw $ra, 0($fp)
 addiu $sp, $sp, 4
 la $t0, _Fparam1
@@ -743,78 +652,48 @@ la $t0, b_0
 la $t0, a_0
 addiu $fp, $sp, 4
 jr $ra
-
-47
 f:
-
-48
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-49
 la $t0, _Tparam0_2
 la $t1, _T26
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-50
 la $t0, _T27
 li $t1, 0
 sw $t1, 0($t0)
-
-51
 la $t0, _T28
 li $t1, 1
 sw $t1, 0($t0)
-
-52
 la $t0, _T26
 la $t1, _T27
 lw $t2, 0($t0)
 lw $t3, 0($t1)
 beq $t2, $t3, REL0 
-
-53
 la $t0, _T28
 li $t1, 0
 sw $t1, 0($t0)
-
-54
 REL0:
-
-55
 la $t0, _Tparam0_2
 la $t1, _T29
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-56
 la $t0, _T30
 li $t1, 1
 sw $t1, 0($t0)
-
-57
 la $t0, _T31
 li $t1, 1
 sw $t1, 0($t0)
-
-58
 la $t0, _T29
 la $t1, _T30
 lw $t2, 0($t0)
 lw $t3, 0($t1)
 beq $t2, $t3, REL1 
-
-59
 la $t0, _T31
 li $t1, 0
 sw $t1, 0($t0)
-
-60
 REL1:
-
-61
 la $t0, _T28
 la $t1, _T31
 la $t2, _F32
@@ -822,13 +701,9 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 or $t5, $t3, $t4
 sw $t5, 0($t2)
-
-62
 la $t0, _T33
 li $t1, 0
 sw $t1, 0($t0)
-
-63
 la $t0, _F32
 la $t1, _T33
 l.s $f0, 0($t0)
@@ -836,14 +711,10 @@ l.s $f1, 0($t1)
 cvt.s.w $f1, $f1
 c.eq.s $f0, $f1
 bc1t COND0 
-
-64
 la $t0, _Tparam0_3
 la $t1, _T34
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-65
 la $t0, _T34
 l.s $f11, 0($t0)
 lw $ra, 0($fp)
@@ -965,22 +836,14 @@ la $t0, b_0
 la $t0, a_0
 addiu $fp, $sp, 4
 jr $ra
-
-66
 COND0:
-
-67
 la $t0, _Tparam0_2
 la $t1, _T35
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-68
 la $t0, _T36
 li $t1, 1
 sw $t1, 0($t0)
-
-69
 la $t0, _T35
 la $t1, _T36
 la $t2, _T37
@@ -988,12 +851,6 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 sub $t5, $t3, $t4
 sw $t5, 0($t2)
-
-70
-
-71
-
-72
 la $t0, a_0
 la $t0, b_0
 la $t0, a_2
@@ -1115,19 +972,13 @@ la $t2, _Tparam_0
 sw $t1, 0($t2)
 jal f
 lw $ra, 4($sp)
-
-73
 la $t0, _Tparam0_2
 la $t1, _T39
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-74
 la $t0, _T40
 li $t1, 2
 sw $t1, 0($t0)
-
-75
 la $t0, _T39
 la $t1, _T40
 la $t2, _T41
@@ -1135,12 +986,6 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 sub $t5, $t3, $t4
 sw $t5, 0($t2)
-
-76
-
-77
-
-78
 la $t0, a_0
 la $t0, b_0
 la $t0, a_2
@@ -1262,8 +1107,6 @@ la $t2, _Tparam_0
 sw $t1, 0($t2)
 jal f
 lw $ra, 4($sp)
-
-79
 la $t0, _T38
 la $t1, _T42
 la $t2, _T43
@@ -1271,8 +1114,6 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 add $t5, $t3, $t4
 sw $t5, 0($t2)
-
-80
 la $t0, _T43
 l.s $f11, 0($t0)
 lw $ra, 0($fp)
@@ -1394,11 +1235,7 @@ la $t0, b_0
 la $t0, a_0
 addiu $fp, $sp, 4
 jr $ra
-
-81
 func_end3:
-
-82
 lw $ra, 0($fp)
 addiu $sp, $sp, 4
 la $t0, _Fparam1
@@ -1518,39 +1355,25 @@ la $t0, b_0
 la $t0, a_0
 addiu $fp, $sp, 4
 jr $ra
-
-83
 .globl main
 main:
-
-84
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-85
 la $t0, _T44
 li $t1, 3
 sw $t1, 0($t0)
-
-86
 la $t0, _T44
 la $t1, e_2
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-87
 la $t0, a_2
 la $t1, _T45
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-88
 la $t0, _T47
 li $t1, 1
 sw $t1, 0($t0)
-
-89
 la $t0, _T45
 la $t1, _T47
 la $t2, _T46
@@ -1558,38 +1381,26 @@ lw $t3, 0($t0)
 lw $t4, 0($t1)
 add $t5, $t3, $t4
 sw $t5, 0($t2)
-
-90
 la $t0, _T46
 la $t1, _T45
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-91
 la $t0, _T45
 la $t1, a_2
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-92
 la $t0, _T45
 la $t1, e_2
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-93
 la $t0, a_2
 la $t1, _T48
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-94
 la $t0, b_2
 la $t1, _F49
 l.s $f0, 0($t0)
 s.s $f0, 0($t1)
-
-95
 la $t0, _T48
 la $t1, _F49
 la $t2, _F50
@@ -1598,26 +1409,18 @@ l.s $t4, 0($t1)
 cvt.s.w $f3, $f3
 add.s $f5, $f3, $f4
 s.s $f5, 0($t2)
-
-96
 la $t0, _F50
 la $t1, c_2
 l.s $f0, 0($t0)
 s.s $f0, 0($t1)
-
-97
 la $t0, a_2
 la $t1, _T51
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-98
 la $t0, b_2
 la $t1, _F52
 l.s $f0, 0($t0)
 s.s $f0, 0($t1)
-
-99
 la $t0, _T51
 la $t1, _F52
 la $t2, _F53
@@ -1626,26 +1429,18 @@ l.s $t4, 0($t1)
 cvt.s.w $f3, $f3
 div.s $f5, $f3, $f4
 s.s $f5, 0($t2)
-
-100
 la $t0, _F53
 la $t1, c_2
 l.s $f0, 0($t0)
 s.s $f0, 0($t1)
-
-101
 la $t0, a_2
 la $t1, _T54
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-102
 la $t0, b_2
 la $t1, _F55
 l.s $f0, 0($t0)
 s.s $f0, 0($t1)
-
-103
 la $t0, _T54
 la $t1, _F55
 la $t2, _F56
@@ -1654,33 +1449,23 @@ l.s $t4, 0($t1)
 cvt.s.w $f3, $f3
 sub.s $f5, $f3, $f4
 s.s $f5, 0($t2)
-
-104
 la $t0, _F56
 la $t1, _T57
 l.s $f0, 0($t0)
 cvt.w.s $f0, $f0
 s.s $f0, 0($t1)
-
-105
 la $t0, _T57
 la $t1, d_2
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-106
 la $t0, a_2
 la $t1, _T58
 lw $t2, 0($t0)
 sw $t2, 0($t1)
-
-107
 la $t0, b_2
 la $t1, _F59
 l.s $f0, 0($t0)
 s.s $f0, 0($t1)
-
-108
 la $t0, _T58
 la $t1, _F59
 la $t2, _F60
